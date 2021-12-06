@@ -38,8 +38,7 @@ add_library(6502_header INTERFACE ${6502_HEADER})
 
 add_executable(6502_tests ${TEST_SOURCES})
 target_link_libraries(6502_tests ${6502_HEADER} unity)
+
 set_target_properties(6502_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/tests")
+
 add_test(TESTING_6502 6502_tests) #add_test(TEST_NAME EXE_NAME_TO_TEST)
-
-
-#target_include_directories(unity PUBLIC tests/Unity)
