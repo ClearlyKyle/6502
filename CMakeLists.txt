@@ -15,6 +15,7 @@ include_directories(src)
 
 file(GLOB 6502_HEADER
     "${PROJECT_SOURCE_DIR}/src/h6502.h"
+    "${PROJECT_SOURCE_DIR}/src/macros.h"
 )
 file(GLOB MAIN_SRC
     "${PROJECT_SOURCE_DIR}/src/*.c"
