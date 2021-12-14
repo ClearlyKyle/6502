@@ -34,13 +34,39 @@ file(GLOB TEST_SOURCES
     "${CMAKE_SOURCE_DIR}/tests/tests.c"
 )
 
+
+
 add_library(unity STATIC ${UNITY_SRC})
 add_library(6502_header INTERFACE ${6502_HEADER})
 
-add_executable(6502_tests ${TEST_SOURCES})
-target_link_libraries(6502_tests ${6502_HEADER} unity)
-target_compile_definitions(6502_tests PRIVATE DEBUG_PRINT=0)
+##
+## TESTING
+##
 
-set_target_properties(6502_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/tests")
+file(GLOB TEST_FILES
+    "${CMAKE_SOURCE_DIR}/tests/*.c"
+)
+set(TEST_NAMES_LIST 
+    "LDA_TESTS" 
+    "LDX_TESTS"
+)
 
-add_test(TESTING_6502 6502_tests) #add_test(TEST_NAME EXE_NAME_TO_TEST)
+message(STATUS "[TESTS] Generating all add_test...")
+
+set(i 0)
+foreach(file ${TEST_FILES})
+    # Get test name "test_name"
+    list(GET TEST_NAMES_LIST ${i} test_name) # TEST_NAMES_LIST doesnt need to be in ${}
+
+    # Create .exe
+    add_executable(${test_name} ${file})
+    # Link the 6502 and Unity headers
+    target_link_libraries(${test_name} 6502_header unity)
+    # Set output folder
+    set_target_properties(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/tests")
+    # Add the test for Ctest, 
+    add_test(6502_${test_name} "${CMAKE_SOURCE_DIR}/bin/tests/${test_name}")
+
+    message(STATUS "[TESTS] ${i} - ${file} with test name : 6502_${test_name}")
+    math(EXPR i "${i} + 1")
+endforeach()
