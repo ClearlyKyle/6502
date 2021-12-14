@@ -39,6 +39,7 @@ add_library(6502_header INTERFACE ${6502_HEADER})
 
 add_executable(6502_tests ${TEST_SOURCES})
 target_link_libraries(6502_tests ${6502_HEADER} unity)
+target_compile_definitions(6502_tests PRIVATE DEBUG_PRINT=0)
 
 set_target_properties(6502_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/tests")
 

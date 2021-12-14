@@ -3,9 +3,10 @@
 
 // https://github.com/ThrowTheSwitch/Unity
 
+
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    reset_cpu(&cpu, &mem);
+    Reset_CPU(&cpu, &mem);
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
@@ -32,7 +33,7 @@ void RunLittleProgram(void)
 
     const int NUM_CYCLES = 8;
 
-    s32 cycles_used = execute(NUM_CYCLES, &mem);
+    s32 cycles_used = Execute(NUM_CYCLES, &mem);
     TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
@@ -44,7 +45,7 @@ void CPU_Does_Nothing_When_Execute_Zero_Cycles(void)
 {
     const s32 NUM_CYCLES = 0;
 
-    s32 cycles_used = execute(NUM_CYCLES, &mem);
+    s32 cycles_used = Execute(NUM_CYCLES, &mem);
 
     TEST_ASSERT_EQUAL_UINT32(0, cycles_used);
 }
@@ -54,7 +55,7 @@ void CPU_Can_Execute_More_Cycles_Than_Requested_If_The_Instruction_Requires(void
     mem.data[0xFFFC] = INS_LDA_IM;
     mem.data[0xFFFD] = 0x84;
 
-    s32 cycles_used = execute(1, &mem);
+    s32 cycles_used = Execute(1, &mem);
     TEST_ASSERT_EQUAL_INT32(2, cycles_used);
 }
 
@@ -63,7 +64,7 @@ void Executing_A_Bad_Instruction_Does_Not_Start_Infinite_Loop(void)
     mem.data[0xFFFC] = 0x0; // invalud instruction
     mem.data[0xFFFD] = 0x0;
 
-    s32 cycles_used = execute(1, &mem);
+    s32 cycles_used = Execute(1, &mem);
     TEST_ASSERT_EQUAL_INT32(1, cycles_used);
 }
 
@@ -72,7 +73,7 @@ void LDA_Immediate_Can_Load_A_Value_Into_A_Register(void)
     mem.data[0xFFFC] = INS_LDA_IM;
     mem.data[0xFFFD] = 0x84;
 
-    s32 cycles_used = execute(2, &mem);
+    s32 cycles_used = Execute(2, &mem);
     TEST_ASSERT_EQUAL_INT32(2, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
@@ -90,7 +91,7 @@ void LDA_Immediate_Can_Effect_The_Zero_Flag(void)
     mem.data[0xFFFC] = INS_LDA_IM;
     mem.data[0xFFFD] = 0x0;
 
-    s32 cycles_used = execute(2, &mem);
+    s32 cycles_used = Execute(2, &mem);
 
     TEST_ASSERT_TRUE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
@@ -104,7 +105,7 @@ void LDAZ_ZP_Can_Load_A_Value_Into_A_Register(void)
     mem.data[0xFFFD] = 0x42;
     mem.data[0x0042] = 0x37;
 
-    s32 cycles_used = execute(3, &mem);
+    s32 cycles_used = Execute(3, &mem);
     TEST_ASSERT_EQUAL_INT32(3, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
@@ -133,7 +134,7 @@ void LDAZ_ZPX_Can_Load_A_Value_Into_A_Register(void)
     mem.data[0xFFFD] = 0x42; // take this value "0x42" and add the "reg_X" value to it
     mem.data[0x0047] = 0x37; // read from the resulting memory address
 
-    s32 cycles_used = execute(4, &mem);
+    s32 cycles_used = Execute(4, &mem);
     TEST_ASSERT_EQUAL_INT32(4, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
@@ -152,7 +153,7 @@ void LDAZ_ZPX_Can_Load_A_Value_Into_A_Register_When_It_wraps(void)
     mem.data[0xFFFD] = 0x80; // take this value "0x42" and add the "reg_X" value to it
     mem.data[0x007F] = 0x37; // read from the resulting memory address
 
-    s32 cycles_used = execute(4, &mem);
+    s32 cycles_used = Execute(4, &mem);
     TEST_ASSERT_EQUAL_INT32(4, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
@@ -172,7 +173,7 @@ void LDA_Absolute_Can_Load_A_Value_Into_The_A_Register(void)
 
     const int expected_cycles = 4;
 
-    s32 cycles_used = execute(expected_cycles, &mem);
+    s32 cycles_used = Execute(expected_cycles, &mem);
     TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
@@ -199,7 +200,7 @@ void LDA_Absolute_X_Can_Load_A_Value_Into_The_A_Register(void)
 
     const int expected_cycles = 4;
 
-    s32 cycles_used = execute(expected_cycles, &mem);
+    s32 cycles_used = Execute(expected_cycles, &mem);
     TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
@@ -216,11 +217,11 @@ void LDA_Absolute_X_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundar
     mem.data[0xFFFC] = INS_LDA_ABS_X;
     mem.data[0xFFFD] = 0x02;
     mem.data[0xFFFE] = 0x44; // load A from 0x4402 then add X Register
-    mem.data[0x457F] = 0x37; // 0x4402 + X_reg(0xFF) -> 0x4501 corss page boundary!
+    mem.data[0x4501] = 0x37; // 0x4402 + X_reg(0xFF) -> 0x4501 corss page boundary!
 
     const int expected_cycles = 5;
 
-    s32 cycles_used = execute(expected_cycles, &mem);
+    s32 cycles_used = Execute(expected_cycles, &mem);
     TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
@@ -236,12 +237,12 @@ void LDA_Absolute_Y_Can_Load_A_Value_Into_The_A_Register(void)
 
     mem.data[0xFFFC] = INS_LDA_ABS_Y;
     mem.data[0xFFFD] = 0x80;
-    mem.data[0xFFFE] = 0x44; // load from 0x4480
-    mem.data[0x4481] = 0x37;
+    mem.data[0xFFFE] = 0x44; // Go to 0x4480
+    mem.data[0x4481] = 0x37; // LDA from : 0x4480 + Y_reg -> 0x4481
 
     const int expected_cycles = 4;
 
-    s32 cycles_used = execute(expected_cycles, &mem);
+    s32 cycles_used = Execute(expected_cycles, &mem);
     TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
@@ -262,7 +263,7 @@ void LDA_Absolute_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundar
 
     const int expected_cycles = 5;
 
-    s32 cycles_used = execute(expected_cycles, &mem);
+    s32 cycles_used = Execute(expected_cycles, &mem);
     TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
@@ -284,7 +285,7 @@ void LDA_Indirect_X_Can_Load_A_Value_Into_The_A_Register(void)
 
     const int expected_cycles = 6;
 
-    s32 cycles_used = execute(expected_cycles, &mem);
+    s32 cycles_used = Execute(expected_cycles, &mem);
     TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
@@ -315,7 +316,7 @@ void LDA_Indirect_Y_Can_Load_A_Value_Into_The_A_Register(void)
 
     const int expected_cycles = 5;
 
-    s32 cycles_used = execute(expected_cycles, &mem);
+    s32 cycles_used = Execute(expected_cycles, &mem);
     TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
@@ -337,7 +338,7 @@ void LDA_Indirect_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundar
 
     const int expected_cycles = 6;
 
-    s32 cycles_used = execute(expected_cycles, &mem);
+    s32 cycles_used = Execute(expected_cycles, &mem);
     TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
@@ -351,24 +352,24 @@ int main(void)
 {
     UNITY_BEGIN();
     RUN_TEST(RunLittleProgram);
-    // RUN_TEST(CPU_Does_Nothing_When_Execute_Zero_Cycles);
-    // RUN_TEST(CPU_Can_Execute_More_Cycles_Than_Requested_If_The_Instruction_Requires);
+    RUN_TEST(CPU_Does_Nothing_When_Execute_Zero_Cycles);
+    RUN_TEST(CPU_Can_Execute_More_Cycles_Than_Requested_If_The_Instruction_Requires);
 
-    // RUN_TEST(LDA_Immediate_Can_Load_A_Value_Into_A_Register);
-    // RUN_TEST(LDA_Immediate_Can_Effect_The_Zero_Flag);
+    RUN_TEST(LDA_Immediate_Can_Load_A_Value_Into_A_Register);
+    RUN_TEST(LDA_Immediate_Can_Effect_The_Zero_Flag);
 
-    // RUN_TEST(LDA_Absolute_Can_Load_A_Value_Into_The_A_Register);
+    RUN_TEST(LDA_Absolute_Can_Load_A_Value_Into_The_A_Register);
 
-    // RUN_TEST(LDA_Absolute_X_Can_Load_A_Value_Into_The_A_Register);
-    // RUN_TEST(LDA_Absolute_X_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary);
+    RUN_TEST(LDA_Absolute_X_Can_Load_A_Value_Into_The_A_Register);
+    RUN_TEST(LDA_Absolute_X_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary);
 
-    // RUN_TEST(LDA_Absolute_Y_Can_Load_A_Value_Into_The_A_Register);
-    // RUN_TEST(LDA_Absolute_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary);
+     RUN_TEST(LDA_Absolute_Y_Can_Load_A_Value_Into_The_A_Register);
+     RUN_TEST(LDA_Absolute_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary);
 
-    // RUN_TEST(LDA_Indirect_X_Can_Load_A_Value_Into_The_A_Register);
+     RUN_TEST(LDA_Indirect_X_Can_Load_A_Value_Into_The_A_Register);
 
-    // RUN_TEST(LDA_Indirect_Y_Can_Load_A_Value_Into_The_A_Register);
-    // RUN_TEST(LDA_Indirect_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary);
+     RUN_TEST(LDA_Indirect_Y_Can_Load_A_Value_Into_The_A_Register);
+     RUN_TEST(LDA_Indirect_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary);
 
     // RUN_TEST(LDAZ_ZP_Can_Load_A_Value_Into_A_Register);
     // RUN_TEST(LDAZ_ZPX_Can_Load_A_Value_Into_A_Register);

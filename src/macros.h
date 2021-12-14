@@ -22,6 +22,7 @@
 
 #define print_int(x) print_db("%s = %d\n", #x, x);
 #define print_str(x) print_db("%s = %s\n", #x, x);
+#define print_hex(x) print_db("%s = 0x%x\n", #x, x);
 
 #define print_tr(fmt, ...)                                            \
         do                                                            \

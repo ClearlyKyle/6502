@@ -5,7 +5,7 @@
 
 int main(int argc, char const *argv[])
 {
-    reset_cpu(&cpu, &mem);
+    Reset_CPU(&cpu, &mem);
 
     // start - little program
     mem.data[0xFFFC] = INS_JSR;
@@ -14,7 +14,7 @@ int main(int argc, char const *argv[])
     mem.data[0x4242] = INS_LDA_IM;
     mem.data[0x4243] = 0x84;
     // end - little program
-    execute(9, &mem);
+    Execute(9, &mem);
     printf("A = %d\n", cpu.accumulator);
 
     printf("Program Exit...\n");
