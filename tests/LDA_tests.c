@@ -68,6 +68,8 @@ void Executing_A_Bad_Instruction_Does_Not_Start_Infinite_Loop(void)
 
 void LDA_Immediate_Can_Effect_The_Zero_Flag(void)
 {
+    cpu.Z = 0;
+    cpu.N = 1;
     cpu.accumulator = 0x88; // junk value
 
     mem.data[0xFFFC] = INS_LDA_IM;
@@ -85,6 +87,9 @@ void LDA_Immediate_Can_Effect_The_Zero_Flag(void)
 
 void Test_Loading_Register_Immediate(Opcode op, u8 *reg)
 {
+    cpu.Z = 1;
+    cpu.N = 0;
+
     mem.data[0xFFFC] = op;
     mem.data[0xFFFD] = 0x84;
 
@@ -119,6 +124,9 @@ void LDY_Immediate_Can_Load_A_Value_Into_Y_Register(void)
 
 void Test_Loading_Register_Zero_Page(Opcode op, u8 *reg)
 {
+    cpu.Z = 1;
+    cpu.N = 1;
+
     mem.data[0xFFFC] = op;
     mem.data[0xFFFD] = 0x42;
     mem.data[0x0042] = 0x37;
@@ -132,22 +140,22 @@ void Test_Loading_Register_Zero_Page(Opcode op, u8 *reg)
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
     TEST_ASSERT_FALSE(cpu.Z);
-    TEST_ASSERT_TRUE(cpu.N);
+    TEST_ASSERT_FALSE(cpu.N);
 
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void LDA_Zero_Page_Can_Load_A_Value_Into_A_Register(void)
+void LDA_ZP_Can_Load_A_Value_Into_A_Register(void)
 {
     Test_Loading_Register_Zero_Page(INS_LDA_ZP, &cpu.accumulator);
 }
 
-void LDA_Zero_Page_Can_Load_A_Value_Into_X_Register(void)
+void LDX_ZP_Can_Load_A_Value_Into_X_Register(void)
 {
     Test_Loading_Register_Zero_Page(INS_LDX_ZP, &cpu.index_reg_X);
 }
 
-void LDA_Zero_Page_Can_Load_A_Value_Into_Y_Register(void)
+void LDY_ZP_Can_Load_A_Value_Into_Y_Register(void)
 {
     Test_Loading_Register_Zero_Page(INS_LDY_ZP, &cpu.index_reg_Y);
 }
@@ -164,6 +172,8 @@ void Test_Loading_Register_Zero_Page_X(Opcode op, u8 *reg)
 
         e.g. 0x80 + 0x0F => 0x8F
     */
+    cpu.Z = 1;
+    cpu.N = 1;
     cpu.index_reg_X = 5;
 
     mem.data[0xFFFC] = op;
@@ -185,6 +195,8 @@ void Test_Loading_Register_Zero_Page_X(Opcode op, u8 *reg)
 
 void Test_Loading_Register_Zero_Page_Y(Opcode op, u8 *reg)
 {
+    cpu.Z = 1;
+    cpu.N = 1;
     cpu.index_reg_Y = 5;
 
     mem.data[0xFFFC] = op;
@@ -242,6 +254,9 @@ void LDA_ZP_X_Can_Load_A_Value_Into_A_Register_When_It_wraps(void)
 
 void Test_Loading_Register_Absolute(Opcode op, u8 *reg)
 {
+    cpu.Z = 1;
+    cpu.N = 1;
+
     mem.data[0xFFFC] = op;
     mem.data[0xFFFD] = 0x80;
     mem.data[0xFFFE] = 0x44; // load from 0x4480
@@ -273,7 +288,7 @@ void LDX_ABS_Can_Load_A_Value_Into_The_X_Register(void)
 
 void LDY_ABS_Can_Load_A_Value_Into_The_Y_Register(void)
 {
-    Test_Loading_Register_Absolute(INS_LDY_ABS, &cpu.index_reg_X);
+    Test_Loading_Register_Absolute(INS_LDY_ABS, &cpu.index_reg_Y);
 }
 
 void Test_Loading_Register_Absolute_X(Opcode op, u8 *reg)
@@ -283,8 +298,8 @@ void Test_Loading_Register_Absolute_X(Opcode op, u8 *reg)
     // of the X Register(1) (0x80 + 0x44 -> 0x4480 + 1 -> 0x4481)
     // load the value(0x37) at this address to the A register
 
-    // cpu.Z = 1;
-    // cpu.N = 1;
+    cpu.Z = 1;
+    cpu.N = 1;
     cpu.index_reg_X = 1;
 
     mem.data[0xFFFC] = op;
@@ -307,6 +322,8 @@ void Test_Loading_Register_Absolute_X(Opcode op, u8 *reg)
 
 void Test_Loading_Register_Absolute_Y(Opcode op, u8 *reg)
 {
+    cpu.Z = 1;
+    cpu.N = 1;
     cpu.index_reg_Y = 1;
 
     mem.data[0xFFFC] = op;
@@ -349,6 +366,8 @@ void LDA_ABS_Y_Can_Load_A_Value_Into_The_A_Register(void)
 
 void Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(Opcode op, u8 *reg)
 {
+    cpu.Z = 1;
+    cpu.N = 1;
     cpu.index_reg_X = 0x1;
 
     mem.data[0xFFFC] = op;
@@ -357,7 +376,31 @@ void Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(Opcode op, u8 *reg)
     mem.data[0x4500] = 0x37; // 0x4402 + X_reg(0xFF) -> 0x4501 corss page boundary!
 
     const CPU before = cpu;
-    const int NUM_OF_CYCLES = 4;
+    const int NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+
+    TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags_From_LDA(before, cpu);
+}
+
+void Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(Opcode op, u8 *reg)
+{
+    cpu.Z = 1;
+    cpu.N = 1;
+    cpu.index_reg_Y = 0x1;
+
+    mem.data[0xFFFC] = op;
+    mem.data[0xFFFD] = 0xFF;
+    mem.data[0xFFFE] = 0x44; // load from 0x4402
+    mem.data[0x4500] = 0x37; // 0x4402 + 0xFF - cross page boundary
+
+    const CPU before = cpu;
+    const int NUM_OF_CYCLES = 5;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -371,34 +414,12 @@ void Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(Opcode op, u8 *reg)
 
 void LDA_ABS_X_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary(void)
 {
-    Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(INS_LDA_ABS_X, &cpu.accumulator);
+    Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(INS_LDA_ABS_X, &cpu.accumulator);
 }
 
 void LDY_ABS_X_Can_Load_A_Value_Into_The_Y_Register_When_Cross_Page_Boundary(void)
 {
-    Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(INS_LDY_ABS_X, &cpu.index_reg_Y);
-}
-
-void Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(Opcode op, u8 *reg)
-{
-    cpu.index_reg_Y = 0x1;
-
-    mem.data[0xFFFC] = op;
-    mem.data[0xFFFD] = 0xFF;
-    mem.data[0xFFFE] = 0x44; // load from 0x4402
-    mem.data[0x4500] = 0x37; // 0x4402 + 0xFF - cross page boundary
-
-    const CPU before = cpu;
-    const int NUM_OF_CYCLES = 4;
-
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
-    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
-
-    TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
-    TEST_ASSERT_FALSE(cpu.Z);
-    TEST_ASSERT_FALSE(cpu.N);
-
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(INS_LDY_ABS_X, &cpu.index_reg_Y);
 }
 
 void LDA_ABS_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary(void)
@@ -406,9 +427,9 @@ void LDA_ABS_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary(voi
     Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(INS_LDA_ABS_Y, &cpu.accumulator);
 }
 
-void LDX_ABS_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary(void)
+void LDX_ABS_Y_Can_Load_A_Value_Into_The_X_Register_When_Cross_Page_Boundary(void)
 {
-    Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(INS_LDX_ABS_Y, cpu.index_reg_X);
+    Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(INS_LDX_ABS_Y, &cpu.index_reg_X);
 }
 
 // LDA Indirect
@@ -504,9 +525,9 @@ int main(void)
     RUN_TEST(LDX_Immediate_Can_Load_A_Value_Into_X_Register);
     RUN_TEST(LDY_Immediate_Can_Load_A_Value_Into_Y_Register);
 
-    RUN_TEST(LDA_Zero_Page_Can_Load_A_Value_Into_A_Register);
-    RUN_TEST(LDA_Zero_Page_Can_Load_A_Value_Into_X_Register);
-    RUN_TEST(LDA_Zero_Page_Can_Load_A_Value_Into_Y_Register);
+    RUN_TEST(LDA_ZP_Can_Load_A_Value_Into_A_Register);
+    RUN_TEST(LDX_ZP_Can_Load_A_Value_Into_X_Register);
+    RUN_TEST(LDY_ZP_Can_Load_A_Value_Into_Y_Register);
 
     RUN_TEST(LDA_ZP_X_Can_Load_A_Value_Into_A_Register);
     RUN_TEST(LDX_ZP_Y_Can_Load_A_Value_Into_X_Register);
@@ -526,7 +547,7 @@ int main(void)
     RUN_TEST(LDY_ABS_X_Can_Load_A_Value_Into_The_Y_Register_When_Cross_Page_Boundary);
 
     RUN_TEST(LDA_ABS_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary);
-    RUN_TEST(LDX_ABS_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary);
+    RUN_TEST(LDX_ABS_Y_Can_Load_A_Value_Into_The_X_Register_When_Cross_Page_Boundary);
 
     RUN_TEST(LDA_IND_X_Can_Load_A_Value_Into_The_A_Register);
     RUN_TEST(LDA_IND_Y_Can_Load_A_Value_Into_The_A_Register);

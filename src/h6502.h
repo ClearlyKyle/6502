@@ -12,7 +12,8 @@
 // > Opcodes : https://web.archive.org/web/20210426072206/http://www.obelisk.me.uk/6502/index.html
 // > Instruction cycles : https://www.nesdev.com/6502_cpu.txt
 // > Addressing Modes : https://www.c64-wiki.com/wiki/Addressing_mode
-
+// > Hex Calculator : https://www.calculator.net/hex-calculator.html?number1=80&c2op=%2B&number2=ff&calctype=op&x=85&y=13
+//              https://keisan.casio.com/exec/system/14495408631029
 // The first 256 Bytes of the memory map (0-255 or $0000-$00FF) are called zeropage (Page 0)
 //      look up [RAM Table]
 
@@ -84,7 +85,7 @@ typedef enum
     INS_LDY_ZP = 0xA4,
     INS_LDY_ZP_X = 0xB4,
     INS_LDY_ABS = 0xAC,
-    INS_LDY_ABS_X = 0xBE,
+    INS_LDY_ABS_X = 0xBC,
 
     // JSR - Jump to Subroutine
     INS_JSR = 0x20
@@ -226,10 +227,93 @@ void Push_PC_To_Stack(s32 *cycles, Memory *mem)
     Push_Word_To_Stack(cycles, mem, cpu.program_counter);
 }
 
-void LDA_set_status()
+// A, X or Y Register
+void Load_Register_Set_Status(u8 reg)
 {
-    cpu.Z = (cpu.accumulator == 0);
-    cpu.N = (cpu.accumulator & 0b10000000) > 0;
+    cpu.Z = (reg == 0);
+    cpu.N = (reg & 0b10000000) > 0;
+}
+
+// Addressing mode - Zero Page
+u16 Address_Zero_Page(s32 *cycles, Memory *mem)
+{
+    u8 zero_page_address = Fetch_Byte(cycles, mem);
+    return zero_page_address;
+}
+
+// Addressing mode - Zero Page
+u16 Address_Zero_Page_X(s32 *cycles, Memory *mem)
+{
+    u8 zero_page_address = Fetch_Byte(cycles, mem);
+    zero_page_address += cpu.index_reg_X;
+    (*cycles) -= 1;
+
+    return zero_page_address;
+}
+
+// Addressing mode - Zero Page
+u16 Address_Zero_Page_Y(s32 *cycles, Memory *mem)
+{
+    u8 zero_page_address = Address_Zero_Page(cycles, mem);
+    zero_page_address += cpu.index_reg_Y;
+    (*cycles) -= 1;
+
+    return zero_page_address;
+}
+
+// Addressing mode - Absolute
+u16 Address_Absolute(s32 *cycles, Memory *mem)
+{
+    u16 absolute_address = Fetch_Word(cycles, mem);
+    return absolute_address;
+}
+
+// Addressing mode - Absolute X
+u16 Address_Absolute_X(s32 *cycles, Memory *mem)
+{
+    const u16 absolute_address = Fetch_Word(cycles, mem);
+    const u16 absolute_address_x = absolute_address + cpu.index_reg_X;
+    const int crossed_page_boundary = (absolute_address ^ absolute_address_x) >> 8;
+    if (crossed_page_boundary)
+        (*cycles) -= 1;
+
+    return absolute_address_x;
+}
+
+// Addressing mode - Absolute Y
+u16 Address_Absolute_Y(s32 *cycles, Memory *mem)
+{
+    const u16 absolute_address = Fetch_Word(cycles, mem);
+    const u16 absolute_address_y = absolute_address + cpu.index_reg_Y;
+    const int crossed_page_boundary = (absolute_address ^ absolute_address_y) >> 8;
+    if (crossed_page_boundary)
+        (*cycles) -= 1;
+
+    return absolute_address_y;
+}
+
+// Addressing mode - Indirect X
+u16 Address_Indirect_X(s32 *cycles, Memory *mem)
+{
+    u8 zero_page_address = Fetch_Byte(cycles, mem);
+    zero_page_address += cpu.index_reg_X;
+    (*cycles) -= 1;
+    const u16 effective_address = Read_Word(cycles, zero_page_address, mem);
+    return effective_address;
+}
+
+// Addressing mode - Indirect Y
+u16 Address_Indirect_Y(s32 *cycles, Memory *mem)
+{
+    const u8 zero_page_address = Fetch_Byte(cycles, mem);
+    const u16 effective_address = Read_Word(cycles, zero_page_address, mem);
+    const u16 effective_address_y = effective_address + cpu.index_reg_Y;
+
+    const int crossed_page_boundary = (effective_address ^ effective_address_y) >> 8;
+    if (crossed_page_boundary)
+        (*cycles) -= 1;
+
+    return effective_address_y;
 }
 
 // execute "num_cycles" the instruction in memory
@@ -242,31 +326,28 @@ s32 Execute(s32 num_cycles, Memory *mem)
         print_int(instruction);
         switch (instruction)
         {
+            // LDA - Load Accumulator
         case INS_LDA_IM: // 2 Cycles
         {
-            const u8 value = Fetch_Byte(&num_cycles, mem); // -1 cycle
-            cpu.accumulator = value;
-            LDA_set_status();
+            cpu.accumulator = Fetch_Byte(&num_cycles, mem); // -1 cycle
+            Load_Register_Set_Status(cpu.accumulator);
 
             break;
         }
         case INS_LDA_ZP: // 3 Cycles
         {
-            const u8 zero_page_address = Fetch_Byte(&num_cycles, mem);
+            const u8 zero_page_address = Address_Zero_Page(&num_cycles, mem);
             cpu.accumulator = Read_Byte(&num_cycles, zero_page_address, mem);
-            LDA_set_status();
 
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_LDA_ZP_X: // 4 Cycles
         {
-            u8 zero_page_address = Fetch_Byte(&num_cycles, mem);
-            zero_page_address += cpu.index_reg_X;
-            num_cycles--;
+            const u16 zero_page_x_address = Address_Zero_Page_X(&num_cycles, mem);
+            cpu.accumulator = Read_Byte(&num_cycles, zero_page_x_address, mem);
 
-            cpu.accumulator = Read_Byte(&num_cycles, zero_page_address, mem);
-            LDA_set_status();
-
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_LDA_ABS: // 4 Cycles
@@ -275,47 +356,27 @@ s32 Execute(s32 num_cycles, Memory *mem)
             //  2    PC     R  fetch low byte of address, increment PC
             //  3    PC     R  fetch high byte of address, increment PC
             //  4  address  R  read from effective address
-
-            print_db("[INSTRUCTION] INS_LDA_ABS\n");
-
-            const u16 absolute_address = Fetch_Word(&num_cycles, mem);
+            const u16 absolute_address = Address_Absolute(&num_cycles, mem);
             cpu.accumulator = Read_Byte(&num_cycles, absolute_address, mem);
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_LDA_ABS_X: // 4 Cycles (+1 if page crossed)
         {
             print_db("[INSTRUCTION] INS_LDA_ABS_X\n");
 
-            const u16 absolute_address = Fetch_Word(&num_cycles, mem); // 2 cycles
-
-            const u16 absolute_address_x = absolute_address + cpu.index_reg_X;
-
-            cpu.accumulator = Read_Byte(&num_cycles, absolute_address_x, mem); // 1 Cycle
-
-            // print_hex(absolute_address);
-            // print_hex(absolute_address_x);
-
-            // crossing page boundary
-            if ((absolute_address_x - absolute_address) > 0xFF)
-            {
-                num_cycles -= 1;
-            }
+            const u16 absolute_address = Address_Absolute_X(&num_cycles, mem); // 2 cycles
+            cpu.accumulator = Read_Byte(&num_cycles, absolute_address, mem);   // 1 Cycle
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_LDA_ABS_Y: // 4 Cycles (+1 if page crossed)
         {
             print_db("[INSTRUCTION] INS_LDA_ABS_Y\n");
 
-            const u16 absolute_address = Fetch_Word(&num_cycles, mem); // 2 cycles
-            const u16 absolute_address_y = absolute_address + cpu.index_reg_Y;
-
-            cpu.accumulator = Read_Byte(&num_cycles, absolute_address_y, mem); // 1 Cycle
-
-            // crossing page boundary
-            if ((absolute_address_y - absolute_address) > 0xFF)
-            {
-                num_cycles -= 1;
-            }
+            const u16 absolute_address = Address_Absolute_Y(&num_cycles, mem); // 2 cycles
+            cpu.accumulator = Read_Byte(&num_cycles, absolute_address, mem);   // 1 Cycle
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_LDA_IND_X: // 6 Cycles
@@ -326,32 +387,93 @@ s32 Execute(s32 num_cycles, Memory *mem)
             //  4   pointer+X   R  fetch effective address low
             //  5  pointer+X+1  R  fetch effective address high
             //  6    address    R  read from effective address
-            print_db("[INSTRUCTION] INS_LDA_IND_X\n");
 
-            u8 zero_page_address = Fetch_Byte(&num_cycles, mem);
-            zero_page_address += cpu.index_reg_X;
-            num_cycles -= 1;
-
-            const u16 effective_address = Read_Word(&num_cycles, zero_page_address, mem);
+            const u16 effective_address = Address_Indirect_X(&num_cycles, mem);
             cpu.accumulator = Read_Byte(&num_cycles, effective_address, mem);
-
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_LDA_IND_Y: // 5 Cycles (+1 if page crossed)
         {
-            print_db("[INSTRUCTION] INS_LDA_IND_Y\n");
+            const u16 effective_address = Address_Indirect_Y(&num_cycles, mem);
+            cpu.accumulator = Read_Byte(&num_cycles, effective_address, mem);
+            Load_Register_Set_Status(cpu.accumulator);
+            break;
+        }
+            // LDX - Load X Register
+        case INS_LDX_IM:
+        {
+            cpu.index_reg_X = Fetch_Byte(&num_cycles, mem); // -1 cycle
+            Load_Register_Set_Status(cpu.index_reg_X);
+            break;
+        }
+        case INS_LDX_ZP:
+        {
+            const u8 zero_page_address = Address_Zero_Page(&num_cycles, mem);
+            cpu.index_reg_X = Read_Byte(&num_cycles, zero_page_address, mem);
 
-            const u8 zero_page_address = Fetch_Byte(&num_cycles, mem);
-            const u16 effective_address = Read_Word(&num_cycles, zero_page_address, mem);
+            Load_Register_Set_Status(cpu.index_reg_X);
+            break;
+        }
+        case INS_LDX_ZP_Y:
+        {
+            const u16 zero_page_y_address = Address_Zero_Page_Y(&num_cycles, mem);
+            cpu.index_reg_X = Read_Byte(&num_cycles, zero_page_y_address, mem);
 
-            const u16 effective_address_y = effective_address + cpu.index_reg_Y;
+            Load_Register_Set_Status(cpu.index_reg_X);
+            break;
+        }
+        case INS_LDX_ABS:
+        {
+            const u16 absolute_address = Address_Absolute(&num_cycles, mem); // 2 cycles
+            cpu.index_reg_X = Read_Byte(&num_cycles, absolute_address, mem);
+            Load_Register_Set_Status(cpu.index_reg_X);
+            break;
+        }
+        case INS_LDX_ABS_Y:
+        {
+            const u16 absolute_address = Address_Absolute_Y(&num_cycles, mem); // 2 cycles
+            cpu.index_reg_X = Read_Byte(&num_cycles, absolute_address, mem);
+            Load_Register_Set_Status(cpu.index_reg_X);
+            break;
+        }
+            // LDY - Load Y Register
+        case INS_LDY_IM:
+        {
+            cpu.index_reg_Y = Fetch_Byte(&num_cycles, mem); // -1 cycle
+            Load_Register_Set_Status(cpu.index_reg_Y);
 
-            cpu.accumulator = Read_Byte(&num_cycles, effective_address_y, mem);
+            break;
+        }
+        case INS_LDY_ZP:
+        {
+            const u8 zero_page_address = Address_Zero_Page(&num_cycles, mem);
+            cpu.index_reg_Y = Read_Byte(&num_cycles, zero_page_address, mem);
 
-            if ((effective_address_y - effective_address) >= 0xFF)
-            {
-                num_cycles -= 1;
-            }
+            Load_Register_Set_Status(cpu.index_reg_Y);
+            break;
+        }
+        case INS_LDY_ZP_X:
+        {
+            const u16 zero_page_x_address = Address_Zero_Page_X(&num_cycles, mem);
+            cpu.index_reg_Y = Read_Byte(&num_cycles, zero_page_x_address, mem);
+
+            Load_Register_Set_Status(cpu.index_reg_Y);
+
+            break;
+        }
+        case INS_LDY_ABS:
+        {
+            const u16 absolute_address = Address_Absolute(&num_cycles, mem); // 2 cycles
+            cpu.index_reg_Y = Read_Byte(&num_cycles, absolute_address, mem);
+            Load_Register_Set_Status(cpu.index_reg_Y);
+            break;
+        }
+        case INS_LDY_ABS_X:
+        {
+            const u16 absolute_address = Address_Absolute_X(&num_cycles, mem); // 2 cycles
+            cpu.index_reg_Y = Read_Byte(&num_cycles, absolute_address, mem);
+            Load_Register_Set_Status(cpu.index_reg_Y);
             break;
         }
         case INS_JSR: // Jump to Subroutine : Absolute, 0x20, 3bytes, 6 cycles

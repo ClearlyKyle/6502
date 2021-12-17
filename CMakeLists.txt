@@ -30,12 +30,6 @@ file(GLOB UNITY_SRC
     "${CMAKE_SOURCE_DIR}/tests/Unity/*.c"
     "${CMAKE_SOURCE_DIR}/tests/Unity/*.h"
 )
-file(GLOB TEST_SOURCES
-    "${CMAKE_SOURCE_DIR}/tests/tests.c"
-)
-
-
-
 add_library(unity STATIC ${UNITY_SRC})
 add_library(6502_header INTERFACE ${6502_HEADER})
 
