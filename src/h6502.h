@@ -13,9 +13,12 @@
 // > Instruction cycles : https://www.nesdev.com/6502_cpu.txt
 // > Addressing Modes : https://www.c64-wiki.com/wiki/Addressing_mode
 
+// The first 256 Bytes of the memory map (0-255 or $0000-$00FF) are called zeropage (Page 0)
+//      look up [RAM Table]
+
 //#define DEBUG_PRINT 1
 #ifndef DEBUG_PRINT
-#define DEBUG_PRINT 1
+#define DEBUG_PRINT 0
 #endif
 
 typedef uint8_t u8;   // byte [0, 255]
@@ -57,17 +60,47 @@ typedef struct CPU
 } CPU;
 
 // opcodes
-// LDA - Load Accumulator
-#define INS_LDA_IM 0xA9
-#define INS_LDA_ZP 0xA5
-#define INS_LDA_ZPX 0xB5
-#define INS_LDA_ABS 0xAD
-#define INS_LDA_ABS_X 0xBD
-#define INS_LDA_ABS_Y 0xB9
-#define INS_LDA_IND_X 0xA1
-#define INS_LDA_IND_Y 0xB1
+typedef enum
+{
+    // LDA - Load Accumulator
+    INS_LDA_IM = 0xA9,
+    INS_LDA_ZP = 0xA5,
+    INS_LDA_ZP_X = 0xB5,
+    INS_LDA_ABS = 0xAD,
+    INS_LDA_ABS_X = 0xBD,
+    INS_LDA_ABS_Y = 0xB9,
+    INS_LDA_IND_X = 0xA1,
+    INS_LDA_IND_Y = 0xB1,
 
-#define INS_JSR 0x20
+    // LDX - Load X Register
+    INS_LDX_IM = 0xA2,
+    INS_LDX_ZP = 0xA6,
+    INS_LDX_ZP_Y = 0xB6,
+    INS_LDX_ABS = 0xAE,
+    INS_LDX_ABS_Y = 0xBE,
+
+    // LDY - Load Y Register
+    INS_LDY_IM = 0xA0,
+    INS_LDY_ZP = 0xA4,
+    INS_LDY_ZP_X = 0xB4,
+    INS_LDY_ABS = 0xAC,
+    INS_LDY_ABS_X = 0xBE,
+
+    // JSR - Jump to Subroutine
+    INS_JSR = 0x20
+
+} Opcode;
+
+//#define INS_LDA_IM 0xA9
+//#define INS_LDA_ZP 0xA5
+//#define INS_LDA_ZPX 0xB5
+//#define INS_LDA_ABS 0xAD
+//#define INS_LDA_ABS_X 0xBD
+//#define INS_LDA_ABS_Y 0xB9
+//#define INS_LDA_IND_X 0xA1
+//#define INS_LDA_IND_Y 0xB1
+
+//#define INS_JSR 0x20
 
 static Memory mem;
 static CPU cpu;
@@ -225,7 +258,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
 
             break;
         }
-        case INS_LDA_ZPX: // 4 Cycles
+        case INS_LDA_ZP_X: // 4 Cycles
         {
             u8 zero_page_address = Fetch_Byte(&num_cycles, mem);
             zero_page_address += cpu.index_reg_X;
