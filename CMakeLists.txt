@@ -41,8 +41,8 @@ file(GLOB TEST_FILES
     "${CMAKE_SOURCE_DIR}/tests/*.c"
 )
 set(TEST_NAMES_LIST 
-    "LDA_TESTS" 
-    "LDX_TESTS"
+    "Store_Operation_tests" 
+    "Load_Operation_tests"
 )
 
 message(STATUS "[TESTS] Generating all add_test...")
