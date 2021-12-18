@@ -9,7 +9,7 @@ void setUp(void) /* Is run before every test, put unit init calls here. */
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
-static void Verify_Unmodified_Flags_From_LDA(CPU before, CPU after)
+static void Verify_Unmodified_Flags_From_LDA(const CPU before, const CPU after)
 {
     // get a copt of the cpu
     TEST_ASSERT_EQUAL_UINT8(before.C, after.C);

@@ -339,7 +339,7 @@ u16 Address_Indirect_Y(s32 *cycles, const Memory *mem)
 }
 
 // Load a value at an 'address' into a given 'register' (1 cycle)
-void Load_Register(s32 *cycles, u8 *reg, const u16 address)
+void Load_Register(s32 *cycles, u8 *reg, const u16 address, const Memory *mem)
 {
     (*reg) = Read_Byte(cycles, address, mem);
     Load_Register_Set_Status((*reg));
@@ -366,13 +366,13 @@ s32 Execute(s32 num_cycles, Memory *mem)
         case INS_LDA_ZP: // 3 Cycles
         {
             const u8 zero_page_address = Address_Zero_Page(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.accumulator, zero_page_address);
+            Load_Register(&num_cycles, &cpu.accumulator, zero_page_address, mem);
             break;
         }
         case INS_LDA_ZP_X: // 4 Cycles
         {
             const u16 zero_page_x_address = Address_Zero_Page_X(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.accumulator, zero_page_x_address);
+            Load_Register(&num_cycles, &cpu.accumulator, zero_page_x_address, mem);
 
             break;
         }
@@ -383,19 +383,19 @@ s32 Execute(s32 num_cycles, Memory *mem)
             //  3    PC     R  fetch high byte of address, increment PC
             //  4  address  R  read from effective address
             const u16 absolute_address = Address_Absolute(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.accumulator, absolute_address);
+            Load_Register(&num_cycles, &cpu.accumulator, absolute_address, mem);
             break;
         }
         case INS_LDA_ABS_X: // 4 Cycles (+1 if page crossed)
         {
             const u16 absolute_address = Address_Absolute_X(&num_cycles, mem); // 2 cycles
-            Load_Register(&num_cycles, &cpu.accumulator, absolute_address);
+            Load_Register(&num_cycles, &cpu.accumulator, absolute_address, mem);
             break;
         }
         case INS_LDA_ABS_Y: // 4 Cycles (+1 if page crossed)
         {
             const u16 absolute_address = Address_Absolute_Y(&num_cycles, mem); // 2 cycles
-            Load_Register(&num_cycles, &cpu.accumulator, absolute_address);
+            Load_Register(&num_cycles, &cpu.accumulator, absolute_address, mem);
             break;
         }
         case INS_LDA_IND_X: // 6 Cycles
@@ -408,13 +408,13 @@ s32 Execute(s32 num_cycles, Memory *mem)
             //  6    address    R  read from effective address
 
             const u16 effective_address = Address_Indirect_X(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.accumulator, effective_address);
+            Load_Register(&num_cycles, &cpu.accumulator, effective_address, mem);
             break;
         }
         case INS_LDA_IND_Y: // 5 Cycles (+1 if page crossed)
         {
             const u16 effective_address = Address_Indirect_Y(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.accumulator, effective_address);
+            Load_Register(&num_cycles, &cpu.accumulator, effective_address, mem);
             break;
         }
             // LDX - Load X Register
@@ -427,25 +427,25 @@ s32 Execute(s32 num_cycles, Memory *mem)
         case INS_LDX_ZP:
         {
             const u8 zero_page_address = Address_Zero_Page(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.index_reg_X, zero_page_address);
+            Load_Register(&num_cycles, &cpu.index_reg_X, zero_page_address, mem);
             break;
         }
         case INS_LDX_ZP_Y:
         {
             const u16 zero_page_y_address = Address_Zero_Page_Y(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.index_reg_X, zero_page_y_address);
+            Load_Register(&num_cycles, &cpu.index_reg_X, zero_page_y_address, mem);
             break;
         }
         case INS_LDX_ABS:
         {
             const u16 absolute_address = Address_Absolute(&num_cycles, mem); // 2 cycles
-            Load_Register(&num_cycles, &cpu.index_reg_X, absolute_address);
+            Load_Register(&num_cycles, &cpu.index_reg_X, absolute_address, mem);
             break;
         }
         case INS_LDX_ABS_Y:
         {
             const u16 absolute_address = Address_Absolute_Y(&num_cycles, mem); // 2 cycles
-            Load_Register(&num_cycles, &cpu.index_reg_X, absolute_address);
+            Load_Register(&num_cycles, &cpu.index_reg_X, absolute_address, mem);
             break;
         }
             // LDY - Load Y Register
@@ -458,25 +458,25 @@ s32 Execute(s32 num_cycles, Memory *mem)
         case INS_LDY_ZP:
         {
             const u8 zero_page_address = Address_Zero_Page(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.index_reg_Y, zero_page_address);
+            Load_Register(&num_cycles, &cpu.index_reg_Y, zero_page_address, mem);
             break;
         }
         case INS_LDY_ZP_X:
         {
             const u16 zero_page_x_address = Address_Zero_Page_X(&num_cycles, mem);
-            Load_Register(&num_cycles, &cpu.index_reg_Y, zero_page_x_address);
+            Load_Register(&num_cycles, &cpu.index_reg_Y, zero_page_x_address, mem);
             break;
         }
         case INS_LDY_ABS:
         {
             const u16 absolute_address = Address_Absolute(&num_cycles, mem); // 2 cycles
-            Load_Register(&num_cycles, &cpu.index_reg_Y, absolute_address);
+            Load_Register(&num_cycles, &cpu.index_reg_Y, absolute_address, mem);
             break;
         }
         case INS_LDY_ABS_X:
         {
             const u16 absolute_address = Address_Absolute_X(&num_cycles, mem); // 2 cycles
-            Load_Register(&num_cycles, &cpu.index_reg_Y, absolute_address);
+            Load_Register(&num_cycles, &cpu.index_reg_Y, absolute_address, mem);
             break;
         }
             // STA - Store Accumulator
@@ -487,81 +487,81 @@ s32 Execute(s32 num_cycles, Memory *mem)
             // 2    PC     R  fetch address, increment PC
             // 3  address  W  write register to effective address
             const u16 effective_address = Address_Zero_Page(&num_cycles, mem); // 1 cycle
-            Write_Byte(&num_cycles, &cpu.accumulator, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
         case INS_STA_ZP_X:
         {
-            const u16 effective_address = Address_Zero_Page(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.accumulator, effective_address);
+            const u16 effective_address = Address_Zero_Page_X(&num_cycles, mem); // 2 cycles
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
         case INS_STA_ABS:
         {
             const u16 effective_address = Address_Absolute(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.accumulator, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
         case INS_STA_ABS_X:
         {
             const u16 effective_address = Address_Absolute_X(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.accumulator, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
         case INS_STA_ABS_Y:
         {
             const u16 effective_address = Address_Absolute_Y(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.accumulator, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
         case INS_STA_IND_X:
         {
             const u16 effective_address = Address_Indirect_X(&num_cycles, mem); // 4 cycles
-            Write_Byte(&num_cycles, &cpu.accumulator, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
         case INS_STA_IND_Y:
         {
             const u16 effective_address = Address_Indirect_Y(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.accumulator, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
             // STX - Store X Register
         case INS_STX_ZP:
         {
             const u16 effective_address = Address_Zero_Page(&num_cycles, mem); // 1 cycles
-            Write_Byte(&num_cycles, &cpu.index_reg_X, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.index_reg_X, effective_address);
             break;
         }
         case INS_STX_ZP_Y:
         {
             const u16 effective_address = Address_Zero_Page_Y(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.index_reg_X, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.index_reg_X, effective_address);
             break;
         }
         case INS_STX_ABS:
         {
             const u16 effective_address = Address_Absolute(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.index_reg_X, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.index_reg_X, effective_address);
             break;
         }
             // STY - Store Y Register
         case INS_STY_ZP:
         {
             const u16 effective_address = Address_Zero_Page(&num_cycles, mem); // 1 cycles
-            Write_Byte(&num_cycles, &cpu.index_reg_Y, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.index_reg_Y, effective_address);
             break;
         }
         case INS_STY_ZP_X:
         {
             const u16 effective_address = Address_Zero_Page_X(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.index_reg_Y, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.index_reg_Y, effective_address);
             break;
         }
         case INS_STY_ABS:
         {
             const u16 effective_address = Address_Absolute(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, &cpu.index_reg_Y, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.index_reg_Y, effective_address);
             break;
         }
         case INS_JSR: // Jump to Subroutine : Absolute, 0x20, 3bytes, 6 cycles

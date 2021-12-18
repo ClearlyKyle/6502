@@ -37,12 +37,13 @@ add_library(6502_header INTERFACE ${6502_HEADER})
 ## TESTING
 ##
 
-file(GLOB TEST_FILES
-    "${CMAKE_SOURCE_DIR}/tests/*.c"
+set(TEST_FILES
+    "${CMAKE_SOURCE_DIR}/tests/Load_Operation_tests.c"
+    "${CMAKE_SOURCE_DIR}/tests/Store_Operation_tests.c"
 )
 set(TEST_NAMES_LIST 
-    "Store_Operation_tests" 
     "Load_Operation_tests"
+    "Store_Operation_tests" 
 )
 
 message(STATUS "[TESTS] Generating all add_test...")
