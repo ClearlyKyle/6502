@@ -480,7 +480,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
             break;
         }
             // STA - Store Accumulator
-        case INS_STA_ZP:
+        case INS_STA_ZP: // 3 cycles
         {
             // STore Accumulator _ ZP value
             // 1    PC     R  fetch opcode, increment PC
@@ -490,37 +490,38 @@ s32 Execute(s32 num_cycles, Memory *mem)
             Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
-        case INS_STA_ZP_X:
+        case INS_STA_ZP_X: // 4 cycles
         {
             const u16 effective_address = Address_Zero_Page_X(&num_cycles, mem); // 2 cycles
             Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
-        case INS_STA_ABS:
+        case INS_STA_ABS: // 4 cycles
         {
             const u16 effective_address = Address_Absolute(&num_cycles, mem); // 2 cycles
             Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
-        case INS_STA_ABS_X:
+        case INS_STA_ABS_X: // 5 cycles
         {
             const u16 effective_address = Address_Absolute_X(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);   // 1 cycle
             break;
         }
-        case INS_STA_ABS_Y:
+        case INS_STA_ABS_Y: // 5 cycles
         {
             const u16 effective_address = Address_Absolute_Y(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);   // 1 cycle
+            num_cycles--;
             break;
         }
-        case INS_STA_IND_X:
+        case INS_STA_IND_X: // 6 cycles
         {
             const u16 effective_address = Address_Indirect_X(&num_cycles, mem); // 4 cycles
             Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
             break;
         }
-        case INS_STA_IND_Y:
+        case INS_STA_IND_Y: // 6 cycles
         {
             const u16 effective_address = Address_Indirect_Y(&num_cycles, mem); // 2 cycles
             Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
