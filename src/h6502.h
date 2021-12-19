@@ -22,6 +22,8 @@
 #define DEBUG_PRINT 0
 #endif
 
+// TODO: Macros to access registers in cpu
+
 typedef uint8_t u8;   // byte [0, 255]
 typedef uint16_t u16; // word [0, 65,535]
 typedef uint32_t u32; // [0, 4,294,967,295]
@@ -42,6 +44,12 @@ typedef struct Memory
     u8 data[MAX_MEM];
 } Memory;
 
+// union Status_Flags
+//{
+//     u8 program_status;
+//     Status_Flags flags;
+// };
+
 typedef struct CPU
 {
     // Registers
@@ -53,13 +61,14 @@ typedef struct CPU
     u8 index_reg_Y; // Y
 
     // Processor Status
-    u8 C : 1; // Carry flag
-    u8 Z : 1; // Zero flag
-    u8 I : 1; // Interrupt flag
-    u8 D : 1; // Decimal flag
-    u8 B : 1; // Break flag
-    u8 V : 1; // Overflow flag
-    u8 N : 1; // Negative flag
+    u8 C : 1; // 0 - Carry flag
+    u8 Z : 1; // 1 - Zero flag
+    u8 I : 1; // 2 - Interrupt flag
+    u8 D : 1; // 3 - Decimal flag
+    u8 B : 1; // 4 - Break flag
+    u8 unused : 1;
+    u8 V : 1; // 7 - Overflow flag
+    u8 N : 1; // 7- Negative flag
 } CPU;
 
 // opcodes
@@ -108,8 +117,15 @@ typedef enum
     INS_STY_ZP_X = 0x94,
     INS_STY_ABS = 0x8C,
 
-    // JSR - Jump to Subroutine
-    INS_JSR = 0x20
+    // JMP - JuMP
+    INS_JMP_ABS = 0x4C,
+    INS_JMP_IND = 0x6C,
+
+    // JSR - Jump to SubRoutine
+    INS_JSR = 0x20,
+
+    // RTS - ReTurn from Subroutine
+    INS_RTS = 0x60
 
 } Opcode;
 
@@ -138,7 +154,7 @@ void Initialise_Memory(Memory *mem)
 void Reset_CPU(CPU *cpu, Memory *mem)
 {
     cpu->program_counter = 0xFFFC; // The low and high 8-bit halves of the register are called PCL and PCH
-    cpu->stack_pointer = 0x00FF;
+    cpu->stack_pointer = 0xFF;
 
     cpu->accumulator = 0;
     cpu->index_reg_X = 0;
@@ -155,12 +171,17 @@ void Reset_CPU(CPU *cpu, Memory *mem)
     Initialise_Memory(mem);
 }
 
+u16 SP_To_Address()
+{
+    return 0x100 | cpu.stack_pointer;
+}
+
 // 1 Cycle
 u8 Fetch_Byte(s32 *cycles, const Memory *mem)
 {
     assert(cpu.program_counter < MAX_MEM);
 
-    u8 data = mem->data[cpu.program_counter];
+    const u8 data = mem->data[cpu.program_counter];
     cpu.program_counter++;
     (*cycles) -= 1;
     return data;
@@ -196,7 +217,7 @@ u8 Read_Byte(s32 *cycles, u16 address, const Memory *mem)
 {
     assert(address < MAX_MEM);
 
-    u8 data = mem->data[address];
+    const u8 data = mem->data[address];
     (*cycles) -= 1;
     return data;
 }
@@ -220,6 +241,15 @@ void Write_Word(s32 *cycles, u16 data, u32 address)
     (*cycles) -= 1;
     mem.data[address] = (data & 0xFF); // 1 cycle
     (*cycles) -= 1;
+}
+
+/** Pop a 16-bit value from the stack */
+u16 Pop_Word_From_Stack(s32 *cycles, Memory *mem)
+{
+    const u16 value_from_stack = Read_Word(cycles, SP_To_Address() + 1, mem);
+    cpu.stack_pointer += 2;
+    (*cycles) -= 1;
+    return value_from_stack;
 }
 
 void Push_Word_To_Stack(s32 *cycles, Memory *mem, u16 value)
@@ -259,7 +289,7 @@ void Load_Register_Set_Status(u8 reg)
 // Addressing mode - Zero Page (1 cycle)
 u16 Address_Zero_Page(s32 *cycles, const Memory *mem)
 {
-    u8 zero_page_address = Fetch_Byte(cycles, mem);
+    const u8 zero_page_address = Fetch_Byte(cycles, mem);
     return zero_page_address;
 }
 
@@ -286,7 +316,7 @@ u16 Address_Zero_Page_Y(s32 *cycles, const Memory *mem)
 // Addressing mode - Absolute (2 cycles)
 u16 Address_Absolute(s32 *cycles, const Memory *mem)
 {
-    u16 absolute_address = Fetch_Word(cycles, mem);
+    const u16 absolute_address = Fetch_Word(cycles, mem);
     return absolute_address;
 }
 
@@ -565,6 +595,32 @@ s32 Execute(s32 num_cycles, Memory *mem)
             Write_Byte(&num_cycles, mem, cpu.index_reg_Y, effective_address);
             break;
         }
+
+        // JMP - JuMP
+        case INS_JMP_ABS:
+        {
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            cpu.program_counter = address;
+            break;
+        }
+        case INS_JMP_IND:
+        {
+            /*
+                1     PC      R  fetch opcode, increment PC
+                2     PC      R  fetch pointer address low, increment PC
+                3     PC      R  fetch pointer address high, increment PC
+                4   pointer   R  fetch low address to latch
+                5  pointer+1* R  fetch PCH, copy latch to PCL
+
+                The PCH will always be fetched from the same page
+                than PCL, i.e. page boundary crossing is not handled.
+            */
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            cpu.program_counter = Read_Word(&num_cycles, address, mem);
+            break;
+        }
+
+            // JSR - Jump to SubRoutine
         case INS_JSR: // Jump to Subroutine : Absolute, 0x20, 3bytes, 6 cycles
         {
             //  1    PC     R  fetch opcode, increment PC
@@ -579,6 +635,23 @@ s32 Execute(s32 num_cycles, Memory *mem)
             cpu.program_counter = sub_address;
             num_cycles -= 1;
 
+            break;
+        }
+        // RTS - ReTurn from Subroutine
+        case INS_RTS:
+        {
+            //  1    PC     R  fetch opcode, increment PC
+            //  2    PC     R  read next instruction byte (and throw it away)
+            //  3  $0100,S  R  increment S
+            //  4  $0100,S  R  pull PCL from stack, increment S
+            //  5  $0100,S  R  pull PCH from stack
+            //  6    PC     R  increment PC
+
+            // Pull top two bytes off the stack (PCL first)
+            // move to address + 1
+            const u16 return_address = Pop_Word_From_Stack(&num_cycles, mem);
+            cpu.program_counter = return_address + 1;
+            num_cycles -= 2;
             break;
         }
         default:
