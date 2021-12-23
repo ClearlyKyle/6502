@@ -30,6 +30,7 @@ void Can_Jump_To_A_Subroutine_And_Jump_Back_Again(void)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_HEX8(0x42, cpu.accumulator);
     TEST_ASSERT_EQUAL_UINT8(cpu_before.stack_pointer, cpu.stack_pointer);
+    TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
 }
 
 void JSR_Does_Not_Affect_The_Processor_Status(void)
@@ -49,9 +50,8 @@ void JSR_Does_Not_Affect_The_Processor_Status(void)
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_NOT_EQUAL_UINT8(cpu_before.stack_pointer, cpu.stack_pointer);
+    TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
     TEST_ASSERT_EQUAL_HEX16(0x8000, cpu.program_counter);
-
-    // EXPECT_EQ(cpu.PS, CPUCopy.PS);
 }
 
 void RTS_Does_Not_Affect_The_Processor_Status(void)
@@ -71,7 +71,7 @@ void RTS_Does_Not_Affect_The_Processor_Status(void)
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
-    // EXPECT_EQ(cpu.PS, CPUCopy.PS);
+    TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
     TEST_ASSERT_EQUAL_HEX16(0xFF03, cpu.program_counter);
 }
 
@@ -92,7 +92,7 @@ void Jump_Absolute_Can_Jump_To_A_New_Location_In_The_Program(void)
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_UINT8(cpu_before.stack_pointer, cpu.stack_pointer);
-    // EXPECT_EQ(cpu.PS, CPUCopy.PS);
+    TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
     TEST_ASSERT_EQUAL_HEX16(0x8000, cpu.program_counter);
 }
 
@@ -115,7 +115,7 @@ void Jump_Indirect_Can_Jump_To_A_New_Location_In_The_Program(void)
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_UINT8(cpu_before.stack_pointer, cpu.stack_pointer);
-    // EXPECT_EQ(cpu.PS, CPUCopy.PS);
+    TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
     TEST_ASSERT_EQUAL_HEX16(0x9000, cpu.program_counter);
 }
 
