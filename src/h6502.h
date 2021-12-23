@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+
+// https://stackoverflow.com/questions/7597025/difference-between-stdint-h-and-inttypes-h
 #include <inttypes.h>
 
 #include "macros.h"
@@ -60,15 +62,21 @@ typedef struct CPU
     u8 index_reg_X; // X
     u8 index_reg_Y; // Y
 
-    // Processor Status
-    u8 C : 1; // 0 - Carry flag
-    u8 Z : 1; // 1 - Zero flag
-    u8 I : 1; // 2 - Interrupt flag
-    u8 D : 1; // 3 - Decimal flag
-    u8 B : 1; // 4 - Break flag
-    u8 unused : 1;
-    u8 V : 1; // 7 - Overflow flag
-    u8 N : 1; // 7- Negative flag
+    union
+    {
+        uint8_t PS; // Processor Status
+        struct
+        {
+            u8 C : 1; // 0 - Carry flag
+            u8 Z : 1; // 1 - Zero flag
+            u8 I : 1; // 2 - Interrupt flag
+            u8 D : 1; // 3 - Decimal flag
+            u8 B : 1; // 4 - Break flag
+            u8 unused : 1;
+            u8 V : 1; // 7 - Overflow flag
+            u8 N : 1; // 7- Negative flag
+        };
+    };
 } CPU;
 
 // opcodes
@@ -128,17 +136,6 @@ typedef enum
     INS_RTS = 0x60
 
 } Opcode;
-
-//#define INS_LDA_IM 0xA9
-//#define INS_LDA_ZP 0xA5
-//#define INS_LDA_ZPX 0xB5
-//#define INS_LDA_ABS 0xAD
-//#define INS_LDA_ABS_X 0xBD
-//#define INS_LDA_ABS_Y 0xB9
-//#define INS_LDA_IND_X 0xA1
-//#define INS_LDA_IND_Y 0xB1
-
-//#define INS_JSR 0x20
 
 static Memory mem;
 static CPU cpu;
