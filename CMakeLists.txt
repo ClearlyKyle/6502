@@ -49,6 +49,7 @@ set(TEST_NAMES_LIST
     "Load_Operation_tests"
     "Store_Operation_tests" 
     "Jumps_and_Calls_tests"
+    "Stack_Operation_tests"
 )
 
 message(STATUS "[TESTS] Loading all test files...")
@@ -68,3 +69,7 @@ foreach(name ${TEST_NAMES_LIST})
 
     math(EXPR i "${i} + 1")
 endforeach()
+
+# will build before CTest is ran
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+                  DEPENDS ${TEST_NAMES_LIST})

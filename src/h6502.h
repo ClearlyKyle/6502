@@ -67,14 +67,14 @@ typedef struct CPU
         uint8_t PS; // Processor Status
         struct
         {
-            u8 C : 1; // 0 - Carry flag
-            u8 Z : 1; // 1 - Zero flag
-            u8 I : 1; // 2 - Interrupt flag
-            u8 D : 1; // 3 - Decimal flag
-            u8 B : 1; // 4 - Break flag
-            u8 unused : 1;
-            u8 V : 1; // 7 - Overflow flag
-            u8 N : 1; // 7- Negative flag
+            u8 C : 1;      // 0 - Carry flag
+            u8 Z : 1;      // 1 - Zero flag
+            u8 I : 1;      // 2 - Interrupt flag
+            u8 D : 1;      // 3 - Decimal flag
+            u8 B : 1;      // 4 - Break flag
+            u8 unused : 1; // not used, should be 1 at all times
+            u8 V : 1;      // 7 - Overflow flag
+            u8 N : 1;      // 8 - Negative flag
         };
     };
 } CPU;
@@ -133,8 +133,15 @@ typedef enum
     INS_JSR = 0x20,
 
     // RTS - ReTurn from Subroutine
-    INS_RTS = 0x60
+    INS_RTS = 0x60,
 
+    // Stack Instructions
+    INS_TAX = 0xAA, // Transfer Accumulator to Index X
+    INS_TAY = 0xA8, // Transfer Accumulator to Index Y
+    INS_TSX = 0xBA, // Transfer Stack Pointer to Index X
+    INS_TXA = 0x8A, // Transfer Index X to Accumulator
+    INS_TXS = 0x9A, // Transfer Index X to Stack Register
+    INS_TYA = 0x98  // Transfer Index Y to Accumulator
 } Opcode;
 
 static Memory mem;
@@ -162,6 +169,7 @@ void Reset_CPU(CPU *cpu, Memory *mem)
     cpu->I = 0;
     cpu->D = 0;
     cpu->B = 0;
+    cpu->unused = 1; // should be 1 at all times
     cpu->V = 0;
     cpu->N = 0;
 
@@ -649,6 +657,30 @@ s32 Execute(s32 num_cycles, Memory *mem)
             const u16 return_address = Pop_Word_From_Stack(&num_cycles, mem);
             cpu.program_counter = return_address + 1;
             num_cycles -= 2;
+            break;
+        }
+        case INS_TAX: // Transfer Accumulator to Index X
+        {
+            break;
+        }
+        case INS_TAY: // Transfer Accumulator to Index Y
+        {
+            break;
+        }
+        case INS_TSX: // Transfer Stack Pointer to Index X
+        {
+            break;
+        }
+        case INS_TXA: // Transfer Index X to Accumulator
+        {
+            break;
+        }
+        case INS_TXS: // Transfer Index X to Stack Register
+        {
+            break;
+        }
+        case INS_TYA: // Transfer Index Y to Accumulator
+        {
             break;
         }
         default:
