@@ -11,6 +11,8 @@ void tearDown(void) {} /* Is run after every test, put unit clean-up calls here.
 
 void TSX_Can_Transfer_The_Stack_Pointer_To_X_Register(void)
 {
+    cpu.program_counter = 0xFF00;
+
     cpu.Z = 1;
     cpu.N = 1;
     cpu.index_reg_X = 0x00;
@@ -25,13 +27,15 @@ void TSX_Can_Transfer_The_Stack_Pointer_To_X_Register(void)
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
-    TEST_ASSERT_EQUAL_UINT8(cpu.index_reg_X, 0x01);
-    TEST_ASSERT_BIT_LOW(cpu.PS, 1);
-    TEST_ASSERT_BIT_LOW(cpu.PS, 8);
+    TEST_ASSERT_EQUAL_UINT8(0x01, cpu.index_reg_X);
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
 }
 
 void TSX_Can_Transfer_The_Stack_Pointer_To_X_Register_Setting_Flags(void)
 {
+    cpu.program_counter = 0xFF00;
+
     cpu.Z = 1;
     cpu.N = 1;
     cpu.index_reg_X = 0x00;
@@ -46,13 +50,15 @@ void TSX_Can_Transfer_The_Stack_Pointer_To_X_Register_Setting_Flags(void)
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
-    TEST_ASSERT_EQUAL_UINT8(cpu.index_reg_X, 0x00);
-    TEST_ASSERT_BIT_HIGH(cpu.PS, 1); // Z
-    TEST_ASSERT_BIT_LOW(cpu.PS, 8);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.index_reg_X);
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
 }
 
 void TSX_Can_Transfer_A_Negative_Stack_Pointer_To_X_Register(void)
 {
+    cpu.program_counter = 0xFF00;
+
     cpu.Z = 0;
     cpu.N = 0;
     cpu.index_reg_X = 0x00;
@@ -68,8 +74,8 @@ void TSX_Can_Transfer_A_Negative_Stack_Pointer_To_X_Register(void)
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_UINT8(cpu.index_reg_X, 0b10000000);
-    TEST_ASSERT_BIT_LOW(cpu.PS, 1); // Z
-    TEST_ASSERT_BIT_HIGH(cpu.PS, 8);
+    TEST_ASSERT_FALSE(cpu.Z); // Z
+    TEST_ASSERT_TRUE(cpu.N);
 }
 
 int main(void)

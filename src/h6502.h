@@ -669,6 +669,9 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_TSX: // Transfer Stack Pointer to Index X
         {
+            cpu.index_reg_X = cpu.stack_pointer;
+            Load_Register_Set_Status(cpu.index_reg_X);
+            num_cycles -= 1;
             break;
         }
         case INS_TXA: // Transfer Index X to Accumulator
