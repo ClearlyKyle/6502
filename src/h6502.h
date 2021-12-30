@@ -680,6 +680,8 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_TXS: // Transfer Index X to Stack Register
         {
+            cpu.stack_pointer = cpu.index_reg_X;
+            num_cycles -= 1;
             break;
         }
         case INS_TYA: // Transfer Index Y to Accumulator
