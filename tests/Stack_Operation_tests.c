@@ -98,6 +98,26 @@ void TXS_Can_Transfer_X_Register_To_Stack_Pointer(void)
     TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
 }
 
+void PHA_Can_Push_A_Register_Onto_Stack(void)
+{
+    cpu.program_counter = 0xFF00;
+
+    cpu.index_reg_X = 0xFF;
+    cpu.stack_pointer = 0;
+    mem.data[0xFF00] = INS_TXS;
+
+    const CPU cpu_before = cpu;
+    const s32 EXPECTED_CYCLES = 2;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    TEST_ASSERT_EQUAL_UINT8(0xFF, cpu.stack_pointer);
+    TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
+}
+
 int main(void)
 {
     UNITY_BEGIN();

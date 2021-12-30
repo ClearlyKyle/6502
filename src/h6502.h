@@ -141,7 +141,12 @@ typedef enum
     INS_TSX = 0xBA, // Transfer Stack Pointer to Index X
     INS_TXA = 0x8A, // Transfer Index X to Accumulator
     INS_TXS = 0x9A, // Transfer Index X to Stack Register
-    INS_TYA = 0x98  // Transfer Index Y to Accumulator
+    INS_TYA = 0x98, // Transfer Index Y to Accumulator
+
+    INS_PHA = 0x48, // Push Accumulator on Stack
+    INS_PHP = 0x08, // Push Processor Status on Stack
+    INS_PLA = 0x68, // Pull Accumulator from Stack
+    INS_PLP = 0x28  // Pull Processor Status from Stack
 } Opcode;
 
 static Memory mem;
@@ -685,6 +690,22 @@ s32 Execute(s32 num_cycles, Memory *mem)
             break;
         }
         case INS_TYA: // Transfer Index Y to Accumulator
+        {
+            break;
+        }
+        case INS_PHA: // Push Accumulator on Stack
+        {
+            break;
+        }
+        case INS_PHP: // Push Processor Status on Stack
+        {
+            break;
+        }
+        case INS_PLA: // Pull Accumulator from Stack
+        {
+            break;
+        }
+        case INS_PLP: // Pull Processor Status from Stack
         {
             break;
         }
