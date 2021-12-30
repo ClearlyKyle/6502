@@ -102,19 +102,19 @@ void PHA_Can_Push_A_Register_Onto_Stack(void)
 {
     cpu.program_counter = 0xFF00;
 
-    cpu.index_reg_X = 0xFF;
-    cpu.stack_pointer = 0;
-    mem.data[0xFF00] = INS_TXS;
+    cpu.accumulator = 0x42;
+    mem.data[0xFF00] = INS_PHA;
 
     const CPU cpu_before = cpu;
-    const s32 EXPECTED_CYCLES = 2;
+    const s32 EXPECTED_CYCLES = 3;
 
     // when:
     const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
-    TEST_ASSERT_EQUAL_UINT8(0xFF, cpu.stack_pointer);
+    TEST_ASSERT_EQUAL_UINT8(0x42, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(mem.data[SP_To_Address() + 1], cpu.accumulator);
     TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
 }
 
@@ -127,6 +127,8 @@ int main(void)
     RUN_TEST(TSX_Can_Transfer_A_Negative_Stack_Pointer_To_X_Register);
 
     RUN_TEST(TXS_Can_Transfer_X_Register_To_Stack_Pointer);
+
+    RUN_TEST(PHA_Can_Push_A_Register_Onto_Stack);
 
     return UNITY_END();
 }

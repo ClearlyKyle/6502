@@ -289,6 +289,13 @@ void Push_PC_To_Stack(s32 *cycles, Memory *mem)
     Push_Word_To_Stack(cycles, mem, cpu.program_counter);
 }
 
+void Push_Byte_Onto_Stack(s32 *cycles, u8 value, Memory *mem)
+{
+    mem->data[SP_To_Address()] = value;
+    cpu.stack_pointer--;
+    (*cycles) -= 1;
+}
+
 // A, X or Y Register
 void Load_Register_Set_Status(u8 reg)
 {
@@ -695,6 +702,12 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_PHA: // Push Accumulator on Stack
         {
+            //  1    PC     R  fetch opcode, increment PC
+            //  2    PC     R  read next instruction byte (and throw it away)
+            //  3  $0100,S  W  push register on stack, decrement S
+
+            Push_Byte_Onto_Stack(&num_cycles, cpu.accumulator, mem);
+            num_cycles -= 1;
             break;
         }
         case INS_PHP: // Push Processor Status on Stack
