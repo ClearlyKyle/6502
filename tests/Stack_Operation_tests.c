@@ -187,9 +187,10 @@ void PLA_Can_Pull_A_Negative_Value_From_Stack_And_Put_Into_A_Register(void)
     TEST_ASSERT_EQUAL_UINT8(0b10000001, cpu.accumulator);
     TEST_ASSERT_TRUE(cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_EQUAL_UINT8(0xFF, cpu.stack_pointer);
 }
 
-void PHP_Can_Push_A_Register_Onto_Stack(void)
+void PHP_Can_Push_Processor_Status_Onto_Stack(void)
 {
     cpu.program_counter = 0xFF00;
 
@@ -197,7 +198,7 @@ void PHP_Can_Push_A_Register_Onto_Stack(void)
     mem.data[0xFF00] = INS_PHP;
 
     const CPU cpu_before = cpu;
-    const s32 EXPECTED_CYCLES = 2;
+    const s32 EXPECTED_CYCLES = 3;
 
     // when:
     const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
@@ -206,6 +207,7 @@ void PHP_Can_Push_A_Register_Onto_Stack(void)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_UINT8(0xCC, mem.data[SP_To_Address() + 1]);
     TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
+    TEST_ASSERT_EQUAL_UINT8(0xFE, cpu.stack_pointer);
 }
 
 void PLP_Can_Pull_Value_From_Stack_And_Put_Into_Processor_Status(void)
@@ -245,7 +247,7 @@ int main(void)
     RUN_TEST(PLA_Can_Pull_A_Zero_Value_From_Stack_And_Put_Into_A_Register);
     RUN_TEST(PLA_Can_Pull_A_Negative_Value_From_Stack_And_Put_Into_A_Register);
 
-    RUN_TEST(PHP_Can_Push_A_Register_Onto_Stack);
+    RUN_TEST(PHP_Can_Push_Processor_Status_Onto_Stack);
 
     RUN_TEST(PLP_Can_Pull_Value_From_Stack_And_Put_Into_Processor_Status);
 

@@ -19,10 +19,7 @@
 // The first 256 Bytes of the memory map (0-255 or $0000-$00FF) are called zeropage (Page 0)
 //      look up [RAM Table]
 
-//#define DEBUG_PRINT 1
-#ifndef DEBUG_PRINT
 #define DEBUG_PRINT 0
-#endif
 
 // TODO: Macros to access registers in cpu
 
@@ -296,6 +293,7 @@ void Push_Byte_Onto_Stack(s32 *cycles, u8 value, Memory *mem)
     (*cycles) -= 1;
 }
 
+// 2 cycles
 u8 Pop_Byte_From_Stack(s32 *cycles, Memory *mem)
 {
     cpu.stack_pointer++;
@@ -720,23 +718,26 @@ s32 Execute(s32 num_cycles, Memory *mem)
         case INS_PHP: // Push Processor Status on Stack
         {
             Push_Byte_Onto_Stack(&num_cycles, cpu.PS, mem);
+            num_cycles--;
             break;
         }
         case INS_PLA: // Pull Accumulator from Stack
-        {
+        {             // 4 cycles
             cpu.accumulator = Pop_Byte_From_Stack(&num_cycles, mem);
             Load_Register_Set_Status(cpu.accumulator);
+            num_cycles--;
             break;
         }
         case INS_PLP: // Pull Processor Status from Stack
-        {
-            cpu.PS = Pop_Byte_From_Stack(&num_cycles, mem); 
+        {             // 4 cycles
+            cpu.PS = Pop_Byte_From_Stack(&num_cycles, mem);
+            num_cycles--;
             break;
         }
         default:
         {
             print_db("Instruction not handled %x\n", instruction);
-            // return -1;
+            return num_cycles;
             break;
         }
         }
