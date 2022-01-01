@@ -712,6 +712,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_PHP: // Push Processor Status on Stack
         {
+            Push_Byte_Onto_Stack(&num_cycles, cpu.PS, mem);
             break;
         }
         case INS_PLA: // Pull Accumulator from Stack

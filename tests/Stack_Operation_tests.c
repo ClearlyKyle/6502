@@ -118,6 +118,25 @@ void PHA_Can_Push_A_Register_Onto_Stack(void)
     TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
 }
 
+void PHP_Can_Push_A_Register_Onto_Stack(void)
+{
+    cpu.program_counter = 0xFF00;
+
+    cpu.PS = 0xCC; // random
+    mem.data[0xFF00] = INS_PHP;
+
+    const CPU cpu_before = cpu;
+    const s32 EXPECTED_CYCLES = 2;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    TEST_ASSERT_EQUAL_UINT8(0xCC, mem.data[SP_To_Address() + 1]);
+    TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -129,6 +148,8 @@ int main(void)
     RUN_TEST(TXS_Can_Transfer_X_Register_To_Stack_Pointer);
 
     RUN_TEST(PHA_Can_Push_A_Register_Onto_Stack);
+
+    RUN_TEST(PHP_Can_Push_A_Register_Onto_Stack);
 
     return UNITY_END();
 }
