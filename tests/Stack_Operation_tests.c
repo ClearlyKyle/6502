@@ -116,6 +116,7 @@ void PHA_Can_Push_A_Register_Onto_Stack(void)
     TEST_ASSERT_EQUAL_UINT8(0x42, cpu.accumulator);
     TEST_ASSERT_EQUAL_UINT8(mem.data[SP_To_Address() + 1], cpu.accumulator);
     TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
+    TEST_ASSERT_EQUAL_UINT8(0xFE, cpu.stack_pointer);
 }
 
 void PLA_Can_Pull_A_Value_From_Stack_And_Put_Into_A_Register(void)
@@ -137,6 +138,7 @@ void PLA_Can_Pull_A_Value_From_Stack_And_Put_Into_A_Register(void)
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_UINT8(0x42, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0xFF, cpu.stack_pointer);
 }
 
 void PLA_Can_Pull_A_Zero_Value_From_Stack_And_Put_Into_A_Register(void)
@@ -162,6 +164,7 @@ void PLA_Can_Pull_A_Zero_Value_From_Stack_And_Put_Into_A_Register(void)
     TEST_ASSERT_EQUAL_UINT8(0x00, cpu.accumulator);
     TEST_ASSERT_TRUE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
+    TEST_ASSERT_EQUAL_UINT8(0xFF, cpu.stack_pointer);
 }
 
 void PLA_Can_Pull_A_Negative_Value_From_Stack_And_Put_Into_A_Register(void)
