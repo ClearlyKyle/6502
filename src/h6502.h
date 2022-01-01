@@ -296,6 +296,13 @@ void Push_Byte_Onto_Stack(s32 *cycles, u8 value, Memory *mem)
     (*cycles) -= 1;
 }
 
+u8 Pop_Byte_From_Stack(s32 *cycles, Memory *mem)
+{
+    cpu.stack_pointer++;
+    (*cycles) -= 2;
+    return mem->data[SP_To_Address()];
+}
+
 // A, X or Y Register
 void Load_Register_Set_Status(u8 reg)
 {
@@ -717,6 +724,8 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_PLA: // Pull Accumulator from Stack
         {
+            cpu.accumulator = Pop_Byte_From_Stack(&num_cycles, mem);
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_PLP: // Pull Processor Status from Stack

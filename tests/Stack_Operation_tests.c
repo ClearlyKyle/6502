@@ -118,6 +118,77 @@ void PHA_Can_Push_A_Register_Onto_Stack(void)
     TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
 }
 
+void PLA_Can_Pull_A_Value_From_Stack_And_Put_Into_A_Register(void)
+{
+    cpu.program_counter = 0xFF00;
+
+    cpu.accumulator = 0x00;
+    cpu.stack_pointer = 0xFE;
+
+    mem.data[0x01FF] = 0x42;
+    mem.data[0xFF00] = INS_PLA;
+
+    const CPU cpu_before = cpu;
+    const s32 EXPECTED_CYCLES = 4;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    TEST_ASSERT_EQUAL_UINT8(0x42, cpu.accumulator);
+}
+
+void PLA_Can_Pull_A_Zero_Value_From_Stack_And_Put_Into_A_Register(void)
+{
+    cpu.program_counter = 0xFF00;
+
+    cpu.accumulator = 0x42;
+    cpu.stack_pointer = 0xFE;
+    cpu.Z = 0;
+    cpu.N = 1;
+
+    mem.data[0x01FF] = 0x00;
+    mem.data[0xFF00] = INS_PLA;
+
+    const CPU cpu_before = cpu;
+    const s32 EXPECTED_CYCLES = 4;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.accumulator);
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+}
+
+void PLA_Can_Pull_A_Negative_Value_From_Stack_And_Put_Into_A_Register(void)
+{
+    cpu.program_counter = 0xFF00;
+
+    cpu.accumulator = 0x42;
+    cpu.stack_pointer = 0xFE;
+    cpu.N = 0;
+    cpu.Z = 1;
+
+    mem.data[0x01FF] = 0b10000001;
+    mem.data[0xFF00] = INS_PLA;
+
+    const CPU cpu_before = cpu;
+    const s32 EXPECTED_CYCLES = 4;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    TEST_ASSERT_EQUAL_UINT8(0b10000001, cpu.accumulator);
+    TEST_ASSERT_TRUE(cpu.N);
+    TEST_ASSERT_FALSE(cpu.Z);
+}
+
 void PHP_Can_Push_A_Register_Onto_Stack(void)
 {
     cpu.program_counter = 0xFF00;
@@ -148,6 +219,10 @@ int main(void)
     RUN_TEST(TXS_Can_Transfer_X_Register_To_Stack_Pointer);
 
     RUN_TEST(PHA_Can_Push_A_Register_Onto_Stack);
+
+    RUN_TEST(PLA_Can_Pull_A_Value_From_Stack_And_Put_Into_A_Register);
+    RUN_TEST(PLA_Can_Pull_A_Zero_Value_From_Stack_And_Put_Into_A_Register);
+    RUN_TEST(PLA_Can_Pull_A_Negative_Value_From_Stack_And_Put_Into_A_Register);
 
     RUN_TEST(PHP_Can_Push_A_Register_Onto_Stack);
 
