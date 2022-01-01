@@ -730,6 +730,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_PLP: // Pull Processor Status from Stack
         {
+            cpu.PS = Pop_Byte_From_Stack(&num_cycles, mem); 
             break;
         }
         default:

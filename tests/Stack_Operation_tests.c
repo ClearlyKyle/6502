@@ -208,6 +208,27 @@ void PHP_Can_Push_A_Register_Onto_Stack(void)
     TEST_ASSERT_EQUAL_UINT8(cpu_before.PS, cpu.PS);
 }
 
+void PLP_Can_Pull_Value_From_Stack_And_Put_Into_Processor_Status(void)
+{
+    cpu.program_counter = 0xFF00;
+
+    cpu.stack_pointer = 0xFE;
+    cpu.PS = 0;
+
+    mem.data[0x01FF] = 0x42;
+    mem.data[0xFF00] = INS_PLP;
+
+    const CPU cpu_before = cpu;
+    const s32 EXPECTED_CYCLES = 4;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    TEST_ASSERT_EQUAL_UINT8(0x42, cpu.PS);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -225,6 +246,8 @@ int main(void)
     RUN_TEST(PLA_Can_Pull_A_Negative_Value_From_Stack_And_Put_Into_A_Register);
 
     RUN_TEST(PHP_Can_Push_A_Register_Onto_Stack);
+
+    RUN_TEST(PLP_Can_Pull_Value_From_Stack_And_Put_Into_Processor_Status);
 
     return UNITY_END();
 }
