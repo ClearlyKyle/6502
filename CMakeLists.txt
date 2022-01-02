@@ -50,6 +50,7 @@ set(TEST_NAMES_LIST
     "Store_Operation_tests" 
     "Jumps_and_Calls_tests"
     "Stack_Operation_tests"
+    "AND_EOR_ORA_tests"
 )
 
 message(STATUS "[TESTS] Loading all test files...")
