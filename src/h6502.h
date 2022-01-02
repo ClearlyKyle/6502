@@ -132,18 +132,63 @@ typedef enum
     // RTS - ReTurn from Subroutine
     INS_RTS = 0x60,
 
-    // Stack Instructions
+    // - Register Instructions -
+    // These instructions are implied mode, have a length of one byte and require two machine cycles.
     INS_TAX = 0xAA, // Transfer Accumulator to Index X
-    INS_TAY = 0xA8, // Transfer Accumulator to Index Y
-    INS_TSX = 0xBA, // Transfer Stack Pointer to Index X
     INS_TXA = 0x8A, // Transfer Index X to Accumulator
-    INS_TXS = 0x9A, // Transfer Index X to Stack Register
+    INS_TAY = 0xA8, // Transfer Accumulator to Index Y
     INS_TYA = 0x98, // Transfer Index Y to Accumulator
 
-    INS_PHA = 0x48, // Push Accumulator on Stack
-    INS_PHP = 0x08, // Push Processor Status on Stack
-    INS_PLA = 0x68, // Pull Accumulator from Stack
-    INS_PLP = 0x28  // Pull Processor Status from Stack
+    INS_DEX = 0xCA, // (DEcrement X)
+    INS_INX = 0xE8, // (INcrement X)
+    INS_DEY = 0x88, // (DEcrement Y)
+    INS_INY = 0xC8, // (INcrement Y)
+
+    // - Stack Instructions -
+    // These instructions are implied mode, have a length of one byte and require machine cycles as
+    // indicated. The stack is always on page one ($100-$1FF) and works top down.
+    INS_TSX = 0xBA, // Transfer Stack Pointer to Index X
+    INS_TXS = 0x9A, // Transfer Index X to Stack Register
+
+    INS_PHA = 0x48, // (PusH Accumulator) Push Accumulator on Stack
+    INS_PLA = 0x68, // (PuLl Accumulator) Pull Accumulator from Stack
+    INS_PHP = 0x08, // (PusH Processor status) Push Processor Status on Stack
+    INS_PLP = 0x28, // (PuLl Processor status) Pull Processor Status from Stack
+
+    // ORA - OR Memory with Accumulator
+    INS_ORA_IM = 0x09,
+    INS_ORA_ZP = 0x05,
+    INS_ORA_ZP_X = 0x15,
+    INS_ORA_ABS = 0x0D,
+    INS_ORA_ABS_X = 0x1D,
+    INS_ORA_ABS_Y = 0x19,
+    INS_ORA_IND_X = 0x01,
+    INS_ORA_IND_Y = 0x11,
+
+    // AND - bitwise AND with accumulator
+    INS_AND_IM = 0x29,
+    INS_AND_ZP = 0x25,
+    INS_AND_ZP_X = 0x35,
+    INS_AND_ABS = 0x2D,
+    INS_AND_ABS_X = 0x3D,
+    INS_AND_ABS_Y = 0x39,
+    INS_AND_IND_X = 0x21,
+    INS_AND_IND_Y = 0x31,
+
+    // EOR - Exclusive OR
+    INS_EOR_IM = 0x49,
+    INS_EOR_ZP = 0x45,
+    INS_EOR_ZP_X = 0x55,
+    INS_EOR_ABS = 0x4D,
+    INS_EOR_ABS_X = 0x5D,
+    INS_EOR_ABS_Y = 0x59,
+    INS_EOR_IND_X = 0x41,
+    INS_EOR_IND_Y = 0x51,
+
+    // BIT - test BITs
+    INS_BIT_ZP = 0x24,
+    INS_BIT_ABS = 0x2C,
+
 } Opcode;
 
 static Memory mem;
@@ -676,7 +721,12 @@ s32 Execute(s32 num_cycles, Memory *mem)
             num_cycles -= 2;
             break;
         }
+        // - Register Instructions -
         case INS_TAX: // Transfer Accumulator to Index X
+        {
+            break;
+        }
+        case INS_TXA: // Transfer Index X to Accumulator
         {
             break;
         }
@@ -684,6 +734,27 @@ s32 Execute(s32 num_cycles, Memory *mem)
         {
             break;
         }
+        case INS_TYA: // Transfer Index Y to Accumulator
+        {
+            break;
+        }
+        case INS_DEX: // (DEcrement X)
+        {
+            break;
+        }
+        case INS_INX: // (INcrement X)
+        {
+            break;
+        }
+        case INS_DEY: // (DEcrement Y)
+        {
+            break;
+        }
+        case INS_INY: // (INcrement Y)
+        {
+            break;
+        }
+        // - Stack Instructions -
         case INS_TSX: // Transfer Stack Pointer to Index X
         {
             cpu.index_reg_X = cpu.stack_pointer;
@@ -691,18 +762,10 @@ s32 Execute(s32 num_cycles, Memory *mem)
             num_cycles -= 1;
             break;
         }
-        case INS_TXA: // Transfer Index X to Accumulator
-        {
-            break;
-        }
         case INS_TXS: // Transfer Index X to Stack Register
         {
             cpu.stack_pointer = cpu.index_reg_X;
             num_cycles -= 1;
-            break;
-        }
-        case INS_TYA: // Transfer Index Y to Accumulator
-        {
             break;
         }
         case INS_PHA: // Push Accumulator on Stack
@@ -715,12 +778,6 @@ s32 Execute(s32 num_cycles, Memory *mem)
             num_cycles -= 1;
             break;
         }
-        case INS_PHP: // Push Processor Status on Stack
-        {
-            Push_Byte_Onto_Stack(&num_cycles, cpu.PS, mem);
-            num_cycles--;
-            break;
-        }
         case INS_PLA: // Pull Accumulator from Stack
         {             // 4 cycles
             cpu.accumulator = Pop_Byte_From_Stack(&num_cycles, mem);
@@ -728,10 +785,125 @@ s32 Execute(s32 num_cycles, Memory *mem)
             num_cycles--;
             break;
         }
+        case INS_PHP: // Push Processor Status on Stack
+        {
+            Push_Byte_Onto_Stack(&num_cycles, cpu.PS, mem);
+            num_cycles--;
+            break;
+        }
         case INS_PLP: // Pull Processor Status from Stack
         {             // 4 cycles
             cpu.PS = Pop_Byte_From_Stack(&num_cycles, mem);
             num_cycles--;
+            break;
+        }
+        // ORA - OR Memory with Accumulator
+        case INS_ORA_IM:
+        {
+            break;
+        }
+        case INS_ORA_ZP:
+        {
+            break;
+        }
+        case INS_ORA_ZP_X:
+        {
+            break;
+        }
+        case INS_ORA_ABS:
+        {
+            break;
+        }
+        case INS_ORA_ABS_X:
+        {
+            break;
+        }
+        case INS_ORA_ABS_Y:
+        {
+            break;
+        }
+        case INS_ORA_IND_X:
+        {
+            break;
+        }
+        case INS_ORA_IND_Y:
+        {
+            break;
+        }
+            // AND - bitwise AND with accumulator
+        case INS_AND_IM:
+        {
+            break;
+        }
+        case INS_AND_ZP:
+        {
+            break;
+        }
+        case INS_AND_ZP_X:
+        {
+            break;
+        }
+        case INS_AND_ABS:
+        {
+            break;
+        }
+        case INS_AND_ABS_X:
+        {
+            break;
+        }
+        case INS_AND_ABS_Y:
+        {
+            break;
+        }
+        case INS_AND_IND_X:
+        {
+            break;
+        }
+        case INS_AND_IND_Y:
+        {
+            break;
+        }
+            // EOR - Exclusive OR
+        case INS_EOR_IM:
+        {
+            break;
+        }
+        case INS_EOR_ZP:
+        {
+            break;
+        }
+        case INS_EOR_ZP_X:
+        {
+            break;
+        }
+        case INS_EOR_ABS:
+        {
+            break;
+        }
+        case INS_EOR_ABS_X:
+        {
+            break;
+        }
+        case INS_EOR_ABS_Y:
+        {
+            break;
+        }
+        case INS_EOR_IND_X:
+        {
+            break;
+        }
+        case INS_EOR_IND_Y:
+        {
+            break;
+        }
+
+        // BIT - test BITs
+        case INS_BIT_ZP:
+        {
+            break;
+        }
+        case INS_BIT_ABS:
+        {
             break;
         }
         default:
