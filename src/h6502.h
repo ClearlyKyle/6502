@@ -800,6 +800,8 @@ s32 Execute(s32 num_cycles, Memory *mem)
         // ORA - OR Memory with Accumulator
         case INS_ORA_IM:
         {
+            cpu.accumulator |= Fetch_Byte(&num_cycles, mem);
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_ORA_ZP:
@@ -833,6 +835,8 @@ s32 Execute(s32 num_cycles, Memory *mem)
             // AND - bitwise AND with accumulator
         case INS_AND_IM:
         {
+            cpu.accumulator &= Fetch_Byte(&num_cycles, mem);
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_AND_ZP:
@@ -866,6 +870,8 @@ s32 Execute(s32 num_cycles, Memory *mem)
             // EOR - Exclusive OR
         case INS_EOR_IM:
         {
+            cpu.accumulator ^= Fetch_Byte(&num_cycles, mem);
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_EOR_ZP:
