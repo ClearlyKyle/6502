@@ -442,6 +442,25 @@ void Load_Register(s32 *cycles, u8 *reg, const u16 address, const Memory *mem)
     Load_Register_Set_Status((*reg));
 }
 
+// AND the A register with the value from 'address'
+void AND_Register(s32 *cycles, const u16 address, const Memory *mem)
+{
+    cpu.accumulator &= Read_Byte(cycles, address, mem);
+    Load_Register_Set_Status(cpu.accumulator);
+}
+// OR the A register with the value from 'address'
+void OR_Register(s32 *cycles, const u16 address, const Memory *mem)
+{
+    cpu.accumulator |= Read_Byte(cycles, address, mem);
+    Load_Register_Set_Status(cpu.accumulator);
+}
+// EOR the A register with the value from 'address'
+void EOR_Register(s32 *cycles, const u16 address, const Memory *mem)
+{
+    cpu.accumulator ^= Read_Byte(cycles, address, mem);
+    Load_Register_Set_Status(cpu.accumulator);
+}
+
 // execute "num_cycles" the instruction in memory
 s32 Execute(s32 num_cycles, Memory *mem)
 {
@@ -806,10 +825,14 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_ORA_ZP:
         {
+            const u16 address = Address_Zero_Page(&num_cycles, mem);
+            OR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_ORA_ZP_X:
         {
+            const u16 address = Address_Zero_Page_X(&num_cycles, mem);
+            OR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_ORA_ABS:
@@ -841,10 +864,14 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_AND_ZP:
         {
+            const u16 address = Address_Zero_Page(&num_cycles, mem);
+            AND_Register(&num_cycles, address, mem);
             break;
         }
         case INS_AND_ZP_X:
         {
+            const u16 address = Address_Zero_Page_X(&num_cycles, mem);
+            AND_Register(&num_cycles, address, mem);
             break;
         }
         case INS_AND_ABS:
@@ -876,10 +903,14 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_EOR_ZP:
         {
+            const u16 address = Address_Zero_Page(&num_cycles, mem);
+            EOR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_EOR_ZP_X:
         {
+            const u16 address = Address_Zero_Page_X(&num_cycles, mem);
+            EOR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_EOR_ABS:
