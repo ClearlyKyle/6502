@@ -28,7 +28,7 @@ enum LogicOperator
     OR
 };
 
-u8 DoLogicalOp(u8 A, u8 B, enum LogicOperator LogicalOp)
+static u8 Do_Logical_Operation(u8 A, u8 B, enum LogicOperator LogicalOp)
 {
     switch (LogicalOp)
     {
@@ -47,7 +47,7 @@ u8 DoLogicalOp(u8 A, u8 B, enum LogicOperator LogicalOp)
     }
 }
 
-void Logical_Operator_Immediate(enum LogicOperator opp)
+static void Logical_Operator_Immediate(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -80,12 +80,11 @@ void Logical_Operator_Immediate(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
 
     TEST_ASSERT_FALSE(cpu.Z);
-    TEST_ASSERT_TRUE(cpu.N);
 
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Zero_Page(enum LogicOperator opp)
+static void Logical_Operator_Zero_Page(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -122,7 +121,7 @@ void Logical_Operator_Zero_Page(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Zero_Page_X(enum LogicOperator opp)
+static void Logical_Operator_Zero_Page_X(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -160,7 +159,7 @@ void Logical_Operator_Zero_Page_X(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Absolute(enum LogicOperator opp)
+static void Logical_Operator_Absolute(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -202,7 +201,7 @@ void Logical_Operator_Absolute(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Absolute_X(enum LogicOperator opp)
+static void Logical_Operator_Absolute_X(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -245,7 +244,7 @@ void Logical_Operator_Absolute_X(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Absolute_Y(enum LogicOperator opp)
+static void Logical_Operator_Absolute_Y(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -288,7 +287,7 @@ void Logical_Operator_Absolute_Y(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Load_Register_Absolute_Y_When_Crossing_Page_Boundary(enum LogicOperator opp)
+static void Load_Register_Absolute_Y_When_Crossing_Page_Boundary(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -329,7 +328,7 @@ void Load_Register_Absolute_Y_When_Crossing_Page_Boundary(enum LogicOperator opp
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Load_Register_Absolute_X_When_Crossing_Page_Boundary(enum LogicOperator opp)
+static void Load_Register_Absolute_X_When_Crossing_Page_Boundary(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -370,7 +369,7 @@ void Load_Register_Absolute_X_When_Crossing_Page_Boundary(enum LogicOperator opp
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Indirect_X(enum LogicOperator opp)
+static void Logical_Operator_Indirect_X(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -414,7 +413,7 @@ void Logical_Operator_Indirect_X(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Indirect_Y(enum LogicOperator opp)
+static void Logical_Operator_Indirect_Y(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -458,7 +457,7 @@ void Logical_Operator_Indirect_Y(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(enum LogicOperator opp)
+static void Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -500,7 +499,7 @@ void Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(enum LogicOperator 
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
+static void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -540,11 +539,63 @@ void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
+// Immediate
+void Test_Logical_Operator_AND_On_A_Register_Immediate(void)
+{
+    Logical_Operator_Immediate(AND);
+}
+void Test_Logical_Operator_ORA_On_A_Register_Immediate(void)
+{
+    Logical_Operator_Immediate(OR);
+}
+void Test_Logical_Operator_EOR_On_A_Register_Immediate(void)
+{
+    Logical_Operator_Immediate(EOR);
+}
+
+// Zero Page
+void Test_Logical_Operator_AND_On_A_Register_ZP(void)
+{
+    Logical_Operator_Zero_Page(AND);
+}
+void Test_Logical_Operator_ORA_On_A_Register_ZP(void)
+{
+    Logical_Operator_Zero_Page(OR);
+}
+void Test_Logical_Operator_EOR_On_A_Register_ZP(void)
+{
+    Logical_Operator_Zero_Page(EOR);
+}
+
+// Zero Page X
+void Test_Logical_Operator_AND_On_A_Register_ZP_X(void)
+{
+    Logical_Operator_Zero_Page_X(AND);
+}
+void Test_Logical_Operator_ORA_On_A_Register_ZP_X(void)
+{
+    Logical_Operator_Zero_Page_X(OR);
+}
+void Test_Logical_Operator_EOR_On_A_Register_ZP_X(void)
+{
+    Logical_Operator_Zero_Page_X(EOR);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
 
-    RUN_TEST(Logical_Operator_Immediate);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_Immediate);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_Immediate);
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_Immediate);
+
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ZP);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ZP);
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ZP);
+
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ZP_X);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ZP_X);
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ZP_X);
 
     return UNITY_END();
 }
