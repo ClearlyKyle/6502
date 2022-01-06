@@ -837,14 +837,20 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_ORA_ABS:
         {
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            OR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_ORA_ABS_X:
         {
+            const u16 address = Address_Absolute_X(&num_cycles, mem);
+            OR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_ORA_ABS_Y:
         {
+            const u16 address = Address_Absolute_Y(&num_cycles, mem);
+            OR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_ORA_IND_X:
@@ -876,14 +882,20 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_AND_ABS:
         {
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            AND_Register(&num_cycles, address, mem);
             break;
         }
         case INS_AND_ABS_X:
         {
+            const u16 address = Address_Absolute_X(&num_cycles, mem);
+            AND_Register(&num_cycles, address, mem);
             break;
         }
         case INS_AND_ABS_Y:
         {
+            const u16 address = Address_Absolute_Y(&num_cycles, mem);
+            AND_Register(&num_cycles, address, mem);
             break;
         }
         case INS_AND_IND_X:
@@ -915,14 +927,20 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_EOR_ABS:
         {
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            EOR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_EOR_ABS_X:
         {
+            const u16 address = Address_Absolute_X(&num_cycles, mem);
+            EOR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_EOR_ABS_Y:
         {
+            const u16 address = Address_Absolute_Y(&num_cycles, mem);
+            EOR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_EOR_IND_X:

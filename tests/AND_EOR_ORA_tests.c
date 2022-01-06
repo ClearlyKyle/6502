@@ -503,7 +503,7 @@ static void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
-    cpu.index_reg_Y = 0xFF;
+    cpu.index_reg_X = 0xFF;
 
     switch (opp)
     {
