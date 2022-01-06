@@ -539,6 +539,26 @@ static void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
+void Test_Logical_Operator_EOR_Immediate_Can_Affect_Zero_Flag(void)
+{
+    // given:
+    cpu.accumulator = 0xCC;
+    mem.data[0xFFFC] = INS_EOR_IM;
+    mem.data[0xFFFD] = cpu.accumulator;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    VerfifyUnmodifiedFlagsFromLogicalOpInstruction(before, cpu);
+}
+
 // Immediate
 void Test_Logical_Operator_AND_On_A_Register_Immediate(void)
 {
@@ -581,6 +601,20 @@ void Test_Logical_Operator_EOR_On_A_Register_ZP_X(void)
     Logical_Operator_Zero_Page_X(EOR);
 }
 
+// Zero Page X when it wraps
+void Test_Logical_Operator_EOR_Can_Load_A_Register_When_Wraps_ZP_X(void)
+{
+    Logical_Operator_Zero_Page_X_When_It_Wraps(EOR);
+}
+void Test_Logical_Operator_ORA_Can_Load_A_Register_When_Wraps_ZP_X(void)
+{
+    Logical_Operator_Zero_Page_X_When_It_Wraps(OR);
+}
+void Test_Logical_Operator_AND_Can_Load_A_Register_When_Wraps_ZP_X(void)
+{
+    Logical_Operator_Zero_Page_X_When_It_Wraps(AND);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -588,6 +622,7 @@ int main(void)
     RUN_TEST(Test_Logical_Operator_AND_On_A_Register_Immediate);
     RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_Immediate);
     RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_Immediate);
+    RUN_TEST(Test_Logical_Operator_EOR_Immediate_Can_Affect_Zero_Flag);
 
     RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ZP);
     RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ZP);
@@ -596,6 +631,10 @@ int main(void)
     RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ZP_X);
     RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ZP_X);
     RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ZP_X);
+
+    RUN_TEST(Test_Logical_Operator_EOR_Can_Load_A_Register_When_Wraps_ZP_X);
+    RUN_TEST(Test_Logical_Operator_ORA_Can_Load_A_Register_When_Wraps_ZP_X);
+    RUN_TEST(Test_Logical_Operator_AND_Can_Load_A_Register_When_Wraps_ZP_X);
 
     return UNITY_END();
 }
