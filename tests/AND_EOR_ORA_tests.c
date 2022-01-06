@@ -556,7 +556,7 @@ void Test_Logical_Operator_EOR_Immediate_Can_Affect_Zero_Flag(void)
     TEST_ASSERT_TRUE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    VerfifyUnmodifiedFlagsFromLogicalOpInstruction(before, cpu);
+    Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
 // Immediate
@@ -615,6 +615,62 @@ void Test_Logical_Operator_AND_Can_Load_A_Register_When_Wraps_ZP_X(void)
     Logical_Operator_Zero_Page_X_When_It_Wraps(AND);
 }
 
+// Absolute
+void Test_Logical_Operator_EOR_On_A_Register_ABS(void)
+{
+    Logical_Operator_Absolute(EOR);
+}
+void Test_Logical_Operator_ORA_On_A_Register_ABS(void)
+{
+    Logical_Operator_Absolute(OR);
+}
+void Test_Logical_Operator_AND_On_A_Register_ABS(void)
+{
+    Logical_Operator_Absolute(AND);
+}
+
+// Absolute X
+void Test_Logical_Operator_EOR_On_A_Register_ABS_X(void)
+{
+    Logical_Operator_Absolute_X(EOR);
+}
+void Test_Logical_Operator_ORA_On_A_Register_ABS_X(void)
+{
+    Logical_Operator_Absolute_X(OR);
+}
+void Test_Logical_Operator_AND_On_A_Register_ABS_X(void)
+{
+    Logical_Operator_Absolute_X(AND);
+}
+
+// Absolute X when crossing page boundary
+void Test_Logical_Operator_EOR_On_A_Register_ABS_X_When_Crossing_Page_Boundary(void)
+{
+    Load_Register_Absolute_X_When_Crossing_Page_Boundary(EOR);
+}
+void Test_Logical_Operator_ORA_On_A_Register_ABS_X_When_Crossing_Page_Boundary(void)
+{
+    Load_Register_Absolute_X_When_Crossing_Page_Boundary(OR);
+}
+void Test_Logical_Operator_AND_On_A_Register_ABS_X_When_Crossing_Page_Boundary(void)
+{
+    Load_Register_Absolute_X_When_Crossing_Page_Boundary(AND);
+}
+
+// Absolute Y
+void Test_Logical_Operator_EOR_On_A_Register_ABS_Y(void)
+{
+    Logical_Operator_Absolute_Y(EOR);
+}
+void Test_Logical_Operator_ORA_On_A_Register_ABS_Y(void)
+{
+    Logical_Operator_Absolute_Y(OR);
+}
+void Test_Logical_Operator_AND_On_A_Register_ABS_Y(void)
+{
+    Logical_Operator_Absolute_Y(AND);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -635,6 +691,22 @@ int main(void)
     RUN_TEST(Test_Logical_Operator_EOR_Can_Load_A_Register_When_Wraps_ZP_X);
     RUN_TEST(Test_Logical_Operator_ORA_Can_Load_A_Register_When_Wraps_ZP_X);
     RUN_TEST(Test_Logical_Operator_AND_Can_Load_A_Register_When_Wraps_ZP_X);
+
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ABS);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ABS);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ABS);
+
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ABS_X);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ABS_X);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ABS_X);
+
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ABS_X_When_Crossing_Page_Boundary);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ABS_X_When_Crossing_Page_Boundary);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ABS_X_When_Crossing_Page_Boundary);
+
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ABS_Y);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ABS_Y);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ABS_Y);
 
     return UNITY_END();
 }
