@@ -855,10 +855,14 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_ORA_IND_X:
         {
+            const u16 address = Address_Indirect_X(&num_cycles, mem);
+            OR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_ORA_IND_Y:
         {
+            const u16 address = Address_Indirect_Y(&num_cycles, mem);
+            OR_Register(&num_cycles, address, mem);
             break;
         }
             // AND - bitwise AND with accumulator
@@ -900,10 +904,14 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_AND_IND_X:
         {
+            const u16 address = Address_Indirect_X(&num_cycles, mem);
+            AND_Register(&num_cycles, address, mem);
             break;
         }
         case INS_AND_IND_Y:
         {
+            const u16 address = Address_Indirect_Y(&num_cycles, mem);
+            AND_Register(&num_cycles, address, mem);
             break;
         }
             // EOR - Exclusive OR
@@ -945,10 +953,14 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_EOR_IND_X:
         {
+            const u16 address = Address_Indirect_X(&num_cycles, mem);
+            EOR_Register(&num_cycles, address, mem);
             break;
         }
         case INS_EOR_IND_Y:
         {
+            const u16 address = Address_Indirect_Y(&num_cycles, mem);
+            EOR_Register(&num_cycles, address, mem);
             break;
         }
 
