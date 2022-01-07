@@ -56,6 +56,9 @@ typedef struct CPU
         uint8_t PS; // Processor Status
         struct
         {
+            // C Z I F B u V N
+            // 0 1 2 3 4 5 6 7
+
             u8 C : 1;      // 0 - Carry flag
             u8 Z : 1;      // 1 - Zero flag
             u8 I : 1;      // 2 - Interrupt flag
@@ -67,6 +70,16 @@ typedef struct CPU
         };
     };
 } CPU;
+
+enum FlagBits
+{
+    NEGATIVE_FLAG_BIT = 0x80,         // 0b10000000
+    OVERFLOW_FLAG_BIT = 0x40,         // 0b01000000,
+    BREAK_FLAG_BIT = 0x10,            // 0b000010000,
+    unused_FLAG_BIT = 0x20,           // 0b000100000,
+    INTERUPT_DISABLE_FLAG_BIT = 0x04, // 0b000000100,
+    ZERO_BIT = 0x01,                  // 0b00000001;
+};
 
 // opcodes
 typedef enum
@@ -953,10 +966,20 @@ s32 Execute(s32 num_cycles, Memory *mem)
         // BIT - test BITs
         case INS_BIT_ZP:
         {
+            const u16 address = Address_Zero_Page(&num_cycles, mem);
+            const u8 value = Read_Byte(&num_cycles, address, mem);
+            cpu.Z = !(cpu.accumulator & value);
+            cpu.N = (value & NEGATIVE_FLAG_BIT) != 0;
+            cpu.V = (value & OVERFLOW_FLAG_BIT) != 0;
             break;
         }
         case INS_BIT_ABS:
         {
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            const u8 value = Read_Byte(&num_cycles, address, mem);
+            cpu.Z = !(cpu.accumulator & value);
+            cpu.N = (value & NEGATIVE_FLAG_BIT) != 0;
+            cpu.V = (value & OVERFLOW_FLAG_BIT) != 0;
             break;
         }
         default:
