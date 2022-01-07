@@ -741,7 +741,7 @@ void Test_BIT_ZP(void)
     mem.data[0x0042] = 0xCC;
 
     // when:
-    const s32 NUM_OF_CYCLES = 2;
+    const s32 NUM_OF_CYCLES = 3;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
 
@@ -763,10 +763,10 @@ void Test_BIT_ZP_Result_Zero(void)
 
     mem.data[0xFFFC] = INS_BIT_ZP;
     mem.data[0xFFFD] = 0x42;
-    mem.data[0x0042] = 0xCC;
+    mem.data[0x0042] = 0x33;
 
     // when
-    const s32 NUM_OF_CYCLES = 2;
+    const s32 NUM_OF_CYCLES = 3;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
 
@@ -774,8 +774,8 @@ void Test_BIT_ZP_Result_Zero(void)
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_UINT8(0xCC, cpu.accumulator);
     TEST_ASSERT_TRUE(cpu.Z);
-    TEST_ASSERT_TRUE(cpu.V);
-    TEST_ASSERT_TRUE(cpu.N);
+    TEST_ASSERT_FALSE(cpu.V);
+    TEST_ASSERT_FALSE(cpu.N);
 }
 
 void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Zero(void)
@@ -820,7 +820,7 @@ void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Mixed(void)
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_TRUE(cpu.V);
-    TEST_ASSERT_TRUE(cpu.N);
+    TEST_ASSERT_FALSE(cpu.N);
 }
 
 void Test_Bit_ABS(void)

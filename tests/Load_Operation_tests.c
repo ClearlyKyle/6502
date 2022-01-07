@@ -62,8 +62,8 @@ void Executing_A_Bad_Instruction_Does_Not_Start_Infinite_Loop(void)
     mem.data[0xFFFC] = 0x0; // invalud instruction
     mem.data[0xFFFD] = 0x0;
 
-    s32 cycles_used = Execute(1, &mem);
-    TEST_ASSERT_EQUAL_INT32(1, cycles_used);
+    const s32 cycles_used = Execute(1, &mem);
+    TEST_ASSERT_EQUAL_INT32(0, cycles_used);
 }
 
 void LDA_Immediate_Can_Effect_The_Zero_Flag(void)
@@ -75,9 +75,14 @@ void LDA_Immediate_Can_Effect_The_Zero_Flag(void)
     mem.data[0xFFFC] = INS_LDA_IM;
     mem.data[0xFFFD] = 0x0;
 
+    // when:
     const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
 
-    s32 cycles_used = Execute(2, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_TRUE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);

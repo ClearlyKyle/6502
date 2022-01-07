@@ -3,7 +3,7 @@
 
 #include "h6502.h"
 
-int main(int argc, char const *argv[])
+int main(void)
 {
     Reset_CPU(&cpu, &mem);
 

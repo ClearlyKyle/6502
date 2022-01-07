@@ -19,7 +19,6 @@ void TSX_Can_Transfer_The_Stack_Pointer_To_X_Register(void)
     cpu.stack_pointer = 0x01;
     mem.data[0xFF00] = INS_TSX;
 
-    const CPU cpu_before = cpu;
     const s32 EXPECTED_CYCLES = 2;
 
     // when:
@@ -42,10 +41,9 @@ void TSX_Can_Transfer_The_Stack_Pointer_To_X_Register_Setting_Flags(void)
     cpu.stack_pointer = 0x00;
     mem.data[0xFF00] = INS_TSX;
 
-    const CPU cpu_before = cpu;
+    // when:
     const s32 EXPECTED_CYCLES = 2;
 
-    // when:
     const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
 
     // then:
@@ -62,18 +60,17 @@ void TSX_Can_Transfer_A_Negative_Stack_Pointer_To_X_Register(void)
     cpu.Z = 0;
     cpu.N = 0;
     cpu.index_reg_X = 0x00;
-    cpu.stack_pointer = 0b10000000; // binary
+    cpu.stack_pointer = NEGATIVE_FLAG_BIT; // binary
     mem.data[0xFF00] = INS_TSX;
 
-    const CPU cpu_before = cpu;
+    // when:
     const s32 EXPECTED_CYCLES = 2;
 
-    // when:
     const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
-    TEST_ASSERT_EQUAL_UINT8(cpu.index_reg_X, 0b10000000);
+    TEST_ASSERT_EQUAL_UINT8(cpu.index_reg_X, NEGATIVE_FLAG_BIT);
     TEST_ASSERT_FALSE(cpu.Z); // Z
     TEST_ASSERT_TRUE(cpu.N);
 }
@@ -129,10 +126,9 @@ void PLA_Can_Pull_A_Value_From_Stack_And_Put_Into_A_Register(void)
     mem.data[0x01FF] = 0x42;
     mem.data[0xFF00] = INS_PLA;
 
-    const CPU cpu_before = cpu;
+    // when:
     const s32 EXPECTED_CYCLES = 4;
 
-    // when:
     const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
 
     // then:
@@ -153,10 +149,9 @@ void PLA_Can_Pull_A_Zero_Value_From_Stack_And_Put_Into_A_Register(void)
     mem.data[0x01FF] = 0x00;
     mem.data[0xFF00] = INS_PLA;
 
-    const CPU cpu_before = cpu;
+    // when:
     const s32 EXPECTED_CYCLES = 4;
 
-    // when:
     const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
 
     // then:
@@ -176,18 +171,17 @@ void PLA_Can_Pull_A_Negative_Value_From_Stack_And_Put_Into_A_Register(void)
     cpu.N = 0;
     cpu.Z = 1;
 
-    mem.data[0x01FF] = 0b10000001;
+    mem.data[0x01FF] = 0x81; // 0x81 = 0b10000001
     mem.data[0xFF00] = INS_PLA;
 
-    const CPU cpu_before = cpu;
+    // when:
     const s32 EXPECTED_CYCLES = 4;
 
-    // when:
     const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
-    TEST_ASSERT_EQUAL_UINT8(0b10000001, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0x81, cpu.accumulator); // 0x81 = 0b10000001
     TEST_ASSERT_TRUE(cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_EQUAL_UINT8(0xFF, cpu.stack_pointer);
@@ -223,10 +217,9 @@ void PLP_Can_Pull_Value_From_Stack_And_Put_Into_Processor_Status(void)
     mem.data[0x01FF] = 0x42;
     mem.data[0xFF00] = INS_PLP;
 
-    const CPU cpu_before = cpu;
+    // when:
     const s32 EXPECTED_CYCLES = 4;
 
-    // when:
     const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
 
     // then:
