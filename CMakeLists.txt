@@ -7,7 +7,7 @@ enable_testing()
 
 set(CMAKE_C_STANDARD 11)
 # Essential -Wall -Wextra
-set(CMAKE_C_FLAGS_DEBUG_INIT "-Wall -Wextra -Werrer -Wshadow")
+add_compile_options(-Wall -Wextra -pedantic -Werror -Wshadow)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 

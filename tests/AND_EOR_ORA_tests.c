@@ -553,6 +553,7 @@ void Test_Logical_Operator_EOR_Immediate_Can_Affect_Zero_Flag(void)
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
 
     // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_TRUE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
@@ -713,6 +714,205 @@ void Test_Logical_Operator_AND_On_A_Register_IND_Y_When_Crossing_Page_Boundary(v
     Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(AND);
 }
 
+// Bit tests
+void Test_BIT_ZP(void)
+{
+    // given:
+    cpu.V = 0;
+    cpu.N = 0;
+    cpu.accumulator = 0xCC;
+
+    mem.data[0xFFFC] = INS_BIT_ZP;
+    mem.data[0xFFFD] = 0x42;
+    mem.data[0x0042] = 0xCC;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX8(0xCC, cpu.accumulator);
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.V);
+    TEST_ASSERT_TRUE(cpu.N);
+}
+
+void Test_BIT_ZP_Result_Zero(void)
+
+{
+    // given:
+    cpu.V = 1;
+    cpu.N = 1;
+    cpu.accumulator = 0xCC;
+
+    mem.data[0xFFFC] = INS_BIT_ZP;
+    mem.data[0xFFFD] = 0x42;
+    mem.data[0x0042] = 0xCC;
+
+    // when
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0xCC, cpu.accumulator);
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.V);
+    TEST_ASSERT_TRUE(cpu.N);
+}
+
+void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Zero(void)
+{
+    // given:
+    cpu.V = 0;
+    cpu.N = 0;
+    cpu.accumulator = 0x33;
+
+    mem.data[0xFFFC] = INS_BIT_ZP;
+    mem.data[0xFFFD] = 0x42;
+    mem.data[0x0042] = 0xCC;
+
+    // when:
+    // const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 3;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x33, cpu.accumulator);
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.V);
+    TEST_ASSERT_TRUE(cpu.N);
+}
+
+void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Mixed(void)
+{
+    // given:
+    cpu.V = 0;
+    cpu.N = 1;
+
+    mem.data[0xFFFC] = INS_BIT_ZP;
+    mem.data[0xFFFD] = 0x42;
+    mem.data[0x0042] = 0b01000000;
+
+    // when:
+    const s32 NUM_OF_CYCLES = 3;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_TRUE(cpu.V);
+    TEST_ASSERT_TRUE(cpu.N);
+}
+
+void Test_Bit_ABS(void)
+{
+    // given:
+    cpu.V = 0;
+    cpu.N = 0;
+    cpu.accumulator = 0xCC;
+
+    mem.data[0xFFFC] = INS_BIT_ABS;
+    mem.data[0xFFFD] = 0x00;
+    mem.data[0xFFFE] = 0x80;
+    mem.data[0x8000] = 0xCC;
+
+    // when:
+    const s32 NUM_OF_CYCLES = 4;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0xCC, cpu.accumulator);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.V);
+    TEST_ASSERT_TRUE(cpu.N);
+}
+
+void Test_Bit_ABS_Result_Zero(void)
+{
+    // given:
+    cpu.V = 1;
+    cpu.N = 1;
+    cpu.accumulator = 0xCC;
+
+    mem.data[0xFFFC] = INS_BIT_ABS;
+    mem.data[0xFFFD] = 0x00;
+    mem.data[0xFFFE] = 0x80;
+    mem.data[0x8000] = 0x33;
+
+    // when:
+    const s32 NUM_OF_CYCLES = 4;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0xCC, cpu.accumulator);
+
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.V);
+    TEST_ASSERT_FALSE(cpu.N);
+}
+
+void Test_BIT_ABS_Result_Zero_Bit_6_And_7_Zero(void)
+{
+    // given:
+    cpu.V = 0;
+    cpu.N = 0;
+    cpu.accumulator = 0x33;
+
+    mem.data[0xFFFC] = INS_BIT_ABS;
+    mem.data[0xFFFD] = 0x00;
+    mem.data[0xFFFE] = 0x80;
+    mem.data[0x8000] = 0xCC;
+
+    // when:
+    const s32 NUM_OF_CYCLES = 4;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x33, cpu.accumulator);
+
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.V);
+    TEST_ASSERT_TRUE(cpu.N);
+}
+
+void Test_BIT_ABS_Result_Zero_Bit_6_And_7_Mixed(void)
+{
+    // given:
+    cpu.V = 1;
+    cpu.N = 0;
+
+    mem.data[0xFFFC] = INS_BIT_ABS;
+    mem.data[0xFFFD] = 0x00;
+    mem.data[0xFFFE] = 0x80;
+    mem.data[0x8000] = 0b10000000;
+
+    // when:
+    const s32 NUM_OF_CYCLES = 4;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+
+    TEST_ASSERT_FALSE(cpu.V);
+    TEST_ASSERT_TRUE(cpu.N);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -761,6 +961,17 @@ int main(void)
     RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_IND_Y_When_Crossing_Page_Boundary);
     RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_IND_Y_When_Crossing_Page_Boundary);
     RUN_TEST(Test_Logical_Operator_AND_On_A_Register_IND_Y_When_Crossing_Page_Boundary);
+
+    // Bit Tests
+    RUN_TEST(Test_BIT_ZP);
+    RUN_TEST(Test_BIT_ZP_Result_Zero);
+    RUN_TEST(Test_BIT_ZP_Result_Zero_Bits_6_and_7_Zero);
+    RUN_TEST(Test_BIT_ZP_Result_Zero_Bits_6_and_7_Mixed);
+
+    RUN_TEST(Test_Bit_ABS);
+    RUN_TEST(Test_Bit_ABS_Result_Zero);
+    RUN_TEST(Test_BIT_ABS_Result_Zero_Bit_6_And_7_Zero);
+    RUN_TEST(Test_BIT_ABS_Result_Zero_Bit_6_And_7_Mixed);
 
     return UNITY_END();
 }
