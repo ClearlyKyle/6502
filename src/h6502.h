@@ -397,6 +397,14 @@ u16 Address_Absolute_X(s32 *cycles, const Memory *mem)
 
     return absolute_address_x;
 }
+u16 Address_Absolute_X_5_Cycle(s32 *cycles, const Memory *mem) // Special Case
+{
+    const u16 absolute_address = Fetch_Word(cycles, mem);
+    const u16 absolute_address_x = absolute_address + cpu.index_reg_X;
+    (*cycles) -= 1;
+
+    return absolute_address_x;
+}
 
 // Addressing mode - Absolute Y (2/3 cycles)
 u16 Address_Absolute_Y(s32 *cycles, const Memory *mem)
@@ -409,7 +417,14 @@ u16 Address_Absolute_Y(s32 *cycles, const Memory *mem)
 
     return absolute_address_y;
 }
+u16 Address_Absolute_Y_5_Cycle(s32 *cycles, const Memory *mem) // Special case
+{
+    const u16 absolute_address = Fetch_Word(cycles, mem);
+    const u16 absolute_address_y = absolute_address + cpu.index_reg_Y;
+    (*cycles) -= 1;
 
+    return absolute_address_y;
+}
 // Addressing mode - Indirect X (4 cycles)
 u16 Address_Indirect_X(s32 *cycles, const Memory *mem)
 {
@@ -430,6 +445,16 @@ u16 Address_Indirect_Y(s32 *cycles, const Memory *mem)
     const int crossed_page_boundary = (effective_address ^ effective_address_y) >> 8;
     if (crossed_page_boundary)
         (*cycles) -= 1;
+
+    return effective_address_y;
+}
+// 4 Cycles
+u16 Address_Indirect_Y_6_Cycles(s32 *cycles, const Memory *mem) // Special Case
+{
+    const u8 zero_page_address = Fetch_Byte(cycles, mem);
+    const u16 effective_address = Read_Word(cycles, zero_page_address, mem);
+    const u16 effective_address_y = effective_address + cpu.index_reg_Y;
+    (*cycles) -= 1;
 
     return effective_address_y;
 }
@@ -619,15 +644,14 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_STA_ABS_X: // 5 cycles
         {
-            const u16 effective_address = Address_Absolute_X(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);   // 1 cycle
+            const u16 effective_address = Address_Absolute_X_5_Cycle(&num_cycles, mem); // 2 cycles
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);           // 1 cycle
             break;
         }
         case INS_STA_ABS_Y: // 5 cycles
         {
-            const u16 effective_address = Address_Absolute_Y(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);   // 1 cycle
-            num_cycles--;
+            const u16 effective_address = Address_Absolute_Y_5_Cycle(&num_cycles, mem); // 2 cycles
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);           // 1 cycle
             break;
         }
         case INS_STA_IND_X: // 6 cycles
@@ -638,8 +662,8 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_STA_IND_Y: // 6 cycles
         {
-            const u16 effective_address = Address_Indirect_Y(&num_cycles, mem); // 2 cycles
-            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);
+            const u16 effective_address = Address_Indirect_Y_6_Cycles(&num_cycles, mem); // 4 cycles
+            Write_Byte(&num_cycles, mem, cpu.accumulator, effective_address);            // 1 cycle
             break;
         }
             // STX - Store X Register
