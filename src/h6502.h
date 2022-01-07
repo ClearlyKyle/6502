@@ -73,12 +73,12 @@ typedef struct CPU
 
 enum FlagBits
 {
-    NEGATIVE_FLAG_BIT = 0x80,         // 0b10000000
-    OVERFLOW_FLAG_BIT = 0x40,         // 0b01000000,
-    BREAK_FLAG_BIT = 0x10,            // 0b000010000,
-    unused_FLAG_BIT = 0x20,           // 0b000100000,
-    INTERUPT_DISABLE_FLAG_BIT = 0x04, // 0b000000100,
-    ZERO_BIT = 0x01,                  // 0b00000001;
+    NEGATIVE_FLAG_BIT = 0x80,         // 0b''1000'0000
+    OVERFLOW_FLAG_BIT = 0x40,         // 0b''0100'0000
+    BREAK_FLAG_BIT = 0x10,            // 0b0'0001'0000
+    unused_FLAG_BIT = 0x20,           // 0b0'0010'0000
+    INTERUPT_DISABLE_FLAG_BIT = 0x04, // 0b0'0000'0100
+    ZERO_BIT = 0x01,                  // 0b''0000'0001
 };
 
 // opcodes
