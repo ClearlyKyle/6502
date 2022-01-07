@@ -28,14 +28,6 @@ typedef uint16_t u16; // word [0, 65,535]
 typedef uint32_t u32; // [0, 4,294,967,295]
 typedef int32_t s32;
 
-#define ASSERT(Condition, Text) \
-    {                           \
-        if (!(Condition))       \
-        {                       \
-            throw -1;           \
-        }                       \
-    }
-
 #define MAX_MEM 65536 // 1024 * 64 = 65536
 
 typedef struct Memory
@@ -256,10 +248,8 @@ u16 Fetch_Word(s32 *cycles, const Memory *mem)
 }
 
 // 1 cycle
-u8 Write_Byte(s32 *cycles, Memory *mem, u8 data, u16 address)
+void Write_Byte(s32 *cycles, Memory *mem, u8 data, u16 address)
 {
-    assert(address < MAX_MEM);
-
     mem->data[address] = data;
     (*cycles) -= 1;
 }
@@ -267,8 +257,6 @@ u8 Write_Byte(s32 *cycles, Memory *mem, u8 data, u16 address)
 // 1 Cycle
 u8 Read_Byte(s32 *cycles, u16 address, const Memory *mem)
 {
-    assert(address < MAX_MEM);
-
     const u8 data = mem->data[address];
     (*cycles) -= 1;
     return data;
@@ -277,8 +265,6 @@ u8 Read_Byte(s32 *cycles, u16 address, const Memory *mem)
 // 2 Cycles
 u16 Read_Word(s32 *cycles, u16 address, const Memory *mem)
 {
-    assert(address < MAX_MEM);
-
     const u8 low_byte = Read_Byte(cycles, address, mem);
     const u8 high_byte = Read_Byte(cycles, address + 1, mem);
 
@@ -350,7 +336,7 @@ u8 Pop_Byte_From_Stack(s32 *cycles, Memory *mem)
 void Load_Register_Set_Status(u8 reg)
 {
     cpu.Z = (reg == 0);
-    cpu.N = (reg & 0b10000000) > 0;
+    cpu.N = (reg & 0x80) > 0;
 }
 
 // Addressing mode - Zero Page (1 cycle)

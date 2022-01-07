@@ -7,7 +7,7 @@ enable_testing()
 
 set(CMAKE_C_STANDARD 11)
 # Essential -Wall -Wextra
-add_compile_options(-Wall -Wextra -pedantic -Werror -Wshadow)
+add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 

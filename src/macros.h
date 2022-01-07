@@ -15,9 +15,9 @@
         {                                                    \
                 if (DEBUG_PRINT)                             \
                         fprintf(stderr, fmt, ##__VA_ARGS__); \
-        } while (0)
+        } while (0);
 
-//#define print_db(fmt) \
+// #define print_db(fmt) 
 //            do { if (DEBUG_PRINT) fprintf(stderr, fmt); } while (0)
 
 #define print_int(x) print_db("%s = %d\n", #x, x);
@@ -30,7 +30,7 @@
                 if (DEBUG_PRINT)                                      \
                         fprintf(stderr, "%s:%d:%s(): " fmt, __FILE__, \
                                 __LINE__, __func__, __VA_ARGS__);     \
-        } while (0)
+        } while (0);
 
 #define log_info(M, ...) fprintf(stderr, WHITE "[INFO]" COLOR_X " (%s:%d:%s) " M "\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__)
 

@@ -73,7 +73,7 @@ static void Logical_Operator_Immediate(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x84, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -111,7 +111,7 @@ static void Logical_Operator_Zero_Page(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -149,7 +149,7 @@ static void Logical_Operator_Zero_Page_X(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -159,7 +159,7 @@ static void Logical_Operator_Zero_Page_X(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-static void Logical_Operator_Absolute(enum LogicOperator opp)
+static void Logical_Operator_ABS(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -191,7 +191,7 @@ static void Logical_Operator_Absolute(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -201,7 +201,7 @@ static void Logical_Operator_Absolute(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-static void Logical_Operator_Absolute_X(enum LogicOperator opp)
+static void Logical_Operator_ABS_X(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -234,7 +234,7 @@ static void Logical_Operator_Absolute_X(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -244,7 +244,7 @@ static void Logical_Operator_Absolute_X(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-static void Logical_Operator_Absolute_Y(enum LogicOperator opp)
+static void Logical_Operator_ABS_Y(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -277,7 +277,7 @@ static void Logical_Operator_Absolute_Y(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -287,7 +287,7 @@ static void Logical_Operator_Absolute_Y(enum LogicOperator opp)
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-static void Load_Register_Absolute_Y_When_Crossing_Page_Boundary(enum LogicOperator opp)
+static void Load_Register_ABS_Y_When_Crossing_Page_Boundary(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -318,7 +318,7 @@ static void Load_Register_Absolute_Y_When_Crossing_Page_Boundary(enum LogicOpera
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -328,7 +328,7 @@ static void Load_Register_Absolute_Y_When_Crossing_Page_Boundary(enum LogicOpera
     Verify_Unmodified_Flags_From_LDA(before, cpu);
 }
 
-static void Load_Register_Absolute_X_When_Crossing_Page_Boundary(enum LogicOperator opp)
+static void Load_Register_ABS_X_When_Crossing_Page_Boundary(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
@@ -359,7 +359,7 @@ static void Load_Register_Absolute_X_When_Crossing_Page_Boundary(enum LogicOpera
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -403,7 +403,7 @@ static void Logical_Operator_Indirect_X(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -447,7 +447,7 @@ static void Logical_Operator_Indirect_Y(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -489,7 +489,7 @@ static void Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(enum LogicOp
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -529,7 +529,7 @@ static void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
 
     // then:
     const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
-    const bool expected_negative = (expected_result & 0b10000000) > 0;
+    const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -619,57 +619,71 @@ void Test_Logical_Operator_AND_Can_Load_A_Register_When_Wraps_ZP_X(void)
 // Absolute
 void Test_Logical_Operator_EOR_On_A_Register_ABS(void)
 {
-    Logical_Operator_Absolute(EOR);
+    Logical_Operator_ABS(EOR);
 }
 void Test_Logical_Operator_ORA_On_A_Register_ABS(void)
 {
-    Logical_Operator_Absolute(OR);
+    Logical_Operator_ABS(OR);
 }
 void Test_Logical_Operator_AND_On_A_Register_ABS(void)
 {
-    Logical_Operator_Absolute(AND);
+    Logical_Operator_ABS(AND);
 }
 
 // Absolute X
 void Test_Logical_Operator_EOR_On_A_Register_ABS_X(void)
 {
-    Logical_Operator_Absolute_X(EOR);
+    Logical_Operator_ABS_X(EOR);
 }
 void Test_Logical_Operator_ORA_On_A_Register_ABS_X(void)
 {
-    Logical_Operator_Absolute_X(OR);
+    Logical_Operator_ABS_X(OR);
 }
 void Test_Logical_Operator_AND_On_A_Register_ABS_X(void)
 {
-    Logical_Operator_Absolute_X(AND);
+    Logical_Operator_ABS_X(AND);
 }
 
 // Absolute X when crossing page boundary
 void Test_Logical_Operator_EOR_On_A_Register_ABS_X_When_Crossing_Page_Boundary(void)
 {
-    Load_Register_Absolute_X_When_Crossing_Page_Boundary(EOR);
+    Load_Register_ABS_X_When_Crossing_Page_Boundary(EOR);
 }
 void Test_Logical_Operator_ORA_On_A_Register_ABS_X_When_Crossing_Page_Boundary(void)
 {
-    Load_Register_Absolute_X_When_Crossing_Page_Boundary(OR);
+    Load_Register_ABS_X_When_Crossing_Page_Boundary(OR);
 }
 void Test_Logical_Operator_AND_On_A_Register_ABS_X_When_Crossing_Page_Boundary(void)
 {
-    Load_Register_Absolute_X_When_Crossing_Page_Boundary(AND);
+    Load_Register_ABS_X_When_Crossing_Page_Boundary(AND);
 }
 
 // Absolute Y
 void Test_Logical_Operator_EOR_On_A_Register_ABS_Y(void)
 {
-    Logical_Operator_Absolute_Y(EOR);
+    Logical_Operator_ABS_Y(EOR);
 }
 void Test_Logical_Operator_ORA_On_A_Register_ABS_Y(void)
 {
-    Logical_Operator_Absolute_Y(OR);
+    Logical_Operator_ABS_Y(OR);
 }
 void Test_Logical_Operator_AND_On_A_Register_ABS_Y(void)
 {
-    Logical_Operator_Absolute_Y(AND);
+    Logical_Operator_ABS_Y(AND);
+}
+
+// Absolute Y when crossing page boundary
+void Test_Logical_Operator_EOR_On_A_Register_ABS_Y_When_Crossing_Page_Boundary(void)
+{
+    Load_Register_ABS_Y_When_Crossing_Page_Boundary(EOR);
+}
+void Test_Logical_Operator_ORA_On_A_Register_ABS_Y_When_Crossing_Page_Boundary(void)
+{
+    Load_Register_ABS_Y_When_Crossing_Page_Boundary(OR);
+}
+void Test_Logical_Operator_AND_On_A_Register_ABS_Y_When_Crossing_Page_Boundary(void)
+{
+    Load_Register_ABS_Y_When_Crossing_Page_Boundary(AND);
 }
 
 // Indirect X
@@ -727,7 +741,6 @@ void Test_BIT_ZP(void)
     mem.data[0x0042] = 0xCC;
 
     // when:
-    const CPU before = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
@@ -753,7 +766,6 @@ void Test_BIT_ZP_Result_Zero(void)
     mem.data[0x0042] = 0xCC;
 
     // when
-    const CPU before = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
@@ -778,7 +790,6 @@ void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Zero(void)
     mem.data[0x0042] = 0xCC;
 
     // when:
-    // const CPU before = cpu;
     const s32 NUM_OF_CYCLES = 3;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
@@ -799,7 +810,7 @@ void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Mixed(void)
 
     mem.data[0xFFFC] = INS_BIT_ZP;
     mem.data[0xFFFD] = 0x42;
-    mem.data[0x0042] = 0b01000000;
+    mem.data[0x0042] = 0x40; // 0x40 = 0b01000000
 
     // when:
     const s32 NUM_OF_CYCLES = 3;
@@ -899,7 +910,7 @@ void Test_BIT_ABS_Result_Zero_Bit_6_And_7_Mixed(void)
     mem.data[0xFFFC] = INS_BIT_ABS;
     mem.data[0xFFFD] = 0x00;
     mem.data[0xFFFE] = 0x80;
-    mem.data[0x8000] = 0b10000000;
+    mem.data[0x8000] = 0x80; // 0x80 = 0b10000000
 
     // when:
     const s32 NUM_OF_CYCLES = 4;
@@ -949,6 +960,10 @@ int main(void)
     RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ABS_Y);
     RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ABS_Y);
     RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ABS_Y);
+
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ABS_Y_When_Crossing_Page_Boundary);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ABS_Y_When_Crossing_Page_Boundary);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ABS_Y_When_Crossing_Page_Boundary);
 
     RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_IND_X);
     RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_IND_X);
