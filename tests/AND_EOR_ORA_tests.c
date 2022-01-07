@@ -671,6 +671,48 @@ void Test_Logical_Operator_AND_On_A_Register_ABS_Y(void)
     Logical_Operator_Absolute_Y(AND);
 }
 
+// Indirect X
+void Test_Logical_Operator_EOR_On_A_Register_IND_X(void)
+{
+    Logical_Operator_Indirect_X(EOR);
+}
+void Test_Logical_Operator_ORA_On_A_Register_IND_X(void)
+{
+    Logical_Operator_Indirect_X(OR);
+}
+void Test_Logical_Operator_AND_On_A_Register_IND_X(void)
+{
+    Logical_Operator_Indirect_X(AND);
+}
+
+// Indirect Y
+void Test_Logical_Operator_EOR_On_A_Register_IND_Y(void)
+{
+    Logical_Operator_Indirect_Y(EOR);
+}
+void Test_Logical_Operator_ORA_On_A_Register_IND_Y(void)
+{
+    Logical_Operator_Indirect_Y(OR);
+}
+void Test_Logical_Operator_AND_On_A_Register_IND_Y(void)
+{
+    Logical_Operator_Indirect_Y(AND);
+}
+
+// Indirect Y when crossing page boundary
+void Test_Logical_Operator_EOR_On_A_Register_IND_Y_When_Crossing_Page_Boundary(void)
+{
+    Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(EOR);
+}
+void Test_Logical_Operator_ORA_On_A_Register_IND_Y_When_Crossing_Page_Boundary(void)
+{
+    Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(OR);
+}
+void Test_Logical_Operator_AND_On_A_Register_IND_Y_When_Crossing_Page_Boundary(void)
+{
+    Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(AND);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -707,6 +749,18 @@ int main(void)
     RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_ABS_Y);
     RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_ABS_Y);
     RUN_TEST(Test_Logical_Operator_AND_On_A_Register_ABS_Y);
+
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_IND_X);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_IND_X);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_IND_X);
+
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_IND_Y);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_IND_Y);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_IND_Y);
+
+    RUN_TEST(Test_Logical_Operator_EOR_On_A_Register_IND_Y_When_Crossing_Page_Boundary);
+    RUN_TEST(Test_Logical_Operator_ORA_On_A_Register_IND_Y_When_Crossing_Page_Boundary);
+    RUN_TEST(Test_Logical_Operator_AND_On_A_Register_IND_Y_When_Crossing_Page_Boundary);
 
     return UNITY_END();
 }
