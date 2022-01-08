@@ -18,5 +18,9 @@ int main(void)
     printf("A = %d\n", cpu.accumulator);
 
     printf("Program Exit...\n");
+
+    cpu.V = 1;
+    cpu.B = 1;
+    Display_CPU_State(&cpu);
     return 0;
 }

@@ -228,6 +228,46 @@ void Reset_CPU(CPU *cpu, Memory *mem)
     Initialise_Memory(mem);
 }
 
+#define GET_VAR_NAME(V) #V
+
+void Display_CPU_State(const CPU *cpu)
+{
+    printf("A  : 0x%X \t(%d) \tSP: 0x%X \t(%d) \n", cpu->accumulator, cpu->accumulator, cpu->stack_pointer, cpu->stack_pointer);
+    printf("X  : 0x%X \t(%d) \tPC: 0x%X \t(%d) \n", cpu->index_reg_X, cpu->index_reg_X, cpu->program_counter, cpu->program_counter);
+    printf("Y  : 0x%X \t(%d) \n", cpu->index_reg_Y, cpu->index_reg_Y);
+    char PS_str[] = "--------\0";
+
+    if (cpu->C) // 0 - Carry flag
+    {
+        PS_str[0] = 'C';
+    }
+    if (cpu->Z) // 1 - Zero flag
+    {
+        PS_str[1] = 'Z';
+    }
+    if (cpu->I) // 2 - Interrupt flag
+    {
+        PS_str[2] = 'I';
+    }
+    if (cpu->D) // 3 - Decimal flag
+    {
+        PS_str[3] = 'D';
+    }
+    if (cpu->B) // 4 - Break flag
+    {
+        PS_str[4] = 'B';
+    }
+    if (cpu->V) // 7 - Overflow flag
+    {
+        PS_str[7] = 'V';
+    }
+    if (cpu->N) // 8 - Negative flag
+    {
+        PS_str[8] = 'N';
+    }
+    printf("PS :\t%s\n", PS_str);
+}
+
 void Load_Program(const u8 *program, Memory *mem, int number_of_bytes)
 {
     // if (!program)
