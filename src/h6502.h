@@ -243,10 +243,10 @@ void Load_Program(const u8 *program, Memory *mem, int number_of_bytes)
     u32 current_position = 0;
 
     // LOW | (HIGH << 8) : 0xHHLL
-    const u32 LL = current_position++;
-    const u32 HH = current_position++;
+    const u32 LL = program[current_position++];
+    const u32 HH = program[current_position++] << 8;
 
-    u16 load_address = (program[LL]) | (program[HH] << 8);
+    u16 load_address = LL | HH;
 
     for (u16 i = load_address; i < load_address + number_of_bytes - 2; i++)
     {
