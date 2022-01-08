@@ -38,11 +38,25 @@ void Test_Load_Program_Into_Correct_Area_Of_Memory(void)
     TEST_ASSERT_EQUAL_UINT8_ARRAY(mem_expected.data, mem.data, MAX_MEM);
 }
 
+void Test_Load_Program_And_Execute(void)
+{
+    const u8 program[] = {0x00, 0x10, 0xA9, 0xFF, 0x85, 0x90, 0x8D, 0x00, 0x80, 0x49, 0xCC, 0x4C, 0x02, 0x10};
+    const int number_of_bytes = 14;
+
+    Load_Program(program, &mem, number_of_bytes);
+
+    for (s32 clock = 100; clock > 0;)
+    {
+        clock -= Execute(1, &mem);
+    }
+}
+
 int main(void)
 {
     UNITY_BEGIN();
 
     RUN_TEST(Test_Load_Program_Into_Correct_Area_Of_Memory);
+    RUN_TEST(Test_Load_Program_And_Execute);
 
     return UNITY_END();
 }
