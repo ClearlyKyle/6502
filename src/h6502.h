@@ -228,6 +228,33 @@ void Reset_CPU(CPU *cpu, Memory *mem)
     Initialise_Memory(mem);
 }
 
+void Load_Program(const u8 *program, Memory *mem, int number_of_bytes)
+{
+    // if (!program)
+    //{
+    //     fprintf(stderr, "Error Loading Program Data\n");
+    //     return
+    // }
+
+    if (number_of_bytes <= 2)
+    {
+        return;
+    }
+    u32 current_position = 0;
+
+    // LOW | (HIGH << 8) : 0xHHLL
+    const u32 LL = current_position++;
+    const u32 HH = current_position++;
+
+    u16 load_address = (program[LL]) | (program[HH] << 8);
+
+    for (u16 i = load_address; i < load_address + number_of_bytes - 2; i++)
+    {
+        mem->data[i] = program[current_position++];
+    }
+    return;
+}
+
 u16 SP_To_Address()
 {
     return 0x100 | cpu.stack_pointer;
