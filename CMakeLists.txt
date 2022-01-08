@@ -1,11 +1,14 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.11)
 
 project(6502 C)
 
 include(CTest)
 enable_testing()
 
-set(CMAKE_C_STANDARD 11)
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+set (CMAKE_C_FLAGS "-std=gnu11 ${CMAKE_C_FLAGS}")
+endif ()
+
 # Essential -Wall -Wextra
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
