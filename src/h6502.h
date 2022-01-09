@@ -56,8 +56,9 @@ typedef struct CPU
         uint8_t PS; // Processor Status
         struct
         {
-            // C Z I F B u V N
-            // 0 1 2 3 4 5 6 7
+            // Binary Representation
+            // N V u B D I Z C
+            // 8 7 6 5 4 3 2 1
 
             u8 C : 1;      // 0 - Carry flag
             u8 Z : 1;      // 1 - Zero flag
@@ -65,8 +66,8 @@ typedef struct CPU
             u8 D : 1;      // 3 - Decimal flag
             u8 B : 1;      // 4 - Break flag
             u8 unused : 1; // not used, should be 1 at all times
-            u8 V : 1;      // 7 - Overflow flag
-            u8 N : 1;      // 8 - Negative flag
+            u8 V : 1;      // 6 - Overflow flag
+            u8 N : 1;      // 7 - Negative flag
         };
     };
 } CPU;
@@ -216,6 +217,8 @@ void Reset_CPU(CPU *cpu, Memory *mem)
     cpu->index_reg_X = 0;
     cpu->index_reg_Y = 0;
 
+    // cpu->PS = 0x00;
+
     cpu->C = 0;
     cpu->Z = 0;
     cpu->I = 0;
@@ -235,37 +238,22 @@ void Display_CPU_State(const CPU *cpu)
     printf("A  : 0x%X \t(%d) \tSP: 0x%X \t(%d) \n", cpu->accumulator, cpu->accumulator, cpu->stack_pointer, cpu->stack_pointer);
     printf("X  : 0x%X \t(%d) \tPC: 0x%X \t(%d) \n", cpu->index_reg_X, cpu->index_reg_X, cpu->program_counter, cpu->program_counter);
     printf("Y  : 0x%X \t(%d) \n", cpu->index_reg_Y, cpu->index_reg_Y);
-    char PS_str[] = "--------\0";
 
-    if (cpu->C) // 0 - Carry flag
+    char PS_str[] = "NV-BDIZC";
+    // Binary Representation
+    // N V u B D I Z C
+    // 8 7 6 5 4 3 2 1
+    printf("Current PS : %X\n", cpu->PS);
+
+    for (int i = 0; i < 8; i++)
     {
-        PS_str[0] = 'C';
+        if (!((cpu->PS >> i) & 0x01))
+        {
+            PS_str[7 - i] = '-';
+        }
     }
-    if (cpu->Z) // 1 - Zero flag
-    {
-        PS_str[1] = 'Z';
-    }
-    if (cpu->I) // 2 - Interrupt flag
-    {
-        PS_str[2] = 'I';
-    }
-    if (cpu->D) // 3 - Decimal flag
-    {
-        PS_str[3] = 'D';
-    }
-    if (cpu->B) // 4 - Break flag
-    {
-        PS_str[4] = 'B';
-    }
-    if (cpu->V) // 7 - Overflow flag
-    {
-        PS_str[7] = 'V';
-    }
-    if (cpu->N) // 8 - Negative flag
-    {
-        PS_str[8] = 'N';
-    }
-    printf("PS :\t%s\n", PS_str);
+
+    printf("PS :  %s\t(0x%X)\n", PS_str, cpu->PS);
 }
 
 void Load_Program(const u8 *program, Memory *mem, int number_of_bytes)
