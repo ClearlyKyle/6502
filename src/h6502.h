@@ -821,18 +821,30 @@ s32 Execute(s32 num_cycles, Memory *mem)
         // - Register Instructions -
         case INS_TAX: // Transfer Accumulator to Index X
         {
+            cpu.index_reg_X = cpu.accumulator;
+            num_cycles -= 1;
+            Load_Register_Set_Status(cpu.accumulator);
             break;
         }
         case INS_TXA: // Transfer Index X to Accumulator
         {
+            cpu.accumulator = cpu.index_reg_X;
+            num_cycles -= 1;
+            Load_Register_Set_Status(cpu.index_reg_X);
             break;
         }
         case INS_TAY: // Transfer Accumulator to Index Y
         {
+            cpu.index_reg_Y = cpu.accumulator;
+            num_cycles -= 1;
+            Load_Register_Set_Status(cpu.index_reg_Y);
             break;
         }
         case INS_TYA: // Transfer Index Y to Accumulator
         {
+            cpu.accumulator = cpu.index_reg_Y;
+            num_cycles -= 1;
+            Load_Register_Set_Status(cpu.index_reg_Y);
             break;
         }
         case INS_DEX: // (DEcrement X)
