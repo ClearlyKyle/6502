@@ -24,6 +24,7 @@ static void Verify_Unmodified_Flags(const CPU before, const CPU after)
     // TEST_ASSERT_EQUAL_UINT8(before.PS, after.PS);
 }
 
+// TAX
 void TAX_Can_Transfer_Non_Negative_Non_Zero_Value(void)
 {
     cpu.accumulator = 0x42;
@@ -102,6 +103,7 @@ void TAX_Can_Transfer_Negative_Value(void)
     Verify_Unmodified_Flags(before, cpu);
 }
 
+// TAY
 void TAY_Can_Transfer_Non_Negative_Non_Zero_Value(void)
 {
     cpu.accumulator = 0x42;
@@ -180,6 +182,164 @@ void TAY_Can_Transfer_Negative_Value(void)
     Verify_Unmodified_Flags(before, cpu);
 }
 
+// TXA
+void TXA_Can_Transfer_Non_Negative_Non_Zero_Value(void)
+{
+    cpu.index_reg_X = 0x42;
+    cpu.accumulator = 0x32;
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_TXA;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x42, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0x42, cpu.index_reg_X);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void TXA_Can_Transfer_Non_Negative_Zero_Value(void)
+{
+    cpu.index_reg_X = 0x00;
+    cpu.accumulator = 0x32;
+    cpu.Z = 0;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_TXA;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.index_reg_X);
+
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void TXA_Can_Transfer_Negative_Value(void)
+{
+    cpu.index_reg_X = 0x8B; // 0b10001011
+    cpu.accumulator = 0x32;
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_TXA;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x8B, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0x8B, cpu.index_reg_X);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+// TYA
+void TYA_Can_Transfer_Non_Negative_Non_Zero_Value(void)
+{
+    cpu.index_reg_Y = 0x42;
+    cpu.accumulator = 0x32;
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_TYA;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x42, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0x42, cpu.index_reg_Y);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void TYA_Can_Transfer_Non_Negative_Zero_Value(void)
+{
+    cpu.index_reg_Y = 0x00;
+    cpu.accumulator = 0x32;
+    cpu.Z = 0;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_TYA;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.index_reg_Y);
+
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void TYA_Can_Transfer_Negative_Value(void)
+{
+    cpu.index_reg_Y = 0x8B; // 0b10001011
+    cpu.accumulator = 0x32;
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_TYA;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x8B, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0x8B, cpu.index_reg_Y);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -191,6 +351,14 @@ int main(void)
     RUN_TEST(TAY_Can_Transfer_Non_Negative_Non_Zero_Value);
     RUN_TEST(TAY_Can_Transfer_Non_Negative_Zero_Value);
     RUN_TEST(TAY_Can_Transfer_Negative_Value);
+
+    RUN_TEST(TXA_Can_Transfer_Non_Negative_Non_Zero_Value);
+    RUN_TEST(TXA_Can_Transfer_Non_Negative_Zero_Value);
+    RUN_TEST(TXA_Can_Transfer_Negative_Value);
+
+    RUN_TEST(TYA_Can_Transfer_Non_Negative_Non_Zero_Value);
+    RUN_TEST(TYA_Can_Transfer_Non_Negative_Zero_Value);
+    RUN_TEST(TYA_Can_Transfer_Negative_Value);
 
     return UNITY_END();
 }
