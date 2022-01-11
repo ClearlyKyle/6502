@@ -77,5 +77,5 @@ foreach(name ${TEST_NAMES_LIST})
 endforeach()
 
 # will build before CTest is ran
-add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+add_custom_target(BUILD_RUN_ALL_TESTS COMMAND ${CMAKE_CTEST_COMMAND}
                   DEPENDS ${TEST_NAMES_LIST})
