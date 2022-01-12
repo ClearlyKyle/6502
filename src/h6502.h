@@ -193,8 +193,7 @@ typedef enum
 
     // BIT - test BITs
     INS_BIT_ZP = 0x24,
-    INS_BIT_ABS = 0x2C,
-
+    INS_BIT_ABS = 0x2C
 } Opcode;
 
 static Memory mem;
@@ -849,18 +848,30 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_DEX: // (DEcrement X)
         {
+            cpu.index_reg_X--;
+            num_cycles -= 1;
+            Load_Register_Set_Status(cpu.index_reg_X);
             break;
         }
         case INS_INX: // (INcrement X)
         {
+            cpu.index_reg_X++;
+            num_cycles -= 1;
+            Load_Register_Set_Status(cpu.index_reg_X);
             break;
         }
         case INS_DEY: // (DEcrement Y)
         {
+            cpu.index_reg_Y--;
+            num_cycles -= 1;
+            Load_Register_Set_Status(cpu.index_reg_Y);
             break;
         }
         case INS_INY: // (INcrement Y)
         {
+            cpu.index_reg_Y++;
+            num_cycles -= 1;
+            Load_Register_Set_Status(cpu.index_reg_Y);
             break;
         }
         // - Stack Instructions -
