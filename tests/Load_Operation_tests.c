@@ -9,7 +9,7 @@ void setUp(void) /* Is run before every test, put unit init calls here. */
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
-static void Verify_Unmodified_Flags_From_LDA(const CPU before, const CPU after)
+static void Verify_Unmodified_Flags(const CPU before, const CPU after)
 {
     // get a copt of the cpu
     TEST_ASSERT_EQUAL_UINT8(before.C, after.C);
@@ -87,7 +87,7 @@ void LDA_Immediate_Can_Effect_The_Zero_Flag(void)
     TEST_ASSERT_TRUE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void Test_Loading_Register_Immediate(Opcode op, u8 *reg)
@@ -109,7 +109,7 @@ void Test_Loading_Register_Immediate(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_TRUE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void LDA_Immediate_Can_Load_A_Value_Into_A_Register(void)
@@ -147,7 +147,7 @@ void Test_Loading_Register_Zero_Page(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void LDA_ZP_Can_Load_A_Value_Into_A_Register(void)
@@ -195,7 +195,7 @@ void Test_Loading_Register_Zero_Page_X(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void Test_Loading_Register_Zero_Page_Y(Opcode op, u8 *reg)
@@ -218,7 +218,7 @@ void Test_Loading_Register_Zero_Page_Y(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void LDA_ZP_X_Can_Load_A_Value_Into_A_Register(void)
@@ -254,7 +254,7 @@ void LDA_ZP_X_Can_Load_A_Value_Into_A_Register_When_It_wraps(void)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void Test_Loading_Register_Absolute(Opcode op, u8 *reg)
@@ -278,7 +278,7 @@ void Test_Loading_Register_Absolute(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void LDA_ABS_Can_Load_A_Value_Into_The_A_Register(void)
@@ -322,7 +322,7 @@ void Test_Loading_Register_Absolute_X(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void Test_Loading_Register_Absolute_Y(Opcode op, u8 *reg)
@@ -346,7 +346,7 @@ void Test_Loading_Register_Absolute_Y(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void LDA_ABS_X_Can_Load_A_Value_Into_The_A_Register(void)
@@ -390,7 +390,7 @@ void Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(Opcode op, u8 *reg)
@@ -414,7 +414,7 @@ void Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(Opcode op, u8 *reg)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void LDA_ABS_X_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary(void)
@@ -458,7 +458,7 @@ void LDA_IND_X_Can_Load_A_Value_Into_The_A_Register(void)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void LDA_IND_Y_Can_Load_A_Value_Into_The_A_Register(void)
@@ -489,7 +489,7 @@ void LDA_IND_Y_Can_Load_A_Value_Into_The_A_Register(void)
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void LDA_IND_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary(void)
@@ -512,7 +512,7 @@ void LDA_IND_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary(voi
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 int main(void)

@@ -9,7 +9,7 @@ void setUp(void) /* Is run before every test, put unit init calls here. */
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
-void Verify_Unmodified_Flags_From_Store_Register(const CPU before, const CPU after)
+void Verify_Unmodified_Flags_Store_Register(const CPU before, const CPU after)
 {
     // get a copt of the cpu
     TEST_ASSERT_EQUAL_UINT8(before.C, after.C);
@@ -35,7 +35,7 @@ void Test_Store_Register_ZP(Opcode op, u8 *reg)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x0080], 0x2F);
 
-    Verify_Unmodified_Flags_From_Store_Register(before, cpu);
+    Verify_Unmodified_Flags_Store_Register(before, cpu);
 }
 
 void Test_Store_Register_ZP_X(Opcode op, u8 *reg)
@@ -55,7 +55,7 @@ void Test_Store_Register_ZP_X(Opcode op, u8 *reg)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(0x42, mem.data[0x008F]);
 
-    Verify_Unmodified_Flags_From_Store_Register(before, cpu);
+    Verify_Unmodified_Flags_Store_Register(before, cpu);
 }
 
 void Test_Store_Register_ZP_Y(Opcode op, u8 *reg)
@@ -75,7 +75,7 @@ void Test_Store_Register_ZP_Y(Opcode op, u8 *reg)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x008F], 0x42);
 
-    Verify_Unmodified_Flags_From_Store_Register(before, cpu);
+    Verify_Unmodified_Flags_Store_Register(before, cpu);
 }
 
 void Test_Store_Register_ABS(Opcode op, u8 *reg)
@@ -95,7 +95,7 @@ void Test_Store_Register_ABS(Opcode op, u8 *reg)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x8000], 0x2F);
 
-    Verify_Unmodified_Flags_From_Store_Register(before, cpu);
+    Verify_Unmodified_Flags_Store_Register(before, cpu);
 }
 
 void STA_ZP_Can_Store_The_A_Register_Into_Memory(void)
@@ -161,7 +161,7 @@ void STA_ABS_X_Can_Store_The_A_Register_Into_Memory(void)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x800F], 0x42);
 
-    Verify_Unmodified_Flags_From_Store_Register(before, cpu);
+    Verify_Unmodified_Flags_Store_Register(before, cpu);
 }
 
 void STA_ABS_Y_Can_Store_The_A_Register_Into_Memory(void)
@@ -181,7 +181,7 @@ void STA_ABS_Y_Can_Store_The_A_Register_Into_Memory(void)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x800F], 0x42);
 
-    Verify_Unmodified_Flags_From_Store_Register(before, cpu);
+    Verify_Unmodified_Flags_Store_Register(before, cpu);
 }
 
 void STA_IND_X_Can_Store_The_A_Register_Into_Memory(void)
@@ -203,7 +203,7 @@ void STA_IND_X_Can_Store_The_A_Register_Into_Memory(void)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x8000], 0x42);
 
-    Verify_Unmodified_Flags_From_Store_Register(before, cpu);
+    Verify_Unmodified_Flags_Store_Register(before, cpu);
 }
 
 void STA_IND_Y_Can_Store_The_A_Register_Into_Memory(void)
@@ -225,7 +225,7 @@ void STA_IND_Y_Can_Store_The_A_Register_Into_Memory(void)
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(0x42, mem.data[0x8000 + 0x0F]);
 
-    Verify_Unmodified_Flags_From_Store_Register(before, cpu);
+    Verify_Unmodified_Flags_Store_Register(before, cpu);
 }
 
 int main(void)

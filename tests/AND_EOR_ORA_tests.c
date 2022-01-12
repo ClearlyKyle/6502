@@ -11,7 +11,7 @@ void setUp(void) /* Is run before every test, put unit init calls here. */
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
-static void Verify_Unmodified_Flags_From_LDA(const CPU before, const CPU after)
+static void Verify_Unmodified_Flags(const CPU before, const CPU after)
 {
     // get a copt of the cpu
     TEST_ASSERT_EQUAL_UINT8(before.C, after.C);
@@ -81,7 +81,7 @@ static void Logical_Operator_Immediate(enum LogicOperator opp)
 
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_Zero_Page(enum LogicOperator opp)
@@ -118,7 +118,7 @@ static void Logical_Operator_Zero_Page(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_Zero_Page_X(enum LogicOperator opp)
@@ -156,7 +156,7 @@ static void Logical_Operator_Zero_Page_X(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_ABS(enum LogicOperator opp)
@@ -198,7 +198,7 @@ static void Logical_Operator_ABS(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_ABS_X(enum LogicOperator opp)
@@ -241,7 +241,7 @@ static void Logical_Operator_ABS_X(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_ABS_Y(enum LogicOperator opp)
@@ -284,7 +284,7 @@ static void Logical_Operator_ABS_Y(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Load_Register_ABS_Y_When_Crossing_Page_Boundary(enum LogicOperator opp)
@@ -325,7 +325,7 @@ static void Load_Register_ABS_Y_When_Crossing_Page_Boundary(enum LogicOperator o
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Load_Register_ABS_X_When_Crossing_Page_Boundary(enum LogicOperator opp)
@@ -366,7 +366,7 @@ static void Load_Register_ABS_X_When_Crossing_Page_Boundary(enum LogicOperator o
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_Indirect_X(enum LogicOperator opp)
@@ -410,7 +410,7 @@ static void Logical_Operator_Indirect_X(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_Indirect_Y(enum LogicOperator opp)
@@ -454,7 +454,7 @@ static void Logical_Operator_Indirect_Y(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(enum LogicOperator opp)
@@ -496,7 +496,7 @@ static void Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(enum LogicOp
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 static void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
@@ -536,7 +536,7 @@ static void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
     TEST_ASSERT_EQUAL(expected_negative, cpu.N);
     TEST_ASSERT_FALSE(cpu.Z);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 void Test_Logical_Operator_EOR_Immediate_Can_Affect_Zero_Flag(void)
@@ -557,7 +557,7 @@ void Test_Logical_Operator_EOR_Immediate_Can_Affect_Zero_Flag(void)
     TEST_ASSERT_TRUE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 
-    Verify_Unmodified_Flags_From_LDA(before, cpu);
+    Verify_Unmodified_Flags(before, cpu);
 }
 
 // Immediate
