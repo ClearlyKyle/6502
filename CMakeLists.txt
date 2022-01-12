@@ -56,6 +56,7 @@ set(TEST_NAMES_LIST
     "AND_EOR_ORA_tests"
     "Load_Program_tests"
     "Transfer_Register_tests"
+    "Increment_Decrement_tests"
 )
 
 message(STATUS "[TESTS] Loading all test files...")
