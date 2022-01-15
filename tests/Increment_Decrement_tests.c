@@ -457,7 +457,7 @@ void INC_Can_Increment_A_Value_In_ZP_X(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_OF_CYCLES = 5;
+    const s32 NUM_OF_CYCLES = 6;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
 
@@ -483,7 +483,7 @@ void INC_Can_Increment_A_Value_In_ABS(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_OF_CYCLES = 5;
+    const s32 NUM_OF_CYCLES = 6;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
 
@@ -510,7 +510,7 @@ void INC_Can_Increment_A_Value_In_ABS_X(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_OF_CYCLES = 5;
+    const s32 NUM_OF_CYCLES = 7;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
 

@@ -194,7 +194,20 @@ typedef enum
 
     // BIT - test BITs
     INS_BIT_ZP = 0x24,
-    INS_BIT_ABS = 0x2C
+    INS_BIT_ABS = 0x2C,
+
+    // DEC (DECrement memory)
+    INS_DEC_ZP = 0xC6,
+    INS_DEC_ZP_X = 0xD6,
+    INS_DEC_ABS = 0xCE,
+    INS_DEC_ABS_X = 0xDE,
+
+    // INC (INCrement memory)
+    INS_INC_ZP = 0xE6,
+    INS_INC_ZP_X = 0xF6,
+    INS_INC_ABS = 0xEE,
+    INS_INC_ABS_X = 0xFE
+
 } Opcode;
 
 static Memory mem;
@@ -1083,6 +1096,88 @@ s32 Execute(s32 num_cycles, Memory *mem)
             cpu.Z = !(cpu.accumulator & value);
             cpu.N = (value & NEGATIVE_FLAG_BIT) != 0;
             cpu.V = (value & OVERFLOW_FLAG_BIT) != 0;
+            break;
+        }
+        // DEC (DECrement memory)
+        case INS_DEC_ZP:
+        {
+            const u16 address = Address_Zero_Page(&num_cycles, mem);
+            u8 value = Read_Byte(&num_cycles, address, mem);
+            value -= 1;
+            num_cycles -= 1;
+            Write_Byte(&num_cycles, mem, value, address);
+            Load_Register_Set_Status(value);
+            break;
+        }
+        case INS_DEC_ZP_X:
+        {
+            const u16 address = Address_Zero_Page_X(&num_cycles, mem);
+            u8 value = Read_Byte(&num_cycles, address, mem);
+            value -= 1;
+            num_cycles -= 1;
+            Write_Byte(&num_cycles, mem, value, address);
+            Load_Register_Set_Status(value);
+            break;
+        }
+        case INS_DEC_ABS:
+        {
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            u8 value = Read_Byte(&num_cycles, address, mem);
+            value -= 1;
+            num_cycles -= 1;
+            Write_Byte(&num_cycles, mem, value, address);
+            Load_Register_Set_Status(value);
+            break;
+        }
+        case INS_DEC_ABS_X:
+        {
+            const u16 address = Address_Absolute_X_5_Cycle(&num_cycles, mem);
+            u8 value = Read_Byte(&num_cycles, address, mem);
+            value -= 1;
+            num_cycles -= 1;
+            Write_Byte(&num_cycles, mem, value, address);
+            Load_Register_Set_Status(value);
+            break;
+        }
+        // INC (INCrement memory)
+        case INS_INC_ZP:
+        {
+            const u16 address = Address_Zero_Page(&num_cycles, mem);
+            u8 value = Read_Byte(&num_cycles, address, mem);
+            value += 1;
+            num_cycles -= 1;
+            Write_Byte(&num_cycles, mem, value, address);
+            Load_Register_Set_Status(value);
+            break;
+        }
+        case INS_INC_ZP_X:
+        {
+            const u16 address = Address_Zero_Page_X(&num_cycles, mem);
+            u8 value = Read_Byte(&num_cycles, address, mem);
+            value += 1;
+            num_cycles -= 1;
+            Write_Byte(&num_cycles, mem, value, address);
+            Load_Register_Set_Status(value);
+            break;
+        }
+        case INS_INC_ABS:
+        {
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            u8 value = Read_Byte(&num_cycles, address, mem);
+            value += 1;
+            num_cycles -= 1;
+            Write_Byte(&num_cycles, mem, value, address);
+            Load_Register_Set_Status(value);
+            break;
+        }
+        case INS_INC_ABS_X:
+        {
+            const u16 address = Address_Absolute_X_5_Cycle(&num_cycles, mem);
+            u8 value = Read_Byte(&num_cycles, address, mem);
+            value += 1;
+            num_cycles -= 1;
+            Write_Byte(&num_cycles, mem, value, address);
+            Load_Register_Set_Status(value);
             break;
         }
         default:
