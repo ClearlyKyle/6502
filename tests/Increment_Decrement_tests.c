@@ -314,6 +314,216 @@ void DEX_Can_Decrement_A_Negative_Value(void)
     Verify_Unmodified_Flags(before, cpu);
 }
 
+// DEC
+void DEC_Can_Decrement_A_Value_In_ZP(void)
+{
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_DEC_ZP;
+    mem.data[0xFF01] = 0x42;
+    mem.data[0x0042] = 0x57;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x56, mem.data[0x0042]);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void DEC_Can_Decrement_A_Value_In_ZP_X(void)
+{
+    cpu.index_reg_X = 0x10;
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_DEC_ZP_X;
+    mem.data[0xFF01] = 0x42;
+    mem.data[0x0042 + 0x10] = 0x57;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 6;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x56, mem.data[0x0042 + 0x10]);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void DEC_Can_Decrement_A_Value_ABS(void)
+{
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_DEC_ABS;
+    mem.data[0xFF01] = 0x00;
+    mem.data[0xFF02] = 0x80;
+    mem.data[0x8000] = 0x57;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 6;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x56, mem.data[0x8000]);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void DEC_Can_Decrement_A_Value_ABS_X(void)
+{
+    cpu.index_reg_X = 0x10;
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_DEC_ABS_X;
+    mem.data[0xFF01] = 0x00;
+    mem.data[0xFF02] = 0x80;
+    mem.data[0x8000 + 0x10] = 0x57;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 7;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x56, mem.data[0x8000 + 0x10]);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+// INC
+void INC_Can_Increment_A_Value_In_ZP(void)
+{
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_INC_ZP;
+    mem.data[0xFF01] = 0x42;
+    mem.data[0x0042] = 0x57;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x58, mem.data[0x0042]);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void INC_Can_Increment_A_Value_In_ZP_X(void)
+{
+    cpu.index_reg_X = 0x10;
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_INC_ZP_X;
+    mem.data[0xFF01] = 0x42;
+    mem.data[0x0042 + 0x10] = 0x57;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x58, mem.data[0x0042 + 0x10]);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void INC_Can_Increment_A_Value_In_ABS(void)
+{
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_INC_ABS;
+    mem.data[0xFF01] = 0x00;
+    mem.data[0xFF02] = 0x80;
+    mem.data[0x8000] = 0x57;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x58, mem.data[0x8000]);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void INC_Can_Increment_A_Value_In_ABS_X(void)
+{
+    cpu.index_reg_X = 0x10;
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_INC_ABS_X;
+    mem.data[0xFF01] = 0x00;
+    mem.data[0xFF02] = 0x80;
+    mem.data[0x8000 + 0x10] = 0x57;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x58, mem.data[0x8000 + 0x10]);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -333,6 +543,16 @@ int main(void)
     RUN_TEST(DEX_Can_Decrement_A_Zero_Value);
     RUN_TEST(DEX_Can_Decrement_0xFF);
     RUN_TEST(DEX_Can_Decrement_A_Negative_Value);
+
+    RUN_TEST(DEC_Can_Decrement_A_Value_In_ZP);
+    RUN_TEST(DEC_Can_Decrement_A_Value_In_ZP_X);
+    RUN_TEST(DEC_Can_Decrement_A_Value_ABS);
+    RUN_TEST(DEC_Can_Decrement_A_Value_ABS_X);
+
+    RUN_TEST(INC_Can_Increment_A_Value_In_ZP);
+    RUN_TEST(INC_Can_Increment_A_Value_In_ZP_X);
+    RUN_TEST(INC_Can_Increment_A_Value_In_ABS);
+    RUN_TEST(INC_Can_Increment_A_Value_In_ABS_X);
 
     return UNITY_END();
 }
