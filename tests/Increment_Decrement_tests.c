@@ -22,6 +22,7 @@ static void Verify_Unmodified_Flags(const CPU before, const CPU after)
     TEST_ASSERT_EQUAL_UINT8(before.V, after.V);
 }
 
+// INX
 void INX_Can_Increment_A_Zero_Value(void)
 {
     cpu.index_reg_X = 0x00;
@@ -46,11 +47,292 @@ void INX_Can_Increment_A_Zero_Value(void)
     Verify_Unmodified_Flags(before, cpu);
 }
 
+void INX_Can_Increment_0xFF(void)
+{
+    cpu.index_reg_X = 0xFF;
+    cpu.Z = 0;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_INX;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.index_reg_X);
+
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void INX_Can_Increment_A_Negative_Value(void)
+{
+    cpu.index_reg_X = 0x88; // 0b10001000
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_INX;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x89, cpu.index_reg_X);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+// INY
+void INY_Can_Increment_A_Zero_Value(void)
+{
+    cpu.index_reg_Y = 0x00;
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_INY;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x01, cpu.index_reg_Y);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void INY_Can_Increment_0xFF(void)
+{
+    cpu.index_reg_Y = 0xFF;
+    cpu.Z = 0;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_INY;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.index_reg_Y);
+
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void INY_Can_Increment_A_Negative_Value(void)
+{
+    cpu.index_reg_Y = 0x88; // 0b10001000
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_INY;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x89, cpu.index_reg_Y);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+// DEY
+void DEY_Can_Decrement_A_Zero_Value(void)
+{
+    cpu.index_reg_Y = 0x00;
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_DEY;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0xFF, cpu.index_reg_Y);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void DEY_Can_Decrement_0xFF(void)
+{
+    cpu.index_reg_Y = 0xFF;
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_DEY;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0xFE, cpu.index_reg_Y);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void DEY_Can_Decrement_A_Negative_Value(void)
+{
+    cpu.index_reg_Y = 0x89; // 0b10001001
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_DEY;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x88, cpu.index_reg_Y);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+// DEX
+void DEX_Can_Decrement_A_Zero_Value(void)
+{
+    cpu.index_reg_X = 0x00;
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_DEX;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0xFF, cpu.index_reg_X);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void DEX_Can_Decrement_0xFF(void)
+{
+    cpu.index_reg_X = 0xFF;
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_DEX;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0xFE, cpu.index_reg_X);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
+void DEX_Can_Decrement_A_Negative_Value(void)
+{
+    cpu.index_reg_X = 0x89; // 0b10001001
+    cpu.Z = 1;
+    cpu.N = 0;
+
+    mem.data[0xFF00] = INS_DEX;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x88, cpu.index_reg_X);
+
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
 
     RUN_TEST(INX_Can_Increment_A_Zero_Value);
+    RUN_TEST(INX_Can_Increment_0xFF);
+    RUN_TEST(INX_Can_Increment_A_Negative_Value);
+
+    RUN_TEST(INY_Can_Increment_A_Zero_Value);
+    RUN_TEST(INY_Can_Increment_0xFF);
+    RUN_TEST(INY_Can_Increment_A_Negative_Value);
+
+    RUN_TEST(DEY_Can_Decrement_A_Zero_Value);
+    RUN_TEST(DEY_Can_Decrement_0xFF);
+    RUN_TEST(DEY_Can_Decrement_A_Negative_Value);
+
+    RUN_TEST(DEX_Can_Decrement_A_Zero_Value);
+    RUN_TEST(DEX_Can_Decrement_0xFF);
+    RUN_TEST(DEX_Can_Decrement_A_Negative_Value);
 
     return UNITY_END();
 }
