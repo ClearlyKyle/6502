@@ -269,31 +269,30 @@ void Display_CPU_State(const CPU *cpu)
     printf("PS :  %s\t(0x%X)\n", PS_str, cpu->PS);
 }
 
-void Load_Program(const u8 *program, Memory *mem, int number_of_bytes)
+u16 Load_Program(const u8 *program, Memory *mem, int number_of_bytes)
 {
     // if (!program)
     //{
     //     fprintf(stderr, "Error Loading Program Data\n");
     //     return
     // }
-
-    if (number_of_bytes <= 2)
+    u16 load_address = 0x00;
+    if (program != NULL && number_of_bytes >= 2)
     {
-        return;
+        u32 current_position = 0;
+
+        // LOW | (HIGH << 8) : 0xHHLL
+        const u32 LL = program[current_position++];
+        const u32 HH = program[current_position++] << 8;
+
+        load_address = LL | HH;
+
+        for (u16 i = load_address; i < load_address + number_of_bytes - 2; i++)
+        {
+            mem->data[i] = program[current_position++];
+        }
     }
-    u32 current_position = 0;
-
-    // LOW | (HIGH << 8) : 0xHHLL
-    const u32 LL = program[current_position++];
-    const u32 HH = program[current_position++] << 8;
-
-    u16 load_address = LL | HH;
-
-    for (u16 i = load_address; i < load_address + number_of_bytes - 2; i++)
-    {
-        mem->data[i] = program[current_position++];
-    }
-    return;
+    return load_address;
 }
 
 u16 SP_To_Address()
