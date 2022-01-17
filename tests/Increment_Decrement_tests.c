@@ -524,6 +524,32 @@ void INC_Can_Increment_A_Value_In_ABS_X(void)
     Verify_Unmodified_Flags(before, cpu);
 }
 
+void Test_Load_A_Program_That_Can_INC(void)
+{
+    /*
+    * = $1000
+    lda #00
+    sta $42
+    start
+    inc $42
+    ldx $42
+    inx
+    jmp start
+    */
+    u8 test_program[] = {0x0, 0x10, 0xA9, 0x00, 0x85, 0x42, 0xE6, 0x42,
+                         0xA6, 0x42, 0xE8, 0x4C, 0x04, 0x10};
+    const int number_of_bytes = sizeof(test_program) / sizeof(test_program[0]);
+
+    const u16 start_address = Load_Program(test_program, &mem, number_of_bytes);
+    cpu.program_counter = start_address;
+
+    // then:
+    for (s32 clock = 1000; clock > 0;)
+    {
+        clock -= Execute(1, &mem);
+    }
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -553,6 +579,8 @@ int main(void)
     RUN_TEST(INC_Can_Increment_A_Value_In_ZP_X);
     RUN_TEST(INC_Can_Increment_A_Value_In_ABS);
     RUN_TEST(INC_Can_Increment_A_Value_In_ABS_X);
+
+    RUN_TEST(Test_Load_A_Program_That_Can_INC);
 
     return UNITY_END();
 }
