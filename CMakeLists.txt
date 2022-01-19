@@ -57,6 +57,7 @@ set(TEST_NAMES_LIST
     "Load_Program_tests"
     "Transfer_Register_tests"
     "Increment_Decrement_tests"
+    "Branch_tests"
 )
 
 message(STATUS "[TESTS] Loading all test files...")
