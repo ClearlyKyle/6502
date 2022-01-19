@@ -27,6 +27,8 @@
 typedef uint8_t u8;   // byte [0, 255]
 typedef uint16_t u16; // word [0, 65,535]
 typedef uint32_t u32; // [0, 4,294,967,295]
+typedef int8_t s8;
+typedef int16_t s16;
 typedef int32_t s32;
 
 #define MAX_MEM 65536 // 1024 * 64 = 65536
@@ -206,7 +208,17 @@ typedef enum
     INS_INC_ZP = 0xE6,
     INS_INC_ZP_X = 0xF6,
     INS_INC_ABS = 0xEE,
-    INS_INC_ABS_X = 0xFE
+    INS_INC_ABS_X = 0xFE,
+
+    // Branch Instructions
+    INS_BPL = 0x10, // BPL (Branch on PLus)
+    INS_BMI = 0x30, // BMI (Branch on MInus)
+    INS_BVC = 0x50, // BVC (Branch on oVerflow Clear)
+    INS_BVS = 0x70, // BVS (Branch on oVerflow Set)
+    INS_BCC = 0x90, // BCC (Branch on Carry Clear)
+    INS_BCS = 0xB0, // BCS (Branch on Carry Set)
+    INS_BNE = 0xD0, // BNE (Branch on Not Equal)
+    INS_BEQ = 0xF0  // BEQ (Branch on EQual)
 
 } Opcode;
 
@@ -1179,6 +1191,52 @@ s32 Execute(s32 num_cycles, Memory *mem)
             Load_Register_Set_Status(value);
             break;
         }
+        // Branch Instructions
+        case INS_BPL: // BPL (Branch on PLus)
+        {
+            break;
+        }
+        case INS_BMI: // BMI (Branch on MInus)
+        {
+            break;
+        }
+        case INS_BVC: // BVC (Branch on oVerflow Clear)
+        {
+            break;
+        }
+        case INS_BVS: // BVS (Branch on oVerflow Set)
+        {
+            break;
+        }
+        case INS_BCC: // BCC (Branch on Carry Clear)
+        {
+            break;
+        }
+        case INS_BCS: // BCS (Branch on Carry Set)
+        {
+            break;
+        }
+        case INS_BNE: // BNE (Branch on Not Equal)
+        {
+            break;
+        }
+        case INS_BEQ: // BEQ (Branch on EQual)
+        {
+            const s8 jump_offset = (s8)Fetch_Byte(&num_cycles, mem);
+            if (cpu.Z)
+            {
+                const u16 old_program_counter = cpu.program_counter;
+                cpu.program_counter += jump_offset;
+                num_cycles -= 1;
+
+                if ((cpu.program_counter >> 8) != (old_program_counter >> 8))
+                {
+                    num_cycles -= 2;
+                }
+            }
+            break;
+        }
+
         default:
         {
             print_db("Instruction not handled %x\n", instruction);
