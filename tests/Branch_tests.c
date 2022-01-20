@@ -131,6 +131,35 @@ void BEQ_Can_Branch_Bakwards_Into_New_Page_When_Zero_Is_Set(void)
     TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
 }
 
+void BEQ_Can_Branch_Backwards_When_Zero_Is_Set_From_Assemble_Code(void)
+{
+    // given:
+    cpu.program_counter = 0xFFCC;
+    cpu.Z = 1;
+
+    /*
+    loop
+    lda #0
+    beq loop
+    */
+
+    mem.data[0xFFCC] = 0xA9;
+    mem.data[0xFFCC + 1] = 0x00;
+    mem.data[0xFFCC + 2] = 0xF0;
+    mem.data[0xFFCC + 3] = 0xFC;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFFCC, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -141,6 +170,7 @@ int main(void)
     RUN_TEST(BEQ_Can_Branch_Backwards_When_Zero_Is_Set);
     RUN_TEST(BEQ_Does_Not_Branch_Backwards_When_Zero_Is_Not_Set);
     RUN_TEST(BEQ_Can_Branch_Bakwards_Into_New_Page_When_Zero_Is_Set);
+    RUN_TEST(BEQ_Can_Branch_Backwards_When_Zero_Is_Set_From_Assemble_Code);
 
     return UNITY_END();
 }
