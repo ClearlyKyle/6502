@@ -29,7 +29,7 @@ void RunLittleProgram(void)
     mem.data[0x4243] = 0x84;
     // end - little program
 
-    const int NUM_CYCLES = 8;
+    const s32 NUM_CYCLES = 8;
 
     s32 cycles_used = Execute(NUM_CYCLES, &mem);
     TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
