@@ -1218,10 +1218,12 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_BVC: // BVC (Branch on oVerflow Clear)
         {
+            Branch_If(&num_cycles, mem, cpu.V, 0);
             break;
         }
         case INS_BVS: // BVS (Branch on oVerflow Set)
         {
+            Branch_If(&num_cycles, mem, cpu.V, 1);
             break;
         }
         case INS_BCC: // BCC (Branch on Carry Clear)

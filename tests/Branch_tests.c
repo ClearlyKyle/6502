@@ -533,6 +533,260 @@ void BCS_Can_Branch_Bakwards_Into_New_Page_When_Carry_Is_Set(void)
     TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
 }
 
+// BVC (Branch on oVerflow Clear)
+void BVC_Can_Branch_Forward_When_Overflow_Is_Not_Set(void)
+{
+    // Branch Forward
+    cpu.program_counter = 0xFF00;
+    cpu.V = 0;
+
+    mem.data[0xFF00] = INS_BVC;
+    mem.data[0xFF01] = 0x1;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 3;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFF03, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVC_Does_Not_Branch_Forward_When_Overflow_Is_Set(void)
+{
+    // Dont branch forward
+    cpu.program_counter = 0xFF00;
+    cpu.V = 1;
+
+    mem.data[0xFF00] = INS_BVC;
+    mem.data[0xFF01] = 0x1;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFF02, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVC_Can_Branch_Forward_Into_New_Page_When_Overflow_Is_Not_Set(void)
+{
+    // branch forward when condition is met
+    cpu.program_counter = 0xFEFD;
+    cpu.V = 0;
+
+    mem.data[0xFEFD] = INS_BVC;
+    mem.data[0xFEFE] = 0x1;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFF00, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVC_Can_Branch_Backwards_When_Overflow_Is_Not_Set(void)
+{
+    // Branch backwards when condition is set
+    cpu.program_counter = 0xFFCC;
+    cpu.V = 0;
+
+    mem.data[0xFFCC] = INS_BVC;
+    mem.data[0xFFCD] = -1 * 0x2;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 3;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFFCC, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVC_Does_Not_Branch_Backwards_When_Overflow_Is_Set(void)
+{
+    // Dont branch backwards when condition is set
+    cpu.program_counter = 0xFFCC;
+    cpu.V = 1;
+
+    mem.data[0xFFCC] = INS_BVC;
+    mem.data[0xFFCD] = -1 * 0x2;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFFCE, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVC_Can_Branch_Bakwards_Into_New_Page_When_Overflow_Is_Not_Set(void)
+{
+    // Branch backwards into a new page when condition is met
+    cpu.program_counter = 0xFF00;
+    cpu.V = 0;
+
+    mem.data[0xFF00] = INS_BVC;
+    mem.data[0xFF01] = -1 * 0x3;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFEFF, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+// BVS (Branch on oVerflow Set)
+void BVS_Can_Branch_Forward_When_Overflow_Is_Set(void)
+{
+    // Branch Forward
+    cpu.program_counter = 0xFF00;
+    cpu.V = 1;
+
+    mem.data[0xFF00] = INS_BVS;
+    mem.data[0xFF01] = 0x1;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 3;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFF03, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVS_Does_Not_Branch_Forward_When_Overflow_Is_Not_Set(void)
+{
+    // Dont branch forward
+    cpu.program_counter = 0xFF00;
+    cpu.V = 0;
+
+    mem.data[0xFF00] = INS_BVS;
+    mem.data[0xFF01] = 0x1;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFF02, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVS_Can_Branch_Forward_Into_New_Page_When_Overflow_Is_Set(void)
+{
+    // branch forward when condition is met
+    cpu.program_counter = 0xFEFD;
+    cpu.V = 1;
+
+    mem.data[0xFEFD] = INS_BVS;
+    mem.data[0xFEFE] = 0x1;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFF00, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVS_Can_Branch_Backwards_When_Overflow_Is_Set(void)
+{
+    // Branch backwards when condition is set for branching
+    cpu.program_counter = 0xFFCC;
+    cpu.V = 1;
+
+    mem.data[0xFFCC] = INS_BVS;
+    mem.data[0xFFCD] = -1 * 0x2;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 3;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFFCC, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVS_Does_Not_Branch_Backwards_When_Overflow_Is_Not_Set(void)
+{
+    // Dont branch backwards when condition is set for not branching
+    cpu.program_counter = 0xFFCC;
+    cpu.V = 0;
+
+    mem.data[0xFFCC] = INS_BVS;
+    mem.data[0xFFCD] = -1 * 0x2;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFFCE, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
+void BVS_Can_Branch_Bakwards_Into_New_Page_When_Overflow_Is_Set(void)
+{
+    // Branch backwards into a new page when condition is set for branching
+    cpu.program_counter = 0xFF00;
+    cpu.V = 1;
+
+    mem.data[0xFF00] = INS_BVS;
+    mem.data[0xFF01] = -1 * 0x3;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 5;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_HEX16(0xFEFF, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -549,10 +803,10 @@ int main(void)
     RUN_TEST(BEQ_Can_Branch_Backwards_When_Zero_Is_Set_From_Assemble_Code);
 
     RUN_TEST(BNE_Can_Branch_Forward_When_Zero_Is_Not_Set);
-    RUN_TEST(BNE_Does_Not_Branch_Forward_When_Zero_Is_Set);
-    RUN_TEST(BNE_Can_Branch_Forward_Into_New_Page_When_Zero_Is_Not_Set);
     RUN_TEST(BNE_Can_Branch_Backwards_When_Zero_Is_Not_Set);
+    RUN_TEST(BNE_Does_Not_Branch_Forward_When_Zero_Is_Set);
     RUN_TEST(BNE_Does_Not_Branch_Backwards_When_Zero_Is_Set);
+    RUN_TEST(BNE_Can_Branch_Forward_Into_New_Page_When_Zero_Is_Not_Set);
     RUN_TEST(BNE_Can_Branch_Bakwards_Into_New_Page_When_Zero_Is_Not_Set);
 
     RUN_TEST(BCC_Can_Branch_Forward_When_Carry_Is_Not_Set);
@@ -568,6 +822,20 @@ int main(void)
     RUN_TEST(BCS_Can_Branch_Backwards_When_Carry_Is_Set);
     RUN_TEST(BCS_Does_Not_Branch_Backwards_When_Carry_Is_Not_Set);
     RUN_TEST(BCS_Can_Branch_Bakwards_Into_New_Page_When_Carry_Is_Set);
+
+    RUN_TEST(BVC_Can_Branch_Forward_When_Overflow_Is_Not_Set);
+    RUN_TEST(BVC_Does_Not_Branch_Forward_When_Overflow_Is_Set);
+    RUN_TEST(BVC_Can_Branch_Forward_Into_New_Page_When_Overflow_Is_Not_Set);
+    RUN_TEST(BVC_Can_Branch_Backwards_When_Overflow_Is_Not_Set);
+    RUN_TEST(BVC_Does_Not_Branch_Backwards_When_Overflow_Is_Set);
+    RUN_TEST(BVC_Can_Branch_Bakwards_Into_New_Page_When_Overflow_Is_Not_Set);
+
+    RUN_TEST(BVS_Can_Branch_Forward_When_Overflow_Is_Set);
+    RUN_TEST(BVS_Does_Not_Branch_Forward_When_Overflow_Is_Not_Set);
+    RUN_TEST(BVS_Can_Branch_Forward_Into_New_Page_When_Overflow_Is_Set);
+    RUN_TEST(BVS_Can_Branch_Backwards_When_Overflow_Is_Set);
+    RUN_TEST(BVS_Does_Not_Branch_Backwards_When_Overflow_Is_Not_Set);
+    RUN_TEST(BVS_Can_Branch_Bakwards_Into_New_Page_When_Overflow_Is_Set);
 
     return UNITY_END();
 }
