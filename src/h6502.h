@@ -227,6 +227,8 @@ typedef enum
     INS_SEI = 0x78, // (SEt Interrupt)
     INS_CLV = 0xB8, // (CLear oVerflow)
     INS_CLD = 0xD8, // (CLear Decimal)
+    INS_SED = 0xF8, // (SEt Decimal)
+
     // NOP (No OPeration)
     INS_NOP = 0xEA
 
@@ -1256,6 +1258,42 @@ s32 Execute(s32 num_cycles, Memory *mem)
         case INS_BEQ: // BEQ (Branch on EQual)
         {
             Branch_If(&num_cycles, mem, cpu.Z, 1);
+            break;
+        }
+        // Flag (Processor Status) Instructions
+        case INS_CLC: // (CLear Carry)
+        {
+            cpu.C = 0;
+            break;
+        }
+        case INS_SEC: // (SEt Carry)
+        {
+            cpu.C = 1;
+            break;
+        }
+        case INS_CLI: // (CLear Interrupt)
+        {
+            cpu.I = 0;
+            break;
+        }
+        case INS_SEI: // (SEt Interrupt)
+        {
+            cpu.I = 1;
+            break;
+        }
+        case INS_CLV: // (CLear oVerflow)
+        {
+            cpu.V = 0;
+            break;
+        }
+        case INS_CLD: // (CLear Decimal)
+        {
+            cpu.D = 0;
+            break;
+        }
+        case INS_SED: // (SEt Decimal)
+        {
+            cpu.D = 1;
             break;
         }
         // NOP (No OPeration)
