@@ -1231,6 +1231,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_BCS: // BCS (Branch on Carry Set)
         {
+            Branch_If(&num_cycles, mem, cpu.C, 1);
             break;
         }
         case INS_BNE: // BNE (Branch on Not Equal)
