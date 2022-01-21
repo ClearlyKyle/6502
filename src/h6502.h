@@ -218,7 +218,16 @@ typedef enum
     INS_BCC = 0x90, // BCC (Branch on Carry Clear)
     INS_BCS = 0xB0, // BCS (Branch on Carry Set)
     INS_BNE = 0xD0, // BNE (Branch on Not Equal)
-    INS_BEQ = 0xF0  // BEQ (Branch on EQual)
+    INS_BEQ = 0xF0, // BEQ (Branch on EQual)
+
+    // Flag (Processor Status) Instructions
+    INS_CLC = 0x18, // (CLear Carry)
+    INS_SEC = 0x38, // (SEt Carry)
+    INS_CLI = 0x58, // (CLear Interrupt)
+    INS_SEI = 0x78, // (SEt Interrupt)
+    INS_CLV = 0xB8, // (CLear oVerflow)
+    INS_CLD = 0xD8, // (CLear Decimal)
+    INS_SED = 0xF8  // (SEt Decimal)
 
 } Opcode;
 

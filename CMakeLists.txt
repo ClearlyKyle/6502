@@ -58,6 +58,7 @@ set(TEST_NAMES_LIST
     "Transfer_Register_tests"
     "Increment_Decrement_tests"
     "Branch_tests"
+    "Status_Flag_Change_tests"
 )
 
 message(STATUS "[TESTS] Loading all test files...")
