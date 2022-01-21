@@ -227,7 +227,8 @@ typedef enum
     INS_SEI = 0x78, // (SEt Interrupt)
     INS_CLV = 0xB8, // (CLear oVerflow)
     INS_CLD = 0xD8, // (CLear Decimal)
-    INS_SED = 0xF8  // (SEt Decimal)
+    // NOP (No OPeration)
+    INS_NOP = 0xEA
 
 } Opcode;
 
@@ -1257,7 +1258,12 @@ s32 Execute(s32 num_cycles, Memory *mem)
             Branch_If(&num_cycles, mem, cpu.Z, 1);
             break;
         }
-
+        // NOP (No OPeration)
+        case INS_NOP:
+        {
+            num_cycles -= 1;
+            break;
+        }
         default:
         {
             print_db("Instruction not handled %x\n", instruction);
