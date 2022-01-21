@@ -564,6 +564,22 @@ void EOR_Register(s32 *cycles, const u16 address, const Memory *mem)
     Load_Register_Set_Status(cpu.accumulator);
 }
 
+void Branch_If(s32 *cycles, const Memory *mem, u8 flag, u8 expected)
+{
+    const s8 jump_offset = (s8)Fetch_Byte(cycles, mem);
+    if (flag == expected)
+    {
+        const u16 old_program_counter = cpu.program_counter;
+        cpu.program_counter += jump_offset;
+        (*cycles) -= 1;
+
+        if ((cpu.program_counter >> 8) != (old_program_counter >> 8))
+        {
+            (*cycles) -= 2;
+        }
+    }
+}
+
 // execute "num_cycles" the instruction in memory
 s32 Execute(s32 num_cycles, Memory *mem)
 {
@@ -1218,22 +1234,12 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_BNE: // BNE (Branch on Not Equal)
         {
+            Branch_If(&num_cycles, mem, cpu.Z, 0);
             break;
         }
         case INS_BEQ: // BEQ (Branch on EQual)
         {
-            const s8 jump_offset = (s8)Fetch_Byte(&num_cycles, mem);
-            if (cpu.Z)
-            {
-                const u16 old_program_counter = cpu.program_counter;
-                cpu.program_counter += jump_offset;
-                num_cycles -= 1;
-
-                if ((cpu.program_counter >> 8) != (old_program_counter >> 8))
-                {
-                    num_cycles -= 2;
-                }
-            }
+            Branch_If(&num_cycles, mem, cpu.Z, 1);
             break;
         }
 
