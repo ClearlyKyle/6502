@@ -1210,10 +1210,12 @@ s32 Execute(s32 num_cycles, Memory *mem)
         // Branch Instructions
         case INS_BPL: // BPL (Branch on PLus)
         {
+            Branch_If(&num_cycles, mem, cpu.N, 0);
             break;
         }
         case INS_BMI: // BMI (Branch on MInus)
         {
+            Branch_If(&num_cycles, mem, cpu.N, 1);
             break;
         }
         case INS_BVC: // BVC (Branch on oVerflow Clear)
