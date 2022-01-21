@@ -1226,6 +1226,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
         }
         case INS_BCC: // BCC (Branch on Carry Clear)
         {
+            Branch_If(&num_cycles, mem, cpu.C, 0);
             break;
         }
         case INS_BCS: // BCS (Branch on Carry Set)
