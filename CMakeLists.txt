@@ -60,6 +60,7 @@ set(TEST_NAMES_LIST
     "Branch_tests"
     "Status_Flag_Change_tests"
     "System_Function_tests"
+    "Add_With_Carry_tests"
 )
 
 message(STATUS "[TESTS] Loading all test files...")
