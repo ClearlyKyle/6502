@@ -12,6 +12,7 @@
 
 // Ref
 // > Opcodes : https://web.archive.org/web/20210426072206/http://www.obelisk.me.uk/6502/index.html
+// >            http://www.6502.org/tutorials/6502opcodes.html
 // > Instruction cycles : https://www.nesdev.com/6502_cpu.txt
 // > Addressing Modes : https://www.c64-wiki.com/wiki/Addressing_mode
 // > Hex Calculator : https://www.calculator.net/hex-calculator.html?number1=80&c2op=%2B&number2=ff&calctype=op&x=85&y=13
@@ -230,7 +231,17 @@ typedef enum
     INS_SED = 0xF8, // (SEt Decimal)
 
     // NOP (No OPeration)
-    INS_NOP = 0xEA
+    INS_NOP = 0xEA,
+
+    // ADC (ADd with Carry)
+    INS_ADC_IM = 0x69,
+    INS_ADC_ZP = 0x65,
+    INS_ADC_ZP_X = 0x75,
+    INS_ADC_ABS = 0x6D,
+    INS_ADC_ABS_X = 0x7D,
+    INS_ADC_ABS_Y = 0x79,
+    INS_ADC_IND_X = 0x61,
+    INS_ADC_IND_Y = 0x71
 
 } Opcode;
 
@@ -1300,6 +1311,46 @@ s32 Execute(s32 num_cycles, Memory *mem)
         case INS_NOP:
         {
             num_cycles -= 1;
+            break;
+        }
+        // ADC (ADd with Carry)
+        case INS_ADC_IM:
+        {
+            break;
+        }
+        case INS_ADC_ZP:
+        {
+            break;
+        }
+        case INS_ADC_ZP_X:
+        {
+            break;
+        }
+        case INS_ADC_ABS:
+        {
+            const u16 address = Address_Absolute(&num_cycles, mem);
+            const u8 operand = Read_Byte(&num_cycles, address, mem);
+            cpu.accumulator += operand;
+            cpu.Z = 1;
+            cpu.N = 0;
+            cpu.C = 0;
+            cpu.V = 0;
+            break;
+        }
+        case INS_ADC_ABS_X:
+        {
+            break;
+        }
+        case INS_ADC_ABS_Y:
+        {
+            break;
+        }
+        case INS_ADC_IND_X:
+        {
+            break;
+        }
+        case INS_ADC_IND_Y:
+        {
             break;
         }
         default:

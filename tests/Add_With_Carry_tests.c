@@ -34,7 +34,7 @@ void ADC_Can_Ass_Zero_To_Zero_To_Get_Zero(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_OF_CYCLES = 2;
+    const s32 NUM_OF_CYCLES = 4;
 
     const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
 
