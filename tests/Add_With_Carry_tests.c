@@ -18,7 +18,7 @@ static void Verify_Unmodified_Flags(const CPU before, const CPU after)
     TEST_ASSERT_EQUAL_UINT8(before.B, after.B);
 }
 
-void ADC_Can_Ass_Zero_To_Zero_To_Get_Zero(void)
+void ADC_Can_Add_Zero_To_Zero_To_Get_Zero(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
@@ -53,7 +53,7 @@ int main(void)
 {
     UNITY_BEGIN();
 
-    RUN_TEST(ADC_Can_Ass_Zero_To_Zero_To_Get_Zero);
+    RUN_TEST(ADC_Can_Add_Zero_To_Zero_To_Get_Zero);
 
     return UNITY_END();
 }
