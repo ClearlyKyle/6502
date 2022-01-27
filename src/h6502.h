@@ -1331,26 +1331,38 @@ s32 Execute(s32 num_cycles, Memory *mem)
             const u16 address = Address_Absolute(&num_cycles, mem);
             const u8 operand = Read_Byte(&num_cycles, address, mem);
             cpu.accumulator += operand;
-            cpu.Z = 1;
-            cpu.N = 0;
-            cpu.C = 0;
-            cpu.V = 0;
+            // cpu.Z = 1;
+            // cpu.N = 0;
+            // cpu.C = 0;
+            // cpu.V = 0;
             break;
         }
         case INS_ADC_ABS_X:
         {
+            const u16 address = Address_Absolute_X(&num_cycles, mem);
+            const u8 operand = Read_Byte(&num_cycles, address, mem);
+            cpu.accumulator += operand;
             break;
         }
         case INS_ADC_ABS_Y:
         {
+            const u16 address = Address_Absolute_Y(&num_cycles, mem);
+            const u8 operand = Read_Byte(&num_cycles, address, mem);
+            cpu.accumulator += operand;
             break;
         }
         case INS_ADC_IND_X:
         {
+            const u16 address = Address_Indirect_X(&num_cycles, mem);
+            const u8 operand = Read_Byte(&num_cycles, address, mem);
+            cpu.accumulator += operand;
             break;
         }
         case INS_ADC_IND_Y:
         {
+            const u16 address = Address_Indirect_Y(&num_cycles, mem);
+            const u8 operand = Read_Byte(&num_cycles, address, mem);
+            cpu.accumulator += operand;
             break;
         }
         default:
