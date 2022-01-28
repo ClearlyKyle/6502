@@ -49,6 +49,37 @@ void ADC_Can_Add_Zero_To_Zero_To_Get_Zero(void)
     Verify_Unmodified_Flags(before, cpu);
 }
 
+void ADC_ABS_X(void)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.accumulator = 0;
+    cpu.C = 0;
+    cpu.Z = 1;
+    cpu.N = 1;
+
+    mem.data[0xFF00] = INS_ADC_ABS_X;
+    mem.data[0xFF01] = 0x00;
+    mem.data[0xFF02] = 0x80;
+    mem.data[0x8000 + 0x10] = 0x02;
+
+    // when:
+    const CPU before = cpu;
+    const s32 NUM_OF_CYCLES = 4;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(0x00, cpu.accumulator);
+    TEST_ASSERT_FALSE(cpu.C);
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+    TEST_ASSERT_FALSE(cpu.V);
+
+    Verify_Unmodified_Flags(before, cpu);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
