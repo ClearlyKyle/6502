@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdbool.h>
 
 // https://stackoverflow.com/questions/7597025/difference-between-stdint-h-and-inttypes-h
 #include <inttypes.h>
@@ -602,6 +603,24 @@ void Branch_If(s32 *cycles, const Memory *mem, u8 flag, u8 expected)
         }
     }
 }
+
+/** Do add with carry given the the operand */
+void ADC(u8 operand)
+{
+    assert(cpu.D == false && "haven't handled decimal mode!");
+
+    const bool AreSignBitsTheSame = !((cpu.accumulator ^ operand) & NEGATIVE_FLAG_BIT);
+    u16 sum = cpu.accumulator;
+    sum += operand;
+    sum += cpu.C;
+
+    cpu.accumulator = (sum & 0xFF);
+
+    SetZeroAndNegativeFlags(cpu.accumulator);
+
+    cpu.C = sum > 0xFF;
+    cpu.V = AreSignBitsTheSame && ((cpu.accumulator ^ operand) & NEGATIVE_FLAG_BIT);
+};
 
 // execute "num_cycles" the instruction in memory
 s32 Execute(s32 num_cycles, Memory *mem)
@@ -1331,6 +1350,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
             const u16 address = Address_Absolute(&num_cycles, mem);
             const u8 operand = Read_Byte(&num_cycles, address, mem);
             cpu.accumulator += operand;
+            ADC(operand);
             // cpu.Z = 1;
             // cpu.N = 0;
             // cpu.C = 0;
@@ -1342,6 +1362,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
             const u16 address = Address_Absolute_X(&num_cycles, mem);
             const u8 operand = Read_Byte(&num_cycles, address, mem);
             cpu.accumulator += operand;
+            ADC(operand);
             break;
         }
         case INS_ADC_ABS_Y:
@@ -1349,6 +1370,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
             const u16 address = Address_Absolute_Y(&num_cycles, mem);
             const u8 operand = Read_Byte(&num_cycles, address, mem);
             cpu.accumulator += operand;
+            ADC(operand);
             break;
         }
         case INS_ADC_IND_X:
@@ -1356,6 +1378,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
             const u16 address = Address_Indirect_X(&num_cycles, mem);
             const u8 operand = Read_Byte(&num_cycles, address, mem);
             cpu.accumulator += operand;
+            ADC(operand);
             break;
         }
         case INS_ADC_IND_Y:
@@ -1363,6 +1386,7 @@ s32 Execute(s32 num_cycles, Memory *mem)
             const u16 address = Address_Indirect_Y(&num_cycles, mem);
             const u8 operand = Read_Byte(&num_cycles, address, mem);
             cpu.accumulator += operand;
+            ADC(operand);
             break;
         }
         default:
