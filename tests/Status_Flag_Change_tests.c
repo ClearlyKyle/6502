@@ -21,13 +21,13 @@ void CLC_Will_Clear_Carry_Flag(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_CYCLES = 8;
+    const s32 NUM_CYCLES = 2;
 
     const s32 cycles_used = Execute(NUM_CYCLES, &mem);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
-    TEST_ASSERT_TRUE(cpu.C);
+    TEST_ASSERT_FALSE(cpu.C);
 
     // TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
     TEST_ASSERT_EQUAL_UINT8(before.Z, cpu.Z);
@@ -48,7 +48,7 @@ void SEC_Will_Set_Carry_Flag(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_CYCLES = 8;
+    const s32 NUM_CYCLES = 2;
 
     const s32 cycles_used = Execute(NUM_CYCLES, &mem);
 
@@ -75,13 +75,13 @@ void CLD_Will_Clear_Decimal_Flag(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_CYCLES = 8;
+    const s32 NUM_CYCLES = 2;
 
     const s32 cycles_used = Execute(NUM_CYCLES, &mem);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
-    TEST_ASSERT_TRUE(cpu.D);
+    TEST_ASSERT_FALSE(cpu.D);
 
     TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
     TEST_ASSERT_EQUAL_UINT8(before.Z, cpu.Z);
@@ -102,7 +102,7 @@ void SED_Will_Set_Decimal_Flag(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_CYCLES = 8;
+    const s32 NUM_CYCLES = 2;
 
     const s32 cycles_used = Execute(NUM_CYCLES, &mem);
 
@@ -129,13 +129,13 @@ void CLI_Will_Clear_Interrupt_Flag(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_CYCLES = 8;
+    const s32 NUM_CYCLES = 2;
 
     const s32 cycles_used = Execute(NUM_CYCLES, &mem);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
-    TEST_ASSERT_TRUE(cpu.I);
+    TEST_ASSERT_FALSE(cpu.I);
 
     TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
     TEST_ASSERT_EQUAL_UINT8(before.Z, cpu.Z);
@@ -156,7 +156,7 @@ void SEI_Will_Set_Interrupt_Flag(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_CYCLES = 8;
+    const s32 NUM_CYCLES = 2;
 
     const s32 cycles_used = Execute(NUM_CYCLES, &mem);
 
@@ -183,13 +183,13 @@ void CLV_Will_Clear_Overflow_Flag(void)
 
     // when:
     const CPU before = cpu;
-    const s32 NUM_CYCLES = 8;
+    const s32 NUM_CYCLES = 2;
     
     const s32 cycles_used = Execute(NUM_CYCLES, &mem);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
-    TEST_ASSERT_TRUE(cpu.V);
+    TEST_ASSERT_FALSE(cpu.V);
 
     TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
     TEST_ASSERT_EQUAL_UINT8(before.Z, cpu.Z);
