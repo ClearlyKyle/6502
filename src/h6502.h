@@ -334,7 +334,7 @@ u16 SP_To_Address()
     return 0x100 | cpu.stack_pointer;
 }
 
-// 1 Cycle
+// 1 Cycle (fetch oppcode)
 u8 Fetch_Byte(s32 *cycles)
 {
     assert(cpu.program_counter < MAX_MEM);
@@ -343,6 +343,12 @@ u8 Fetch_Byte(s32 *cycles)
     cpu.program_counter++;
     (*cycles) -= 1;
     return data;
+}
+
+// 1 Cycle
+s8 Fetch_Signed_Byte(s32 *cycles)
+{
+    return (s8)Fetch_Byte(cycles);
 }
 
 // 2 Cycles
