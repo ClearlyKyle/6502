@@ -30,7 +30,6 @@ file(GLOB MAIN_SRC
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${MAIN_SRC})
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /std:c11)
 
 # ### UNITY TESING
 # http://www.throwtheswitch.org/build/cmake
