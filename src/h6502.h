@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <string.h>
 
 // https://stackoverflow.com/questions/7597025/difference-between-stdint-h-and-inttypes-h
 #include <inttypes.h>
@@ -252,8 +253,7 @@ static CPU    cpu = {0};
 
 void Initialise_Memory(void)
 {
-    for (size_t i = 0; i < MAX_MEM; i++)
-        mem.data[i] = 0;
+    memset(mem.data, 0, MAX_MEM);
 }
 
 void Reset_CPU(void)
