@@ -9,10 +9,7 @@ void setUp(void) /* Is run before every test, put unit init calls here. */
 {
     Reset_CPU();
 }
-void tearDown(void)
-{
-    Reset_CPU();
-} /* Is run after every test, put unit clean-up calls here. */
+void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
 // BEQ (Branch on EQual)
 // If the zero flag is clear when the CPU encounters a BEQ instruction,
