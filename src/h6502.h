@@ -22,16 +22,14 @@
 //      look up [RAM Table]
 // https://www.pagetable.com/c64ref/6502/?tab=2#INC
 
-#define DEBUG_PRINT 0
-
 // TODO: Macros to access registers in cpu
 
-typedef uint8_t u8;   // byte [0, 255]
+typedef uint8_t  u8;  // byte [0, 255]
 typedef uint16_t u16; // word [0, 65,535]
 typedef uint32_t u32; // [0, 4,294,967,295]
-typedef int8_t s8;
-typedef int16_t s16;
-typedef int32_t s32;
+typedef int8_t   s8;
+typedef int16_t  s16;
+typedef int32_t  s32;
 
 #define MAX_MEM 65536 // 1024 * 64 = 65536
 
@@ -50,7 +48,7 @@ typedef struct CPU
 {
     // Registers
     u16 program_counter; // Program Counter
-    u8 stack_pointer;    // Stack Pointer
+    u8  stack_pointer;   // Stack Pointer
 
     u8 accumulator; // A
     u8 index_reg_X; // X
@@ -79,59 +77,59 @@ typedef struct CPU
 
 enum FlagBits
 {
-    NEGATIVE_FLAG_BIT = 0x80,         // 0b''1000'0000
-    OVERFLOW_FLAG_BIT = 0x40,         // 0b''0100'0000
-    BREAK_FLAG_BIT = 0x10,            // 0b0'0001'0000
-    unused_FLAG_BIT = 0x20,           // 0b0'0010'0000
+    NEGATIVE_FLAG_BIT         = 0x80, // 0b''1000'0000
+    OVERFLOW_FLAG_BIT         = 0x40, // 0b''0100'0000
+    BREAK_FLAG_BIT            = 0x10, // 0b0'0001'0000
+    unused_FLAG_BIT           = 0x20, // 0b0'0010'0000
     INTERUPT_DISABLE_FLAG_BIT = 0x04, // 0b0'0000'0100
-    ZERO_BIT = 0x01,                  // 0b''0000'0001
+    ZERO_BIT                  = 0x01, // 0b''0000'0001
 };
 
 // opcodes
 typedef enum
 {
     // LDA - Load Accumulator
-    INS_LDA_IM = 0xA9,
-    INS_LDA_ZP = 0xA5,
-    INS_LDA_ZP_X = 0xB5,
-    INS_LDA_ABS = 0xAD,
+    INS_LDA_IM    = 0xA9,
+    INS_LDA_ZP    = 0xA5,
+    INS_LDA_ZP_X  = 0xB5,
+    INS_LDA_ABS   = 0xAD,
     INS_LDA_ABS_X = 0xBD,
     INS_LDA_ABS_Y = 0xB9,
     INS_LDA_IND_X = 0xA1,
     INS_LDA_IND_Y = 0xB1,
 
     // LDX - Load X Register
-    INS_LDX_IM = 0xA2,
-    INS_LDX_ZP = 0xA6,
-    INS_LDX_ZP_Y = 0xB6,
-    INS_LDX_ABS = 0xAE,
+    INS_LDX_IM    = 0xA2,
+    INS_LDX_ZP    = 0xA6,
+    INS_LDX_ZP_Y  = 0xB6,
+    INS_LDX_ABS   = 0xAE,
     INS_LDX_ABS_Y = 0xBE,
 
     // LDY - Load Y Register
-    INS_LDY_IM = 0xA0,
-    INS_LDY_ZP = 0xA4,
-    INS_LDY_ZP_X = 0xB4,
-    INS_LDY_ABS = 0xAC,
+    INS_LDY_IM    = 0xA0,
+    INS_LDY_ZP    = 0xA4,
+    INS_LDY_ZP_X  = 0xB4,
+    INS_LDY_ABS   = 0xAC,
     INS_LDY_ABS_X = 0xBC,
 
     // STA - Store Accumulator
-    INS_STA_ZP = 0x85,
-    INS_STA_ZP_X = 0x95,
-    INS_STA_ABS = 0x8D,
+    INS_STA_ZP    = 0x85,
+    INS_STA_ZP_X  = 0x95,
+    INS_STA_ABS   = 0x8D,
     INS_STA_ABS_X = 0x9D,
     INS_STA_ABS_Y = 0x99,
     INS_STA_IND_X = 0x81,
     INS_STA_IND_Y = 0x91,
 
     // STX - Store X Register
-    INS_STX_ZP = 0x86,
+    INS_STX_ZP   = 0x86,
     INS_STX_ZP_Y = 0x96,
-    INS_STX_ABS = 0x8E,
+    INS_STX_ABS  = 0x8E,
 
     // STY - Store Y Register
-    INS_STY_ZP = 0x84,
+    INS_STY_ZP   = 0x84,
     INS_STY_ZP_X = 0x94,
-    INS_STY_ABS = 0x8C,
+    INS_STY_ABS  = 0x8C,
 
     // JMP - JuMP
     INS_JMP_ABS = 0x4C,
@@ -167,49 +165,49 @@ typedef enum
     INS_PLP = 0x28, // (PuLl Processor status) Pull Processor Status from Stack
 
     // ORA - OR Memory with Accumulator
-    INS_ORA_IM = 0x09,
-    INS_ORA_ZP = 0x05,
-    INS_ORA_ZP_X = 0x15,
-    INS_ORA_ABS = 0x0D,
+    INS_ORA_IM    = 0x09,
+    INS_ORA_ZP    = 0x05,
+    INS_ORA_ZP_X  = 0x15,
+    INS_ORA_ABS   = 0x0D,
     INS_ORA_ABS_X = 0x1D,
     INS_ORA_ABS_Y = 0x19,
     INS_ORA_IND_X = 0x01,
     INS_ORA_IND_Y = 0x11,
 
     // AND - bitwise AND with accumulator
-    INS_AND_IM = 0x29,
-    INS_AND_ZP = 0x25,
-    INS_AND_ZP_X = 0x35,
-    INS_AND_ABS = 0x2D,
+    INS_AND_IM    = 0x29,
+    INS_AND_ZP    = 0x25,
+    INS_AND_ZP_X  = 0x35,
+    INS_AND_ABS   = 0x2D,
     INS_AND_ABS_X = 0x3D,
     INS_AND_ABS_Y = 0x39,
     INS_AND_IND_X = 0x21,
     INS_AND_IND_Y = 0x31,
 
     // EOR - Exclusive OR
-    INS_EOR_IM = 0x49,
-    INS_EOR_ZP = 0x45,
-    INS_EOR_ZP_X = 0x55,
-    INS_EOR_ABS = 0x4D,
+    INS_EOR_IM    = 0x49,
+    INS_EOR_ZP    = 0x45,
+    INS_EOR_ZP_X  = 0x55,
+    INS_EOR_ABS   = 0x4D,
     INS_EOR_ABS_X = 0x5D,
     INS_EOR_ABS_Y = 0x59,
     INS_EOR_IND_X = 0x41,
     INS_EOR_IND_Y = 0x51,
 
     // BIT - test BITs
-    INS_BIT_ZP = 0x24,
+    INS_BIT_ZP  = 0x24,
     INS_BIT_ABS = 0x2C,
 
     // DEC (DECrement memory)
-    INS_DEC_ZP = 0xC6,
-    INS_DEC_ZP_X = 0xD6,
-    INS_DEC_ABS = 0xCE,
+    INS_DEC_ZP    = 0xC6,
+    INS_DEC_ZP_X  = 0xD6,
+    INS_DEC_ABS   = 0xCE,
     INS_DEC_ABS_X = 0xDE,
 
     // INC (INCrement memory)
-    INS_INC_ZP = 0xE6,
-    INS_INC_ZP_X = 0xF6,
-    INS_INC_ABS = 0xEE,
+    INS_INC_ZP    = 0xE6,
+    INS_INC_ZP_X  = 0xF6,
+    INS_INC_ABS   = 0xEE,
     INS_INC_ABS_X = 0xFE,
 
     // Branch Instructions
@@ -235,10 +233,10 @@ typedef enum
     INS_NOP = 0xEA,
 
     // ADC (ADd with Carry)
-    INS_ADC_IM = 0x69,
-    INS_ADC_ZP = 0x65,
-    INS_ADC_ZP_X = 0x75,
-    INS_ADC_ABS = 0x6D,
+    INS_ADC_IM    = 0x69,
+    INS_ADC_ZP    = 0x65,
+    INS_ADC_ZP_X  = 0x75,
+    INS_ADC_ABS   = 0x6D,
     INS_ADC_ABS_X = 0x7D,
     INS_ADC_ABS_Y = 0x79,
     INS_ADC_IND_X = 0x61,
