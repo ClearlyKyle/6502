@@ -241,7 +241,17 @@ typedef enum
     INS_ADC_ABS_X = 0x7D,
     INS_ADC_ABS_Y = 0x79,
     INS_ADC_IND_X = 0x61,
-    INS_ADC_IND_Y = 0x71
+    INS_ADC_IND_Y = 0x71,
+
+    // SBC (SuBtract with Carry)
+    INS_SBC_IM    = 0xE9,
+    INS_SBC_ZP    = 0xE5,
+    INS_SBC_ZP_X  = 0xF5,
+    INS_SBC_ABS   = 0xED,
+    INS_SBC_ABS_X = 0xFD,
+    INS_SBC_ABS_Y = 0xF9,
+    INS_SBC_IND_X = 0xE1,
+    INS_SBC_IND_Y = 0xF1
 
 } Opcode;
 
@@ -1406,6 +1416,42 @@ s32 Execute(s32 num_cycles)
             const u8  operand = Read_Byte(&num_cycles, address);
             cpu.accumulator += operand;
             ADC(operand);
+            break;
+        }
+        // SBC (SuBtract with Carry)
+        case INS_SBC_IM:
+        {
+            break;
+        }
+        case INS_SBC_ZP:
+        {
+            break;
+        }
+        case INS_SBC_ZP_X:
+        {
+            break;
+        }
+        case INS_SBC_ABS:
+        {
+            const u16 address = Address_Absolute(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            SBC(operand);
+            break;
+        }
+        case INS_SBC_ABS_X:
+        {
+            break;
+        }
+        case INS_SBC_ABS_Y:
+        {
+            break;
+        }
+        case INS_SBC_IND_X:
+        {
+            break;
+        }
+        case INS_SBC_IND_Y:
+        {
             break;
         }
         default:
