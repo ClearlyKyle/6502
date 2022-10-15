@@ -644,9 +644,12 @@ void ADC(u8 operand)
     cpu.V = AreSignBitsTheSame && ((cpu.accumulator ^ operand) & NEGATIVE_FLAG_BIT);
 };
 
-// execute "num_cycles" the instruction in memory
-s32 Execute(s32 num_cycles)
+/** Do subtract with carry given the the operand */
+void SBC(u8 operand)
 {
+    ADC(~operand);
+};
+
 // execute "number_of_cycles" the instruction in memory
 inline s32 Execute(s32 number_of_cycles)
     {
