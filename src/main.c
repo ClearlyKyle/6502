@@ -5,20 +5,24 @@
 
 int main(void)
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
+
+    u8 data[MAX_MEM];
 
     // start - little program
-    mem.data[0xFFFC] = INS_JSR;
-    mem.data[0xFFFD] = 0x42;
-    mem.data[0xFFFE] = 0x42;
-    mem.data[0x4242] = INS_LDA_IM;
-    mem.data[0x4243] = 0x84;
+    data[0xFFFC] = INS_JSR;
+    data[0xFFFD] = 0x42;
+    data[0xFFFE] = 0x42;
+    data[0x4242] = INS_LDA_IM;
+    data[0x4243] = 0x84;
     // end - little program
-    Execute(9, &mem);
-    printf("A = %d\n", cpu.accumulator);
+
+    Load_Program(data, MAX_MEM);
+
+    Execute(9);
+
+    Display_CPU_State();
 
     printf("Program Exit...\n");
-
-    Display_CPU_State(&cpu);
     return 0;
 }
