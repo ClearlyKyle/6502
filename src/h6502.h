@@ -603,18 +603,22 @@ void EOR_Register(s32 *cycles, const u16 address)
     Load_Register_Set_Status(cpu.accumulator);
 }
 
+// 1 Cycle - Fetch
+// 2 Cycles - flag is set then jump
+// 3 Cycles - Crossing page
 void Branch_If(s32 *cycles, u8 flag, u8 expected)
 {
-    const s8 jump_offset = (s8)Fetch_Byte(cycles);
+    const s8 jump_offset = Fetch_Signed_Byte(cycles);
     if (flag == expected)
     {
         const u16 old_program_counter = cpu.program_counter;
         cpu.program_counter += jump_offset;
         (*cycles) -= 1;
 
-        if ((cpu.program_counter >> 8) != (old_program_counter >> 8))
+        const bool page_change = (cpu.program_counter >> 8) != (old_program_counter >> 8);
+        if (page_change)
         {
-            (*cycles) -= 2;
+            (*cycles) -= 1;
         }
     }
 }
