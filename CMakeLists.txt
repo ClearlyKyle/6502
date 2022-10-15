@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.11)
 project(6502 C)
 
 include(CTest)
-enable_testing()
 
 if(MSVC)
     message(STATUS "MSVC flags set")
@@ -60,8 +59,7 @@ set(TEST_NAMES_LIST
 
 message(STATUS "[TESTS] Loading all test files...")
 
-set(i 0)
-
+set(i 1)
 foreach(name ${TEST_NAMES_LIST})
     message(STATUS "[TESTS] ${i} - ${CMAKE_SOURCE_DIR}/tests/${name}.c \t: 6502_${name}")
 
@@ -81,4 +79,4 @@ foreach(name ${TEST_NAMES_LIST})
 endforeach()
 
 # will build before CTest is ran
-add_custom_target(BUILD_RUN_ALL_TESTS COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS ${TEST_NAMES_LIST})
+add_custom_target(BUILD_RUN_ALL_TESTS COMMAND ${CMAKE_CTEST_COMMAND} --rerun-failed --output-on-failure DEPENDS ${TEST_NAMES_LIST})
