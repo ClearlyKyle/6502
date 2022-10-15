@@ -656,7 +656,7 @@ void SBC(u8 operand)
 
 // execute "number_of_cycles" the instruction in memory
 inline s32 Execute(s32 number_of_cycles)
-    {
+{
     const s32 number_of_cycles_requested = number_of_cycles;
 
     bool bad_instruction = false;
@@ -1378,33 +1378,35 @@ inline s32 Execute(s32 number_of_cycles)
         // ADC (ADd with Carry)
         case INS_ADC_IM:
         {
+            const u8 operand = Fetch_Byte(&number_of_cycles);
+            ADC(operand);
             break;
         }
         case INS_ADC_ZP:
         {
+            const u16 address = Address_Zero_Page(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            ADC(operand);
             break;
         }
         case INS_ADC_ZP_X:
         {
+            const u16 address = Address_Zero_Page_X(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            ADC(operand);
             break;
         }
         case INS_ADC_ABS:
         {
             const u16 address = Address_Absolute(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-            cpu.accumulator += operand;
             ADC(operand);
-            // cpu.Z = 1;
-            // cpu.N = 0;
-            // cpu.C = 0;
-            // cpu.V = 0;
             break;
         }
         case INS_ADC_ABS_X:
         {
             const u16 address = Address_Absolute_X(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-            cpu.accumulator += operand;
             ADC(operand);
             break;
         }
@@ -1412,7 +1414,6 @@ inline s32 Execute(s32 number_of_cycles)
         {
             const u16 address = Address_Absolute_Y(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-            cpu.accumulator += operand;
             ADC(operand);
             break;
         }
@@ -1420,7 +1421,6 @@ inline s32 Execute(s32 number_of_cycles)
         {
             const u16 address = Address_Indirect_X(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-            cpu.accumulator += operand;
             ADC(operand);
             break;
         }
@@ -1428,7 +1428,6 @@ inline s32 Execute(s32 number_of_cycles)
         {
             const u16 address = Address_Indirect_Y(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-            cpu.accumulator += operand;
             ADC(operand);
             break;
         }
