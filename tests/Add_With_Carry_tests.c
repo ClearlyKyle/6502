@@ -743,10 +743,125 @@ void ADC_IND_Y_Can_Add_A_Positive_And_Negative_Number(void)
     Test_ADC_IND_Y(Test, OPERATION_ADD);
 }
 
+// SBC - Subtract with Carry
+
+void SBC_ABS_Can_Subtract_Zero_From_Zero_And_Get_Zero(void)
+{
+    struct ADC_Test_Data Test;
+    Test.Carry       = true;
+    Test.Accumulator = 0;
+    Test.Operand     = 0;
+    Test.Answer      = 0;
+    Test.ExpectC     = true;
+    Test.ExpectN     = false;
+    Test.ExpectV     = false;
+    Test.ExpectZ     = true;
+    Test_SBC_ABS(Test);
+}
+
+void SBC_ABS_Can_Subtract_Zero_From_Zero_And_Carry_And_Get_Minus_One(void)
+{
+    struct ADC_Test_Data Test;
+    Test.Carry       = false;
+    Test.Accumulator = 0;
+    Test.Operand     = 0;
+    Test.Answer      = (u8)(-1);
+    Test.ExpectC     = false;
+    Test.ExpectN     = true;
+    Test.ExpectV     = false;
+    Test.ExpectZ     = false;
+    Test_SBC_ABS(Test);
+}
+
+void SBC_ABS_Can_Subtract_One_From_Zero_And_Get_Minus_One(void)
+{
+    struct ADC_Test_Data Test;
+    Test.Carry       = true;
+    Test.Accumulator = 0;
+    Test.Operand     = 1;
+    Test.Answer      = (u8)(-1);
+    Test.ExpectC     = false;
+    Test.ExpectN     = true;
+    Test.ExpectV     = false;
+    Test.ExpectZ     = false;
+    Test_SBC_ABS(Test);
+}
+
+void SBC_ABS_Can_Subtract_One_From_Zero_With_Carry_And_Get_Minus_Two(void)
+{
+    struct ADC_Test_Data Test;
+    Test.Carry       = false;
+    Test.Accumulator = 0;
+    Test.Operand     = 1;
+    Test.Answer      = (u8)(-2);
+    Test.ExpectC     = false;
+    Test.ExpectN     = true;
+    Test.ExpectV     = false;
+    Test.ExpectZ     = false;
+    Test_SBC_ABS(Test);
+}
+
+void SBC_ABS_Can_Subtract_Two_Negative_Numbers_And_Get_Signed_Overflow(void)
+{
+    struct ADC_Test_Data Test;
+    Test.Carry       = true;
+    Test.Accumulator = (u8)(-128);
+    Test.Operand     = 1;
+    Test.Answer      = 127;
+    Test.ExpectC     = true;
+    Test.ExpectN     = false;
+    Test.ExpectV     = true;
+    Test.ExpectZ     = false;
+    Test_SBC_ABS(Test);
+}
+
+void SBC_ABS_Can_Subtract_A_Postitive_And_Negative_Numbers_And_Get_Signed_Overflow(void)
+{
+    struct ADC_Test_Data Test;
+    Test.Carry       = true;
+    Test.Accumulator = 127;
+    Test.Operand     = (u8)(-1);
+    Test.Answer      = 128;
+    Test.ExpectC     = false;
+    Test.ExpectN     = true;
+    Test.ExpectV     = true;
+    Test.ExpectZ     = false;
+    Test_SBC_ABS(Test);
+}
+
+void SBC_ABS_Can_Subtract_Two_Unsigned_Numbers(void)
+{
+    struct ADC_Test_Data Test;
+    Test.Carry       = true;
+    Test.Accumulator = 20;
+    Test.Operand     = 17;
+    Test.Answer      = 3;
+    Test.ExpectC     = true;
+    Test.ExpectN     = false;
+    Test.ExpectV     = false;
+    Test.ExpectZ     = false;
+    Test_SBC_ABS(Test);
+}
+
+void SBC_ABS_Can_Subtract_Two_Negative_Numbers(void)
+{
+    struct ADC_Test_Data Test;
+    Test.Carry       = true;
+    Test.Accumulator = (u8)(-20);
+    Test.Operand     = (u8)(-17);
+    Test.Answer      = (u8)(-3);
+    Test.ExpectC     = false;
+    Test.ExpectN     = true;
+    Test.ExpectV     = false;
+    Test.ExpectZ     = false;
+    Test_SBC_ABS(Test);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
 
+    // ADC
     RUN_TEST(ADC_ABS_Can_Add_Zero_To_Zero_And_Get_Zero);
     RUN_TEST(ADC_ABS_Can_Add_Carry_And_Zero_To_Zero_And_Get_One);
     RUN_TEST(ADC_ABS_Can_Add_Two_Unsigned_Numbers);
@@ -771,6 +886,16 @@ int main(void)
     RUN_TEST(ADC_IND_X_Can_Add_A_Positive_And_Negative_Number);
     RUN_TEST(ADC_IND_Y_Can_Add_Two_Unsigned_Numbers);
     RUN_TEST(ADC_IND_Y_Can_Add_A_Positive_And_Negative_Number);
+
+    // SBC
+    RUN_TEST(SBC_ABS_Can_Subtract_Zero_From_Zero_And_Get_Zero);
+    RUN_TEST(SBC_ABS_Can_Subtract_Zero_From_Zero_And_Carry_And_Get_Minus_One);
+    RUN_TEST(SBC_ABS_Can_Subtract_One_From_Zero_And_Get_Minus_One);
+    RUN_TEST(SBC_ABS_Can_Subtract_One_From_Zero_With_Carry_And_Get_Minus_Two);
+    RUN_TEST(SBC_ABS_Can_Subtract_Two_Negative_Numbers_And_Get_Signed_Overflow);
+    RUN_TEST(SBC_ABS_Can_Subtract_A_Postitive_And_Negative_Numbers_And_Get_Signed_Overflow);
+    RUN_TEST(SBC_ABS_Can_Subtract_Two_Unsigned_Numbers);
+    RUN_TEST(SBC_ABS_Can_Subtract_Two_Negative_Numbers);
 
     return UNITY_END();
 }
