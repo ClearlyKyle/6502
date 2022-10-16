@@ -7,7 +7,7 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
@@ -43,7 +43,7 @@ static u8 Do_Logical_Operation(u8 A, u8 B, enum LogicOperator LogicalOp)
         break;
     default:
         fprintf(stderr, "Invalid Logical Operator!\n");
-        return -1;
+        return UINT8_MAX;
     }
 }
 
@@ -66,13 +66,14 @@ static void Logical_Operator_Immediate(enum LogicOperator opp)
     mem.data[0xFFFD] = 0x84;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+    (NUM_OF_CYCLES, &mem);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x84, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x84, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -104,13 +105,14 @@ static void Logical_Operator_Zero_Page(enum LogicOperator opp)
     mem.data[0x0042] = 0x37;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 3;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+    (NUM_OF_CYCLES, &mem);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -142,13 +144,13 @@ static void Logical_Operator_Zero_Page_X(enum LogicOperator opp)
     mem.data[0x0047] = 0x37;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -163,8 +165,8 @@ static void Logical_Operator_ABS(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     switch (opp)
     {
@@ -184,13 +186,13 @@ static void Logical_Operator_ABS(enum LogicOperator opp)
     mem.data[0x4480] = 0x37;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -205,8 +207,8 @@ static void Logical_Operator_ABS_X(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
     cpu.index_reg_X = 1;
 
     switch (opp)
@@ -227,13 +229,13 @@ static void Logical_Operator_ABS_X(enum LogicOperator opp)
     mem.data[0x4481] = 0x37;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -248,8 +250,8 @@ static void Logical_Operator_ABS_Y(enum LogicOperator opp)
 {
     // given:
     cpu.accumulator = 0xCC;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
     cpu.index_reg_Y = 1;
 
     switch (opp)
@@ -270,13 +272,13 @@ static void Logical_Operator_ABS_Y(enum LogicOperator opp)
     mem.data[0x4481] = 0x37;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -311,13 +313,14 @@ static void Load_Register_ABS_Y_When_Crossing_Page_Boundary(enum LogicOperator o
     mem.data[0x4501] = 0x37; // 0x4402+0xFF crosses page boundary!
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+    (NUM_OF_CYCLES, &mem);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -352,13 +355,13 @@ static void Load_Register_ABS_X_When_Crossing_Page_Boundary(enum LogicOperator o
     mem.data[0x4501] = 0x37; // 0x4402+0xFF crosses page boundary!
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -374,8 +377,8 @@ static void Logical_Operator_Indirect_X(enum LogicOperator opp)
     // given:
     cpu.accumulator = 0xCC;
     cpu.index_reg_X = 0x04;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     switch (opp)
     {
@@ -396,13 +399,13 @@ static void Logical_Operator_Indirect_X(enum LogicOperator opp)
     mem.data[0x8000] = 0x37;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -418,8 +421,8 @@ static void Logical_Operator_Indirect_Y(enum LogicOperator opp)
     // given:
     cpu.accumulator = 0xCC;
     cpu.index_reg_Y = 0x04;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     switch (opp)
     {
@@ -440,13 +443,13 @@ static void Logical_Operator_Indirect_Y(enum LogicOperator opp)
     mem.data[0x8004] = 0x37; // 0x8000 + 0x4
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -482,13 +485,13 @@ static void Logical_Operator_Indirect_Y_When_Crossing_Page_Boundary(enum LogicOp
     mem.data[0x8101] = 0x37; // 0x8002 + 0xFF
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -522,13 +525,14 @@ static void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
     mem.data[0x007F] = 0x37;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+    (NUM_OF_CYCLES, &mem);
 
     // then:
-    const u8 expected_result = Do_Logical_Operation(0xCC, 0x37, opp);
+    const u8   expected_result   = Do_Logical_Operation(0xCC, 0x37, opp);
     const bool expected_negative = (expected_result & 0x80) > 0; // 0x80 = 0b10000000
 
     TEST_ASSERT_EQUAL_UINT8(expected_result, cpu.accumulator);
@@ -542,15 +546,15 @@ static void Logical_Operator_Zero_Page_X_When_It_Wraps(enum LogicOperator opp)
 void Test_Logical_Operator_EOR_Immediate_Can_Affect_Zero_Flag(void)
 {
     // given:
-    cpu.accumulator = 0xCC;
+    cpu.accumulator  = 0xCC;
     mem.data[0xFFFC] = INS_EOR_IM;
     mem.data[0xFFFD] = cpu.accumulator;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -732,8 +736,8 @@ void Test_Logical_Operator_AND_On_A_Register_IND_Y_When_Crossing_Page_Boundary(v
 void Test_BIT_ZP(void)
 {
     // given:
-    cpu.V = 0;
-    cpu.N = 0;
+    cpu.V           = 0;
+    cpu.N           = 0;
     cpu.accumulator = 0xCC;
 
     mem.data[0xFFFC] = INS_BIT_ZP;
@@ -743,11 +747,11 @@ void Test_BIT_ZP(void)
     // when:
     const s32 NUM_OF_CYCLES = 3;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
-    TEST_ASSERT_EQUAL_HEX8(0xCC, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0xCC, cpu.accumulator);
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_TRUE(cpu.V);
     TEST_ASSERT_TRUE(cpu.N);
@@ -757,8 +761,8 @@ void Test_BIT_ZP_Result_Zero(void)
 
 {
     // given:
-    cpu.V = 1;
-    cpu.N = 1;
+    cpu.V           = 1;
+    cpu.N           = 1;
     cpu.accumulator = 0xCC;
 
     mem.data[0xFFFC] = INS_BIT_ZP;
@@ -768,7 +772,7 @@ void Test_BIT_ZP_Result_Zero(void)
     // when
     const s32 NUM_OF_CYCLES = 3;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -781,8 +785,8 @@ void Test_BIT_ZP_Result_Zero(void)
 void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Zero(void)
 {
     // given:
-    cpu.V = 0;
-    cpu.N = 0;
+    cpu.V           = 0;
+    cpu.N           = 0;
     cpu.accumulator = 0x33;
 
     mem.data[0xFFFC] = INS_BIT_ZP;
@@ -792,7 +796,7 @@ void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Zero(void)
     // when:
     const s32 NUM_OF_CYCLES = 3;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -815,7 +819,7 @@ void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Mixed(void)
     // when:
     const s32 NUM_OF_CYCLES = 3;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -826,8 +830,8 @@ void Test_BIT_ZP_Result_Zero_Bits_6_and_7_Mixed(void)
 void Test_Bit_ABS(void)
 {
     // given:
-    cpu.V = 0;
-    cpu.N = 0;
+    cpu.V           = 0;
+    cpu.N           = 0;
     cpu.accumulator = 0xCC;
 
     mem.data[0xFFFC] = INS_BIT_ABS;
@@ -838,7 +842,7 @@ void Test_Bit_ABS(void)
     // when:
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -852,8 +856,8 @@ void Test_Bit_ABS(void)
 void Test_Bit_ABS_Result_Zero(void)
 {
     // given:
-    cpu.V = 1;
-    cpu.N = 1;
+    cpu.V           = 1;
+    cpu.N           = 1;
     cpu.accumulator = 0xCC;
 
     mem.data[0xFFFC] = INS_BIT_ABS;
@@ -864,7 +868,7 @@ void Test_Bit_ABS_Result_Zero(void)
     // when:
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -878,8 +882,8 @@ void Test_Bit_ABS_Result_Zero(void)
 void Test_BIT_ABS_Result_Zero_Bit_6_And_7_Zero(void)
 {
     // given:
-    cpu.V = 0;
-    cpu.N = 0;
+    cpu.V           = 0;
+    cpu.N           = 0;
     cpu.accumulator = 0x33;
 
     mem.data[0xFFFC] = INS_BIT_ABS;
@@ -890,7 +894,7 @@ void Test_BIT_ABS_Result_Zero_Bit_6_And_7_Zero(void)
     // when:
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -915,7 +919,7 @@ void Test_BIT_ABS_Result_Zero_Bit_6_And_7_Mixed(void)
     // when:
     const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
