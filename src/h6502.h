@@ -289,7 +289,7 @@ void Reset_CPU(void)
     Initialise_Memory();
 }
 
-void Display_CPU_State()
+void Display_CPU_State(void)
 {
     printf("A  : 0x%X \t(%d) \tSP: 0x%X \t(%d) \n", cpu.accumulator, cpu.accumulator, cpu.stack_pointer, cpu.stack_pointer);
     printf("X  : 0x%X \t(%d) \tPC: 0x%X \t(%d) \n", cpu.index_reg_X, cpu.index_reg_X, cpu.program_counter, cpu.program_counter);
@@ -339,7 +339,7 @@ u16 Load_Program(const u8 *program, int number_of_bytes)
     return load_address;
 }
 
-u16 SP_To_Address()
+u16 SP_To_Address(void)
 {
     return 0x100 | cpu.stack_pointer;
 }
@@ -1434,14 +1434,22 @@ inline s32 Execute(s32 number_of_cycles)
         // SBC (SuBtract with Carry)
         case INS_SBC_IM:
         {
+            const u8 operand = Fetch_Byte(&number_of_cycles);
+            SBC(operand);
             break;
         }
         case INS_SBC_ZP:
         {
+            const u16 address = Address_Zero_Page(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            SBC(operand);
             break;
         }
         case INS_SBC_ZP_X:
         {
+            const u16 address = Address_Zero_Page_X(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            SBC(operand);
             break;
         }
         case INS_SBC_ABS:
@@ -1453,18 +1461,30 @@ inline s32 Execute(s32 number_of_cycles)
         }
         case INS_SBC_ABS_X:
         {
+            const u16 address = Address_Zero_Page_X(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            SBC(operand);
             break;
         }
         case INS_SBC_ABS_Y:
         {
+            const u16 address = Address_Absolute_Y(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            SBC(operand);
             break;
         }
         case INS_SBC_IND_X:
         {
+            const u16 address = Address_Indirect_X(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            SBC(operand);
             break;
         }
         case INS_SBC_IND_Y:
         {
+            const u16 address = Address_Indirect_Y(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            SBC(operand);
             break;
         }
         default:
