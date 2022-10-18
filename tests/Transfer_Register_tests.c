@@ -7,7 +7,7 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
     cpu.program_counter = 0xFF00;
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
@@ -29,16 +29,16 @@ void TAX_Can_Transfer_Non_Negative_Non_Zero_Value(void)
 {
     cpu.accumulator = 0x42;
     cpu.index_reg_X = 0x32;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_TAX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -55,16 +55,16 @@ void TAX_Can_Transfer_Non_Negative_Zero_Value(void)
 {
     cpu.accumulator = 0x00;
     cpu.index_reg_X = 0x32;
-    cpu.Z = 0;
-    cpu.N = 1;
+    cpu.Z           = 0;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_TAX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -81,16 +81,16 @@ void TAX_Can_Transfer_Negative_Value(void)
 {
     cpu.accumulator = 0x8B; // 0b10001011
     cpu.index_reg_X = 0x32;
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_TAX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -108,16 +108,16 @@ void TAY_Can_Transfer_Non_Negative_Non_Zero_Value(void)
 {
     cpu.accumulator = 0x42;
     cpu.index_reg_Y = 0x32;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_TAY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -134,16 +134,16 @@ void TAY_Can_Transfer_Non_Negative_Zero_Value(void)
 {
     cpu.accumulator = 0x00;
     cpu.index_reg_Y = 0x32;
-    cpu.Z = 0;
-    cpu.N = 1;
+    cpu.Z           = 0;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_TAY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -160,16 +160,16 @@ void TAY_Can_Transfer_Negative_Value(void)
 {
     cpu.accumulator = 0x8B; // 0b10001011
     cpu.index_reg_Y = 0x32;
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_TAY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -187,16 +187,16 @@ void TXA_Can_Transfer_Non_Negative_Non_Zero_Value(void)
 {
     cpu.index_reg_X = 0x42;
     cpu.accumulator = 0x32;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_TXA;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -213,16 +213,16 @@ void TXA_Can_Transfer_Non_Negative_Zero_Value(void)
 {
     cpu.index_reg_X = 0x00;
     cpu.accumulator = 0x32;
-    cpu.Z = 0;
-    cpu.N = 1;
+    cpu.Z           = 0;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_TXA;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -239,16 +239,16 @@ void TXA_Can_Transfer_Negative_Value(void)
 {
     cpu.index_reg_X = 0x8B; // 0b10001011
     cpu.accumulator = 0x32;
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_TXA;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -266,16 +266,16 @@ void TYA_Can_Transfer_Non_Negative_Non_Zero_Value(void)
 {
     cpu.index_reg_Y = 0x42;
     cpu.accumulator = 0x32;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_TYA;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -292,16 +292,16 @@ void TYA_Can_Transfer_Non_Negative_Zero_Value(void)
 {
     cpu.index_reg_Y = 0x00;
     cpu.accumulator = 0x32;
-    cpu.Z = 0;
-    cpu.N = 1;
+    cpu.Z           = 0;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_TYA;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -318,16 +318,16 @@ void TYA_Can_Transfer_Negative_Value(void)
 {
     cpu.index_reg_Y = 0x8B; // 0b10001011
     cpu.accumulator = 0x32;
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_TYA;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
