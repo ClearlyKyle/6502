@@ -6,7 +6,7 @@ include(CTest)
 
 if(MSVC)
     message(STATUS "MSVC flags set")
-    add_compile_options("/W4" "/std:c11" "$<$<CONFIG:RELEASE>:/O2>")
+    add_compile_options("/WX" "/std:c11" "$<$<CONFIG:RELEASE>:/O2>")
 else()
     message(STATUS "GNU flags set")
     add_compile_options("-Wall" "-Wextra" "-Werror" "-std=gnu11" "$<$<CONFIG:RELEASE>:-O3>")
