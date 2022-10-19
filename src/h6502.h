@@ -251,7 +251,17 @@ typedef enum
     INS_SBC_ABS_X = 0xFD,
     INS_SBC_ABS_Y = 0xF9,
     INS_SBC_IND_X = 0xE1,
-    INS_SBC_IND_Y = 0xF1
+    INS_SBC_IND_Y = 0xF1,
+
+    // CMP (CoMPare accumulator)
+    INS_CMP_IM    = 0xC9,
+    INS_CMP_ZP    = 0xC5,
+    INS_CMP_ZP_X  = 0xD5,
+    INS_CMP_ABS   = 0xCD,
+    INS_CMP_ABS_X = 0xDD,
+    INS_CMP_ABS_Y = 0xD9,
+    INS_CMP_IND_X = 0xC1,
+    INS_CMP_IND_Y = 0xD1,
 
 } Opcode;
 
@@ -654,6 +664,14 @@ void SBC(u8 operand)
     ADC(~operand);
 };
 
+/** Sets the processor status for a CMP/CPX/CPY instruction */
+void Register_Compare(u8 operand, u8 register_value)
+{
+    const u8 Temp = register_value - operand;
+    cpu.N         = (Temp & NEGATIVE_FLAG_BIT) > 0;
+    cpu.Z         = register_value == operand;
+    cpu.C         = register_value >= operand;
+}
 // execute "number_of_cycles" the instruction in memory
 inline s32 Execute(s32 number_of_cycles)
 {
@@ -1485,6 +1503,64 @@ inline s32 Execute(s32 number_of_cycles)
             const u16 address = Address_Indirect_Y(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
             SBC(operand);
+            break;
+        }
+            // CMP (CoMPare accumulator)
+        case INS_CMP_IM:
+        {
+            const u8 address = Fetch_Byte(&number_of_cycles);
+            const u8 operand = Read_Byte(&number_of_cycles, address);
+
+            Register_Compare(operand, cpu.accumulator);
+            break;
+        }
+        case INS_CMP_ZP:
+        {
+            const u16 address = Address_Zero_Page(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+
+            break;
+        }
+        case INS_CMP_ZP_X:
+        {
+            const u16 address = Address_Zero_Page_X(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+
+            break;
+        }
+        case INS_CMP_ABS:
+        {
+            const u16 address = Address_Absolute(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+
+            break;
+        }
+        case INS_CMP_ABS_X:
+        {
+            const u16 address = Address_Absolute_X(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+
+            break;
+        }
+        case INS_CMP_ABS_Y:
+        {
+            const u16 address = Address_Absolute_Y(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+
+            break;
+        }
+        case INS_CMP_IND_X:
+        {
+            const u16 address = Address_Indirect_X(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+
+            break;
+        }
+        case INS_CMP_IND_Y:
+        {
+            const u16 address = Address_Indirect_Y(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+
             break;
         }
         default:
