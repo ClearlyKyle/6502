@@ -55,11 +55,13 @@ set(TEST_NAMES_LIST
     "Status_Flag_Change_tests"
     "System_Function_tests"
     "Add_With_Carry_tests"
+    "Compare_Register_tests"
 )
 
 message(STATUS "[TESTS] Loading all test files...")
 
 set(i 1)
+
 foreach(name ${TEST_NAMES_LIST})
     message(STATUS "[TESTS] ${i} - ${CMAKE_SOURCE_DIR}/tests/${name}.c \t: 6502_${name}")
 
