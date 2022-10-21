@@ -263,6 +263,10 @@ typedef enum
     INS_CMP_IND_X = 0xC1,
     INS_CMP_IND_Y = 0xD1,
 
+    // CPX (ComPare X register)
+    INS_CPX_IM  = 0xE0,
+    INS_CPX_ZP  = 0xE4,
+    INS_CPX_ABS = 0xEC,
 } Opcode;
 
 // ---------------------------------------------------------------------
@@ -667,10 +671,11 @@ void SBC(u8 operand)
 /** Sets the processor status for a CMP/CPX/CPY instruction */
 void Register_Compare(u8 operand, u8 register_value)
 {
-    const u8 Temp = register_value - operand;
-    cpu.N         = (Temp & NEGATIVE_FLAG_BIT) > 0;
-    cpu.Z         = register_value == operand;
-    cpu.C         = register_value >= operand;
+    const u8 temp = register_value - operand;
+    cpu.N         = ((temp & NEGATIVE_FLAG_BIT) > 0);
+    cpu.Z         = (register_value == operand);
+    cpu.C         = (register_value >= operand);
+}
 }
 // execute "number_of_cycles" the instruction in memory
 inline s32 Execute(s32 number_of_cycles)
@@ -1508,9 +1513,7 @@ inline s32 Execute(s32 number_of_cycles)
             // CMP (CoMPare accumulator)
         case INS_CMP_IM:
         {
-            const u8 address = Fetch_Byte(&number_of_cycles);
-            const u8 operand = Read_Byte(&number_of_cycles, address);
-
+            const u8 operand = Fetch_Byte(&number_of_cycles);
             Register_Compare(operand, cpu.accumulator);
             break;
         }
@@ -1560,6 +1563,30 @@ inline s32 Execute(s32 number_of_cycles)
         {
             const u16 address = Address_Indirect_Y(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
+
+            break;
+        }
+            // CPX (ComPare X register)
+        case INS_CPX_IM:
+        {
+            const u8 operand = Fetch_Byte(&number_of_cycles);
+            Register_Compare(operand, cpu.index_reg_X);
+            break;
+        }
+        case INS_CPX_ZP:
+        {
+            const u16 address = Address_Zero_Page(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            Register_Compare(operand, cpu.index_reg_X);
+            break;
+        }
+        case INS_CPX_ABS:
+        {
+            const u16 address = Address_Absolute(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            Register_Compare(operand, cpu.index_reg_X);
+            break;
+        }
 
             break;
         }
