@@ -267,6 +267,12 @@ typedef enum
     INS_CPX_IM  = 0xE0,
     INS_CPX_ZP  = 0xE4,
     INS_CPX_ABS = 0xEC,
+
+    // CPY (ComPare Y register)
+    INS_CPY_IM  = 0xC0,
+    INS_CPY_ZP  = 0xC4,
+    INS_CPY_ABS = 0xCC
+
 } Opcode;
 
 // ---------------------------------------------------------------------
@@ -1588,6 +1594,25 @@ inline s32 Execute(s32 number_of_cycles)
             break;
         }
 
+        // CPY (ComPare Y register)
+        case INS_CPY_IM:
+        {
+            const u8 operand = Fetch_Byte(&number_of_cycles);
+            Register_Compare(operand, cpu.index_reg_Y);
+            break;
+        }
+        case INS_CPY_ZP:
+        {
+            const u16 address = Address_Zero_Page(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            Register_Compare(operand, cpu.index_reg_Y);
+            break;
+        }
+        case INS_CPY_ABS:
+        {
+            const u16 address = Address_Absolute(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            Register_Compare(operand, cpu.index_reg_Y);
             break;
         }
         default:
