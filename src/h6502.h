@@ -492,8 +492,7 @@ void Load_Register_Set_Status(u8 reg)
 // Addressing mode - Zero Page (1 cycle)
 u8 Address_Zero_Page(s32 *cycles)
 {
-    const u8 zero_page_address = Fetch_Byte(cycles);
-    return zero_page_address;
+    return Fetch_Byte(cycles); // zero_page_address
 }
 
 // Addressing mode - Zero Page (2 cycles)
