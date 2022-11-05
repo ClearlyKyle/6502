@@ -1540,7 +1540,7 @@ inline s32 Execute(s32 number_of_cycles)
         {
             const u16 address = Address_Absolute(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-
+            Register_Compare(operand, cpu.accumulator);
             break;
         }
         case INS_CMP_ABS_X:

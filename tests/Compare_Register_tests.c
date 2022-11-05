@@ -197,6 +197,50 @@ static void CMP_ZP_X(struct CMP_Test_Data test)
     Check_Unaffected_Registers(cpu_before);
 }
 
+static void CMP_ABS(struct CMP_Test_Data test, enum Register register_to_compare)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = !test.expect_C;
+    cpu.Z               = !test.expect_Z;
+    cpu.N               = !test.expect_N;
+
+    u8 *reg    = &cpu.accumulator;
+    u8  opcode = INS_CMP_ABS;
+    switch (register_to_compare)
+    {
+    case REGISTER_X:
+        reg    = &cpu.index_reg_X;
+        opcode = INS_CPX_ABS;
+        break;
+    case REGISTER_Y:
+        reg    = &cpu.index_reg_Y;
+        opcode = INS_CPY_ABS;
+        break;
+    };
+    *reg = test.register_value;
+
+    mem.data[0xFF00] = opcode;
+    mem.data[0xFF01] = 0x00;
+    mem.data[0xFF02] = 0x80;
+    mem.data[0x8000] = test.operand;
+
+    const s32 EXPECTED_CYCLES = 4;
+    const CPU cpu_before      = cpu;
+
+    // when:
+    const s32 cycles_used = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(test.register_value, *reg);
+
+    TEST_ASSERT_EQUAL_UINT8(test.expect_Z, cpu.Z);
+    TEST_ASSERT_EQUAL_UINT8(test.expect_N, cpu.N);
+    TEST_ASSERT_EQUAL_UINT8(test.expect_C, cpu.C);
+
+    Check_Unaffected_Registers(cpu_before);
+}
 // Immediate
 void CMP_IM_Can_Compare_Two_Identical_Values(void)
 {
@@ -272,6 +316,31 @@ void CMP_ZP_X_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set(void)
     CMP_ZP_X(test);
 }
 
+// Absolute
+void CMP_ABS_Can_Compare_Two_Identical_Values(void)
+{
+    struct CMP_Test_Data test = Compare_Two_Identical_Values();
+    CMP_ABS(test, REGISTER_A);
+}
+
+void CMP_ABS_Can_Compare_A_Large_Positive_To_A_Small_Positive(void)
+{
+    struct CMP_Test_Data test = Compare_A_Large_Positive_To_A_Small_Positive();
+    CMP_ABS(test, REGISTER_A);
+}
+
+void CMP_ABS_Can_Compare_A_Negative_Number_To_A_Positive(void)
+{
+    struct CMP_Test_Data test = Compare_A_Negative_Number_To_A_Positive();
+    CMP_ABS(test, REGISTER_A);
+}
+
+void CMP_ABS_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set(void)
+{
+    struct CMP_Test_Data test = Compare_Two_Values_That_Result_In_A_Negative_Flag_Set();
+    CMP_ABS(test, REGISTER_A);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -294,5 +363,10 @@ int main(void)
     RUN_TEST(CMP_ZP_X_Can_Compare_A_Negative_Number_To_A_Positive);
     RUN_TEST(CMP_ZP_X_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set);
 
+    // Absolute
+    RUN_TEST(CMP_ABS_Can_Compare_Two_Identical_Values);
+    RUN_TEST(CMP_ABS_Can_Compare_A_Large_Positive_To_A_Small_Positive);
+    RUN_TEST(CMP_ABS_Can_Compare_A_Negative_Number_To_A_Positive);
+    RUN_TEST(CMP_ABS_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set);
     return UNITY_END();
 }
