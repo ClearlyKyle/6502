@@ -241,6 +241,40 @@ static void CMP_ABS(struct CMP_Test_Data test, enum Register register_to_compare
 
     Check_Unaffected_Registers(cpu_before);
 }
+
+static void CMP_ABS_X(struct CMP_Test_Data test)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = !test.expect_C;
+    cpu.Z               = !test.expect_Z;
+    cpu.N               = !test.expect_N;
+    cpu.accumulator     = test.register_value;
+    cpu.index_reg_X     = 4;
+
+    mem.data[0xFF00]     = INS_CMP_ABS_X;
+    mem.data[0xFF01]     = 0x00;
+    mem.data[0xFF02]     = 0x80;
+    mem.data[0x8000 + 4] = test.operand;
+
+    const s32 EXPECTED_CYCLES = 4;
+    const CPU cpu_before      = cpu;
+
+    // when:
+    const s32 cycles_used = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_UINT8(test.register_value, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(4, cpu.index_reg_X);
+
+    TEST_ASSERT_EQUAL_UINT8(test.expect_Z, cpu.Z);
+    TEST_ASSERT_EQUAL_UINT8(test.expect_N, cpu.N);
+    TEST_ASSERT_EQUAL_UINT8(test.expect_C, cpu.C);
+
+    Check_Unaffected_Registers(cpu_before);
+}
+
 // Immediate
 void CMP_IM_Can_Compare_Two_Identical_Values(void)
 {
@@ -341,6 +375,30 @@ void CMP_ABS_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set(void)
     CMP_ABS(test, REGISTER_A);
 }
 
+// Absolute X
+void CMP_ABS_X_Can_Compare_Two_Identical_Values(void)
+{
+    struct CMP_Test_Data test = Compare_Two_Identical_Values();
+    CMP_ABS_X(test);
+}
+
+void CMP_ABS_X_Can_Compare_A_Large_Positive_To_A_Small_Positive(void)
+{
+    struct CMP_Test_Data test = Compare_A_Large_Positive_To_A_Small_Positive();
+    CMP_ABS_X(test);
+}
+
+void CMP_ABS_X_Can_Compare_A_Negative_Number_To_A_Positive(void)
+{
+    struct CMP_Test_Data test = Compare_A_Negative_Number_To_A_Positive();
+    CMP_ABS_X(test);
+}
+
+void CMP_ABS_X_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set(void)
+{
+    struct CMP_Test_Data test = Compare_Two_Values_That_Result_In_A_Negative_Flag_Set();
+    CMP_ABS_X(test);
+}
 int main(void)
 {
     UNITY_BEGIN();
@@ -368,5 +426,11 @@ int main(void)
     RUN_TEST(CMP_ABS_Can_Compare_A_Large_Positive_To_A_Small_Positive);
     RUN_TEST(CMP_ABS_Can_Compare_A_Negative_Number_To_A_Positive);
     RUN_TEST(CMP_ABS_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set);
+
+    // Absolute X
+    RUN_TEST(CMP_ABS_X_Can_Compare_Two_Identical_Values);
+    RUN_TEST(CMP_ABS_X_Can_Compare_A_Large_Positive_To_A_Small_Positive);
+    RUN_TEST(CMP_ABS_X_Can_Compare_A_Negative_Number_To_A_Positive);
+    RUN_TEST(CMP_ABS_X_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set);
     return UNITY_END();
 }
