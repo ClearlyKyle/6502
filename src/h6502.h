@@ -1554,21 +1554,21 @@ inline s32 Execute(s32 number_of_cycles)
         {
             const u16 address = Address_Absolute_Y(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-
+            Register_Compare(operand, cpu.accumulator);
             break;
         }
         case INS_CMP_IND_X:
         {
             const u16 address = Address_Indirect_X(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-
+            Register_Compare(operand, cpu.accumulator);
             break;
         }
         case INS_CMP_IND_Y:
         {
             const u16 address = Address_Indirect_Y(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
-
+            Register_Compare(operand, cpu.accumulator);
             break;
         }
             // CPX (ComPare X register)
