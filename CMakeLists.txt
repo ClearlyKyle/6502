@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.14)
 
 project(6502 C)
 
@@ -39,6 +39,18 @@ file(GLOB UNITY_SRC
 add_library(unity STATIC ${UNITY_SRC})
 add_library(6502_header INTERFACE ${6502_HEADER})
 
+function(pad_string output str padchar length)
+    string(LENGTH "${str}" _strlen)
+    math(EXPR _strlen "${length} - ${_strlen}")
+
+    if(_strlen GREATER 0)
+        string(REPEAT ${padchar} ${_strlen} _pad) # min version 3.14
+        string(APPEND str ${_pad})
+    endif()
+
+    set(${output} "${str}" PARENT_SCOPE)
+endfunction()
+
 # # TESTING
 # These need to match the test file name, and will be make into a
 # test name of "6502_${name}"
@@ -64,8 +76,6 @@ message(STATUS "[TESTS] Loading all test files...")
 set(i 1)
 
 foreach(name ${TEST_NAMES_LIST})
-    message(STATUS "[TESTS] ${i} - ${CMAKE_SOURCE_DIR}/tests/${name}.c \t: 6502_${name}")
-
     # Create .exe
     add_executable(${name} "${CMAKE_SOURCE_DIR}/tests/${name}.c")
 
@@ -78,6 +88,8 @@ foreach(name ${TEST_NAMES_LIST})
     # Add the test for Ctest,
     add_test(6502_${name} "${CMAKE_SOURCE_DIR}/bin/tests/${name}")
 
+    pad_string(test_path_padded "${CMAKE_SOURCE_DIR}/tests/${name}.c" " " 50)
+    message(STATUS "[TESTS] ${i}\t- ${test_path_padded}: 6502_${name}")
     math(EXPR i "${i} + 1")
 endforeach()
 
