@@ -271,7 +271,14 @@ typedef enum
     // CPY (ComPare Y register)
     INS_CPY_IM  = 0xC0,
     INS_CPY_ZP  = 0xC4,
-    INS_CPY_ABS = 0xCC
+    INS_CPY_ABS = 0xCC,
+
+    // Arithmetic shift left
+    INS_ASL       = 0x0A,
+    INS_ASL_ZP    = 0x06,
+    INS_ASL_ZP_X  = 0x16,
+    INS_ASL_ABS   = 0x0E,
+    INS_ASL_ABS_X = 0x1E
 
 } Opcode;
 
@@ -673,7 +680,7 @@ void SBC(u8 operand)
     ADC(~operand);
 };
 
-/** Sets the processor status for a CMP/CPX/CPY instruction */
+/* Sets the processor status for a CMP/CPX/CPY instruction */
 void Register_Compare(u8 operand, u8 register_value)
 {
     const u8 temp = register_value - operand;
@@ -681,6 +688,16 @@ void Register_Compare(u8 operand, u8 register_value)
     cpu.Z         = (register_value == operand);
     cpu.C         = (register_value >= operand);
 }
+
+/* Arithmetic shift left */
+u8 ASL(s32 *cycles, u8 operand)
+{
+    cpu.C           = (operand & NEGATIVE_FLAG_BIT) > 0;
+    const u8 result = operand << 1;
+    Set_Zero_and_Negative_Flags(result);
+    (*cycles)--;
+    return result;
+};
 }
 // execute "number_of_cycles" the instruction in memory
 inline s32 Execute(s32 number_of_cycles)
@@ -1612,6 +1629,12 @@ inline s32 Execute(s32 number_of_cycles)
             const u16 address = Address_Absolute(&number_of_cycles);
             const u8  operand = Read_Byte(&number_of_cycles, address);
             Register_Compare(operand, cpu.index_reg_Y);
+            break;
+        }
+            // Arithmetic shift left
+        case INS_ASL:
+        {
+            cpu.accumulator = ASL(&number_of_cycles, cpu.accumulator);
             break;
         }
         default:
