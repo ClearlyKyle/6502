@@ -651,6 +651,31 @@ void CPX_ZP_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set(void)
     CMP_ZP(test, REGISTER_X);
 }
 
+// CPY Zero Page
+void CPY_ZP_Can_Compare_Two_Identical_Values(void)
+{
+    struct CMP_Test_Data test = Compare_Two_Identical_Values();
+    CMP_ZP(test, REGISTER_Y);
+}
+
+void CPY_ZP_Can_Compare_A_Large_Positive_To_A_Small_Positive(void)
+{
+    struct CMP_Test_Data test = Compare_A_Large_Positive_To_A_Small_Positive();
+    CMP_ZP(test, REGISTER_Y);
+}
+
+void CPY_ZP_Can_Compare_A_Negative_Number_To_A_Positive(void)
+{
+    struct CMP_Test_Data test = Compare_A_Negative_Number_To_A_Positive();
+    CMP_ZP(test, REGISTER_Y);
+}
+
+void CPY_ZP_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set(void)
+{
+    struct CMP_Test_Data test = Compare_Two_Values_That_Result_In_A_Negative_Flag_Set();
+    CMP_ZP(test, REGISTER_Y);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -721,5 +746,10 @@ int main(void)
     RUN_TEST(CPX_ZP_Can_Compare_A_Negative_Number_To_A_Positive);
     RUN_TEST(CPX_ZP_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set);
 
+    // CPY Zero Page
+    RUN_TEST(CPY_ZP_Can_Compare_Two_Identical_Values);
+    RUN_TEST(CPY_ZP_Can_Compare_A_Large_Positive_To_A_Small_Positive);
+    RUN_TEST(CPY_ZP_Can_Compare_A_Negative_Number_To_A_Positive);
+    RUN_TEST(CPY_ZP_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set);
     return UNITY_END();
 }
