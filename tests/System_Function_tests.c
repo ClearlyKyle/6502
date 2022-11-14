@@ -7,7 +7,7 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
@@ -19,13 +19,13 @@ void NOP_Will_Do_Nothing_But_Consume_A_Cycle(void)
     mem.data[0xFF00] = INS_NOP;
 
     // when:
-    const CPU before = cpu;
-    const s32 NUM_CYCLES = 2;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_UINT8(before.PS, cpu.PS);
     TEST_ASSERT_EQUAL_UINT16(before.program_counter + 0x01, cpu.program_counter);

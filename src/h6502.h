@@ -674,7 +674,7 @@ void ADC(u8 operand)
     cpu.V = AreSignBitsTheSame && ((cpu.accumulator ^ operand) & NEGATIVE_FLAG_BIT);
 };
 
-/** Do subtract with carry given the the operand */
+/* Do subtract with carry given the the operand */
 void SBC(u8 operand)
 {
     ADC(~operand);
