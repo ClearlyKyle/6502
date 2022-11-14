@@ -5,7 +5,7 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
@@ -27,10 +27,10 @@ void Test_Store_Register_ZP(Opcode op, u8 *reg)
     mem.data[0xFFFD] = 0x80;
     mem.data[0x0080] = 0x00;
 
-    const CPU before = cpu;
+    const CPU before          = cpu;
     const int EXPECTED_CYCLES = 3;
 
-    const u32 cycles_used = Execute(EXPECTED_CYCLES, &mem);
+    const u32 cycles_used = Execute(EXPECTED_CYCLES);
 
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x0080], 0x2F);
@@ -40,17 +40,17 @@ void Test_Store_Register_ZP(Opcode op, u8 *reg)
 
 void Test_Store_Register_ZP_X(Opcode op, u8 *reg)
 {
-    (*reg) = 0x42;
+    (*reg)          = 0x42;
     cpu.index_reg_X = 0x0F;
 
     mem.data[0xFFFC] = op;
     mem.data[0xFFFD] = 0x80;
     mem.data[0x008F] = 0x00;
 
-    const CPU before = cpu;
+    const CPU before          = cpu;
     const int EXPECTED_CYCLES = 4;
 
-    const u32 cycles_used = Execute(EXPECTED_CYCLES, &mem);
+    const u32 cycles_used = Execute(EXPECTED_CYCLES);
 
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(0x42, mem.data[0x008F]);
@@ -60,17 +60,17 @@ void Test_Store_Register_ZP_X(Opcode op, u8 *reg)
 
 void Test_Store_Register_ZP_Y(Opcode op, u8 *reg)
 {
-    (*reg) = 0x42;
+    (*reg)          = 0x42;
     cpu.index_reg_Y = 0x0F;
 
     mem.data[0xFFFC] = op;
     mem.data[0xFFFD] = 0x80;
     mem.data[0x008F] = 0x00;
 
-    const CPU before = cpu;
+    const CPU before          = cpu;
     const int EXPECTED_CYCLES = 4;
 
-    const u32 cycles_used = Execute(EXPECTED_CYCLES, &mem);
+    const u32 cycles_used = Execute(EXPECTED_CYCLES);
 
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x008F], 0x42);
@@ -80,17 +80,17 @@ void Test_Store_Register_ZP_Y(Opcode op, u8 *reg)
 
 void Test_Store_Register_ABS(Opcode op, u8 *reg)
 {
-    (*reg) = 0x2F;
+    (*reg)           = 0x2F;
     mem.data[0xFFFC] = op;
 
     mem.data[0xFFFD] = 0x00;
     mem.data[0xFFFE] = 0x80;
     mem.data[0x8000] = 0x00;
 
-    const CPU before = cpu;
+    const CPU before          = cpu;
     const int EXPECTED_CYCLES = 4;
 
-    const u32 cycles_used = Execute(EXPECTED_CYCLES, &mem);
+    const u32 cycles_used = Execute(EXPECTED_CYCLES);
 
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x8000], 0x2F);
@@ -147,18 +147,18 @@ void STY_ZP_X_Can_Store_The_Y_Register_Into_Memory(void)
 void STA_ABS_X_Can_Store_The_A_Register_Into_Memory(void)
 {
     // given:
-    cpu.accumulator = 0x42;
-    cpu.index_reg_X = 0x0F;
+    cpu.accumulator  = 0x42;
+    cpu.index_reg_X  = 0x0F;
     mem.data[0xFFFC] = INS_STA_ABS_X;
     mem.data[0xFFFD] = 0x00;
     mem.data[0xFFFE] = 0x80;
 
-    const CPU before = cpu;
-    const int EXPECTED_CYCLES = 5;
+    const CPU before        = cpu;
+    const int NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(EXPECTED_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
-    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x800F], 0x42);
 
     Verify_Unmodified_Flags_Store_Register(before, cpu);
@@ -167,18 +167,18 @@ void STA_ABS_X_Can_Store_The_A_Register_Into_Memory(void)
 void STA_ABS_Y_Can_Store_The_A_Register_Into_Memory(void)
 {
     // given:
-    cpu.accumulator = 0x42;
-    cpu.index_reg_Y = 0x0F;
+    cpu.accumulator  = 0x42;
+    cpu.index_reg_Y  = 0x0F;
     mem.data[0xFFFC] = INS_STA_ABS_Y;
     mem.data[0xFFFD] = 0x00;
     mem.data[0xFFFE] = 0x80;
 
-    const CPU before = cpu;
-    const int EXPECTED_CYCLES = 5;
+    const CPU before        = cpu;
+    const int NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(EXPECTED_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
-    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x800F], 0x42);
 
     Verify_Unmodified_Flags_Store_Register(before, cpu);
@@ -187,20 +187,20 @@ void STA_ABS_Y_Can_Store_The_A_Register_Into_Memory(void)
 void STA_IND_X_Can_Store_The_A_Register_Into_Memory(void)
 {
     // given:
-    cpu.accumulator = 0x42;
-    cpu.index_reg_X = 0x0F;
+    cpu.accumulator  = 0x42;
+    cpu.index_reg_X  = 0x0F;
     mem.data[0xFFFC] = INS_STA_IND_X;
     mem.data[0xFFFD] = 0x20;
     mem.data[0x002F] = 0x00;
     mem.data[0x0030] = 0x80;
     mem.data[0x8000] = 0x00;
 
-    const CPU before = cpu;
-    const int EXPECTED_CYCLES = 6;
+    const CPU before        = cpu;
+    const int NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(EXPECTED_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
-    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(mem.data[0x8000], 0x42);
 
     Verify_Unmodified_Flags_Store_Register(before, cpu);
@@ -209,20 +209,20 @@ void STA_IND_X_Can_Store_The_A_Register_Into_Memory(void)
 void STA_IND_Y_Can_Store_The_A_Register_Into_Memory(void)
 {
     // given:
-    cpu.accumulator = 0x42;
-    cpu.index_reg_Y = 0x0F;
-    mem.data[0xFFFC] = INS_STA_IND_Y;
-    mem.data[0xFFFD] = 0x20;
-    mem.data[0x0020] = 0x00;
-    mem.data[0x0021] = 0x80;
+    cpu.accumulator         = 0x42;
+    cpu.index_reg_Y         = 0x0F;
+    mem.data[0xFFFC]        = INS_STA_IND_Y;
+    mem.data[0xFFFD]        = 0x20;
+    mem.data[0x0020]        = 0x00;
+    mem.data[0x0021]        = 0x80;
     mem.data[0x8000 + 0x0F] = 0x00;
 
-    const CPU before = cpu;
-    const int EXPECTED_CYCLES = 6;
+    const CPU before        = cpu;
+    const int NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(EXPECTED_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
-    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_EQUAL_HEX8(0x42, mem.data[0x8000 + 0x0F]);
 
     Verify_Unmodified_Flags_Store_Register(before, cpu);
