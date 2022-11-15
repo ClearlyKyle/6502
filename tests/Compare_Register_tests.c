@@ -700,6 +700,32 @@ void CPX_ABS_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set(void)
     struct CMP_Test_Data test = Compare_Two_Values_That_Result_In_A_Negative_Flag_Set();
     CMP_ABS(test, REGISTER_X);
 }
+
+// CPY Absolute
+void CPY_ABS_Can_Compare_Two_Identical_Values(void)
+{
+    struct CMP_Test_Data test = Compare_Two_Identical_Values();
+    CMP_ABS(test, REGISTER_Y);
+}
+
+void CPY_ABS_Can_Compare_A_Large_Positive_To_A_Small_Positive(void)
+{
+    struct CMP_Test_Data test = Compare_A_Large_Positive_To_A_Small_Positive();
+    CMP_ABS(test, REGISTER_Y);
+}
+
+void CPY_ABS_Can_Compare_A_Negative_Number_To_A_Positive(void)
+{
+    struct CMP_Test_Data test = Compare_A_Negative_Number_To_A_Positive();
+    CMP_ABS(test, REGISTER_Y);
+}
+
+void CPY_ABS_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set(void)
+{
+    struct CMP_Test_Data test = Compare_Two_Values_That_Result_In_A_Negative_Flag_Set();
+    CMP_ABS(test, REGISTER_Y);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -781,5 +807,12 @@ int main(void)
     RUN_TEST(CPX_ABS_Can_Compare_A_Large_Positive_To_A_Small_Positive);
     RUN_TEST(CPX_ABS_Can_Compare_A_Negative_Number_To_A_Positive);
     RUN_TEST(CPX_ABS_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set);
+
+    // CPY Absolute
+    RUN_TEST(CPY_ABS_Can_Compare_Two_Identical_Values);
+    RUN_TEST(CPY_ABS_Can_Compare_A_Large_Positive_To_A_Small_Positive);
+    RUN_TEST(CPY_ABS_Can_Compare_A_Negative_Number_To_A_Positive);
+    RUN_TEST(CPY_ABS_Can_Compare_Two_Values_That_Result_In_A_Negative_Flag_Set);
+
     return UNITY_END();
 }
