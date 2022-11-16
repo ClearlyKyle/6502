@@ -35,6 +35,30 @@ void ASL_Can_Shift_The_Value_Of_One(void)
     TEST_ASSERT_FALSE(cpu.N);
 }
 
+void ASL_Can_Shift_A_Negative_Value(void)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = 0;
+    cpu.Z               = 1;
+    cpu.N               = 0;
+    cpu.accumulator     = 0b11000010;
+
+    mem.data[0xFF00] = INS_ASL;
+
+    const s32 EXPECTED_CYCLES = 2;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+
+    TEST_ASSERT_EQUAL_INT8(cpu.accumulator, 0b10000100);
+    TEST_ASSERT_TRUE(cpu.C);
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+}
 int main(void)
 {
     UNITY_BEGIN();
