@@ -1637,6 +1637,14 @@ inline s32 Execute(s32 number_of_cycles)
             cpu.accumulator = ASL(&number_of_cycles, cpu.accumulator);
             break;
         }
+        case INS_ASL_ZP:
+        {
+            const u16 address = Address_Zero_Page(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            const u8  result  = ASL(&number_of_cycles, operand);
+            Write_Byte(&number_of_cycles, result, address);
+            break;
+        }
         default:
         {
             print_db("Instruction not handled %x\n", instruction);
