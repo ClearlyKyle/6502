@@ -59,6 +59,7 @@ void ASL_Can_Shift_A_Negative_Value(void)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_TRUE(cpu.N);
 }
+
 void ASL_ZP_Can_Shift_The_Value_Of_One(void)
 {
     // given:
@@ -85,12 +86,40 @@ void ASL_ZP_Can_Shift_The_Value_Of_One(void)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 }
+
+void ASL_ZP_Can_Shift_A_Negative_Value(void)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = 0;
+    cpu.Z               = 1;
+    cpu.N               = 0;
+
+    mem.data[0xFF00] = INS_ASL_ZP;
+    mem.data[0xFF01] = 0x42;
+    mem.data[0x0042] = 0b11000010;
+
+    const s32 EXPECTED_CYCLES = 5;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+
+    TEST_ASSERT_EQUAL(mem.data[0x0042], 0b10000100);
+
+    TEST_ASSERT_TRUE(cpu.C);
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+}
 int main(void)
 {
     UNITY_BEGIN();
 
     // Arithmetic shift left
     RUN_TEST(ASL_Can_Shift_The_Value_Of_One);
+    RUN_TEST(ASL_Can_Shift_A_Negative_Value);
 
     return UNITY_END();
 }
