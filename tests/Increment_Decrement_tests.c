@@ -7,7 +7,7 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
     cpu.program_counter = 0xFF00;
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
@@ -26,16 +26,16 @@ static void Verify_Unmodified_Flags(const CPU before, const CPU after)
 void INX_Can_Increment_A_Zero_Value(void)
 {
     cpu.index_reg_X = 0x00;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_INX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -50,16 +50,16 @@ void INX_Can_Increment_A_Zero_Value(void)
 void INX_Can_Increment_0xFF(void)
 {
     cpu.index_reg_X = 0xFF;
-    cpu.Z = 0;
-    cpu.N = 1;
+    cpu.Z           = 0;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_INX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -74,16 +74,16 @@ void INX_Can_Increment_0xFF(void)
 void INX_Can_Increment_A_Negative_Value(void)
 {
     cpu.index_reg_X = 0x88; // 0b10001000
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_INX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -99,16 +99,16 @@ void INX_Can_Increment_A_Negative_Value(void)
 void INY_Can_Increment_A_Zero_Value(void)
 {
     cpu.index_reg_Y = 0x00;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_INY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -123,16 +123,16 @@ void INY_Can_Increment_A_Zero_Value(void)
 void INY_Can_Increment_0xFF(void)
 {
     cpu.index_reg_Y = 0xFF;
-    cpu.Z = 0;
-    cpu.N = 1;
+    cpu.Z           = 0;
+    cpu.N           = 1;
 
     mem.data[0xFF00] = INS_INY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -147,16 +147,16 @@ void INY_Can_Increment_0xFF(void)
 void INY_Can_Increment_A_Negative_Value(void)
 {
     cpu.index_reg_Y = 0x88; // 0b10001000
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_INY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -172,16 +172,16 @@ void INY_Can_Increment_A_Negative_Value(void)
 void DEY_Can_Decrement_A_Zero_Value(void)
 {
     cpu.index_reg_Y = 0x00;
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_DEY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -196,16 +196,16 @@ void DEY_Can_Decrement_A_Zero_Value(void)
 void DEY_Can_Decrement_0xFF(void)
 {
     cpu.index_reg_Y = 0xFF;
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_DEY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -220,16 +220,16 @@ void DEY_Can_Decrement_0xFF(void)
 void DEY_Can_Decrement_A_Negative_Value(void)
 {
     cpu.index_reg_Y = 0x89; // 0b10001001
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_DEY;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -245,16 +245,16 @@ void DEY_Can_Decrement_A_Negative_Value(void)
 void DEX_Can_Decrement_A_Zero_Value(void)
 {
     cpu.index_reg_X = 0x00;
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_DEX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -269,16 +269,16 @@ void DEX_Can_Decrement_A_Zero_Value(void)
 void DEX_Can_Decrement_0xFF(void)
 {
     cpu.index_reg_X = 0xFF;
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_DEX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -293,16 +293,16 @@ void DEX_Can_Decrement_0xFF(void)
 void DEX_Can_Decrement_A_Negative_Value(void)
 {
     cpu.index_reg_X = 0x89; // 0b10001001
-    cpu.Z = 1;
-    cpu.N = 0;
+    cpu.Z           = 1;
+    cpu.N           = 0;
 
     mem.data[0xFF00] = INS_DEX;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -325,10 +325,10 @@ void DEC_Can_Decrement_A_Value_In_ZP(void)
     mem.data[0x0042] = 0x57;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -343,18 +343,18 @@ void DEC_Can_Decrement_A_Value_In_ZP(void)
 void DEC_Can_Decrement_A_Value_In_ZP_X(void)
 {
     cpu.index_reg_X = 0x10;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
-    mem.data[0xFF00] = INS_DEC_ZP_X;
-    mem.data[0xFF01] = 0x42;
+    mem.data[0xFF00]        = INS_DEC_ZP_X;
+    mem.data[0xFF01]        = 0x42;
     mem.data[0x0042 + 0x10] = 0x57;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -377,10 +377,10 @@ void DEC_Can_Decrement_A_Value_ABS(void)
     mem.data[0x8000] = 0x57;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -395,19 +395,19 @@ void DEC_Can_Decrement_A_Value_ABS(void)
 void DEC_Can_Decrement_A_Value_ABS_X(void)
 {
     cpu.index_reg_X = 0x10;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
-    mem.data[0xFF00] = INS_DEC_ABS_X;
-    mem.data[0xFF01] = 0x00;
-    mem.data[0xFF02] = 0x80;
+    mem.data[0xFF00]        = INS_DEC_ABS_X;
+    mem.data[0xFF01]        = 0x00;
+    mem.data[0xFF02]        = 0x80;
     mem.data[0x8000 + 0x10] = 0x57;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 7;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -430,10 +430,10 @@ void INC_Can_Increment_A_Value_In_ZP(void)
     mem.data[0x0042] = 0x57;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -448,18 +448,18 @@ void INC_Can_Increment_A_Value_In_ZP(void)
 void INC_Can_Increment_A_Value_In_ZP_X(void)
 {
     cpu.index_reg_X = 0x10;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
-    mem.data[0xFF00] = INS_INC_ZP_X;
-    mem.data[0xFF01] = 0x42;
+    mem.data[0xFF00]        = INS_INC_ZP_X;
+    mem.data[0xFF01]        = 0x42;
     mem.data[0x0042 + 0x10] = 0x57;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -482,10 +482,10 @@ void INC_Can_Increment_A_Value_In_ABS(void)
     mem.data[0x8000] = 0x57;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -500,19 +500,19 @@ void INC_Can_Increment_A_Value_In_ABS(void)
 void INC_Can_Increment_A_Value_In_ABS_X(void)
 {
     cpu.index_reg_X = 0x10;
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
 
-    mem.data[0xFF00] = INS_INC_ABS_X;
-    mem.data[0xFF01] = 0x00;
-    mem.data[0xFF02] = 0x80;
+    mem.data[0xFF00]        = INS_INC_ABS_X;
+    mem.data[0xFF01]        = 0x00;
+    mem.data[0xFF02]        = 0x80;
     mem.data[0x8000 + 0x10] = 0x57;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 7;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -536,17 +536,17 @@ void Test_Load_A_Program_That_Can_INC(void)
     inx
     jmp start
     */
-    u8 test_program[] = {0x0, 0x10, 0xA9, 0x00, 0x85, 0x42, 0xE6, 0x42,
+    u8        test_program[]  = {0x0, 0x10, 0xA9, 0x00, 0x85, 0x42, 0xE6, 0x42,
                          0xA6, 0x42, 0xE8, 0x4C, 0x04, 0x10};
     const int number_of_bytes = sizeof(test_program) / sizeof(test_program[0]);
 
-    const u16 start_address = Load_Program(test_program, &mem, number_of_bytes);
-    cpu.program_counter = start_address;
+    const u16 start_address = Load_Program(test_program, number_of_bytes);
+    cpu.program_counter     = start_address;
 
     // then:
     for (s32 clock = 1000; clock > 0;)
     {
-        clock -= Execute(1, &mem);
+        clock -= Execute(1);
     }
 }
 
