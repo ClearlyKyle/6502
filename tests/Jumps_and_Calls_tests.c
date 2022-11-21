@@ -5,26 +5,26 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
 void Can_Jump_To_A_Subroutine_And_Jump_Back_Again(void)
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
     cpu.program_counter = 0xFF00;
-    mem.data[0xFF00] = INS_JSR;
-    mem.data[0xFF01] = 0x00;
-    mem.data[0xFF02] = 0x80;
-    mem.data[0x8000] = INS_RTS;
-    mem.data[0xFF03] = INS_LDA_IM;
-    mem.data[0xFF04] = 0x42;
+    mem.data[0xFF00]    = INS_JSR;
+    mem.data[0xFF01]    = 0x00;
+    mem.data[0xFF02]    = 0x80;
+    mem.data[0x8000]    = INS_RTS;
+    mem.data[0xFF03]    = INS_LDA_IM;
+    mem.data[0xFF04]    = 0x42;
 
-    const CPU cpu_before = cpu;
+    const CPU cpu_before      = cpu;
     const s32 EXPECTED_CYCLES = 6 + 6 + 2;
 
     // when:
-    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
@@ -37,86 +37,86 @@ void JSR_Does_Not_Affect_The_Processor_Status(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    mem.data[0xFF00] = INS_JSR;
-    mem.data[0xFF01] = 0x00;
-    mem.data[0xFF02] = 0x80;
+    mem.data[0xFF00]    = INS_JSR;
+    mem.data[0xFF01]    = 0x00;
+    mem.data[0xFF02]    = 0x80;
 
-    const CPU cpu_before = cpu;
+    const CPU cpu_before      = cpu;
     const s32 EXPECTED_CYCLES = 6;
 
     // when:
-    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_NOT_EQUAL_UINT8(cpu_before.stack_pointer, cpu.stack_pointer);
     TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
-    TEST_ASSERT_EQUAL_HEX16(0x8000, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT16(0x8000, cpu.program_counter);
 }
 
 void RTS_Does_Not_Affect_The_Processor_Status(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    mem.data[0xFF00] = INS_JSR;
-    mem.data[0xFF01] = 0x00;
-    mem.data[0xFF02] = 0x80;
-    mem.data[0x8000] = INS_RTS;
+    mem.data[0xFF00]    = INS_JSR;
+    mem.data[0xFF01]    = 0x00;
+    mem.data[0xFF02]    = 0x80;
+    mem.data[0x8000]    = INS_RTS;
 
-    const CPU cpu_before = cpu;
+    const CPU cpu_before      = cpu;
     const s32 EXPECTED_CYCLES = 6 + 6;
 
     // when:
-    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
-    TEST_ASSERT_EQUAL_HEX16(0xFF03, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT16(0xFF03, cpu.program_counter);
 }
 
 void Jump_Absolute_Can_Jump_To_A_New_Location_In_The_Program(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    mem.data[0xFF00] = INS_JMP_ABS;
-    mem.data[0xFF01] = 0x00;
-    mem.data[0xFF02] = 0x80;
+    mem.data[0xFF00]    = INS_JMP_ABS;
+    mem.data[0xFF01]    = 0x00;
+    mem.data[0xFF02]    = 0x80;
 
-    const CPU cpu_before = cpu;
+    const CPU cpu_before      = cpu;
     const s32 EXPECTED_CYCLES = 3;
 
     // when:
-    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_UINT8(cpu_before.stack_pointer, cpu.stack_pointer);
     TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
-    TEST_ASSERT_EQUAL_HEX16(0x8000, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT16(0x8000, cpu.program_counter);
 }
 
 void Jump_Indirect_Can_Jump_To_A_New_Location_In_The_Program(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    mem.data[0xFF00] = INS_JMP_IND;
-    mem.data[0xFF01] = 0x00;
-    mem.data[0xFF02] = 0x80;
-    mem.data[0x8000] = 0x00;
-    mem.data[0x8001] = 0x90;
+    mem.data[0xFF00]    = INS_JMP_IND;
+    mem.data[0xFF01]    = 0x00;
+    mem.data[0xFF02]    = 0x80;
+    mem.data[0x8000]    = 0x00;
+    mem.data[0x8001]    = 0x90;
 
-    const CPU cpu_before = cpu;
+    const CPU cpu_before      = cpu;
     const s32 EXPECTED_CYCLES = 5;
 
     // when:
-    const s32 actual_cycles = Execute(EXPECTED_CYCLES, &mem);
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
     TEST_ASSERT_EQUAL_UINT8(cpu_before.stack_pointer, cpu.stack_pointer);
     TEST_ASSERT_EQUAL_UINT8(cpu.PS, cpu_before.PS);
-    TEST_ASSERT_EQUAL_HEX16(0x9000, cpu.program_counter);
+    TEST_ASSERT_EQUAL_UINT16(0x9000, cpu.program_counter);
 }
 
 int main(void)
