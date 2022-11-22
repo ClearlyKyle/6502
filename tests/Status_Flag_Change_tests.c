@@ -7,7 +7,7 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
@@ -15,18 +15,18 @@ void CLC_Will_Clear_Carry_Flag(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    cpu.C = true;
+    cpu.C               = true;
 
     mem.data[0xFF00] = INS_CLC;
 
     // when:
-    const CPU before = cpu;
-    const s32 NUM_CYCLES = 2;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_FALSE(cpu.C);
 
     // TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
@@ -42,18 +42,18 @@ void SEC_Will_Set_Carry_Flag(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    cpu.C = false;
+    cpu.C               = false;
 
     mem.data[0xFF00] = INS_SEC;
 
     // when:
-    const CPU before = cpu;
-    const s32 NUM_CYCLES = 2;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_TRUE(cpu.C);
 
     // TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
@@ -69,18 +69,18 @@ void CLD_Will_Clear_Decimal_Flag(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    cpu.D = true;
+    cpu.D               = true;
 
     mem.data[0xFF00] = INS_CLD;
 
     // when:
-    const CPU before = cpu;
-    const s32 NUM_CYCLES = 2;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_FALSE(cpu.D);
 
     TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
@@ -96,18 +96,18 @@ void SED_Will_Set_Decimal_Flag(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    cpu.D = false;
+    cpu.D               = false;
 
     mem.data[0xFF00] = INS_SED;
 
     // when:
-    const CPU before = cpu;
-    const s32 NUM_CYCLES = 2;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_TRUE(cpu.D);
 
     TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
@@ -123,18 +123,18 @@ void CLI_Will_Clear_Interrupt_Flag(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    cpu.I = true;
+    cpu.I               = true;
 
     mem.data[0xFF00] = INS_CLI;
 
     // when:
-    const CPU before = cpu;
-    const s32 NUM_CYCLES = 2;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_FALSE(cpu.I);
 
     TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
@@ -150,18 +150,18 @@ void SEI_Will_Set_Interrupt_Flag(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    cpu.I = false;
+    cpu.I               = false;
 
     mem.data[0xFF00] = INS_SEI;
 
     // when:
-    const CPU before = cpu;
-    const s32 NUM_CYCLES = 2;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_TRUE(cpu.I);
 
     TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
@@ -177,18 +177,18 @@ void CLV_Will_Clear_Overflow_Flag(void)
 {
     // given:
     cpu.program_counter = 0xFF00;
-    cpu.V = true;
+    cpu.V               = true;
 
     mem.data[0xFF00] = INS_CLV;
 
     // when:
-    const CPU before = cpu;
-    const s32 NUM_CYCLES = 2;
-    
-    const s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 2;
+
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
-    TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
     TEST_ASSERT_FALSE(cpu.V);
 
     TEST_ASSERT_EQUAL_UINT8(before.C, cpu.C);
