@@ -7,19 +7,18 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
 void Test_Load_Program_Into_Correct_Area_Of_Memory(void)
 {
-    const u8 program[] = {0x00, 0x10, 0xA9, 0xFF, 0x85, 0x90, 0x8D, 0x00, 0x80, 0x49, 0xCC, 0x4C, 0x02, 0x10};
+    const u8  program[]       = {0x00, 0x10, 0xA9, 0xFF, 0x85, 0x90, 0x8D, 0x00, 0x80, 0x49, 0xCC, 0x4C, 0x02, 0x10};
     const int number_of_bytes = 14;
 
-    Load_Program(program, &mem, number_of_bytes);
+    Load_Program(program, number_of_bytes);
 
-    Memory mem_expected;
-    Initialise_Memory(&mem_expected); // set all to 0x00
+    Memory mem_expected       = {0}; // set all to 0x00
     mem_expected.data[0x0FFF] = 0x00;
     mem_expected.data[0x1000] = 0xA9;
     mem_expected.data[0x1001] = 0xFF;
@@ -40,14 +39,14 @@ void Test_Load_Program_Into_Correct_Area_Of_Memory(void)
 
 void Test_Load_Program_And_Execute(void)
 {
-    const u8 program[] = {0x00, 0x10, 0xA9, 0xFF, 0x85, 0x90, 0x8D, 0x00, 0x80, 0x49, 0xCC, 0x4C, 0x02, 0x10};
+    const u8  program[]       = {0x00, 0x10, 0xA9, 0xFF, 0x85, 0x90, 0x8D, 0x00, 0x80, 0x49, 0xCC, 0x4C, 0x02, 0x10};
     const int number_of_bytes = 14;
 
-    Load_Program(program, &mem, number_of_bytes);
+    Load_Program(program, number_of_bytes);
 
     for (s32 clock = 100; clock > 0;)
     {
-        clock -= Execute(1, &mem);
+        clock -= Execute(1);
     }
 }
 
