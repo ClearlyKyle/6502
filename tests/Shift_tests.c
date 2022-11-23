@@ -169,6 +169,34 @@ void ASL_ZP_X_Can_Shift_A_Negative_Value(void)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_TRUE(cpu.N);
 }
+
+void ASL_ABS_Can_Shift_The_Value_Of_One(void)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = 1;
+    cpu.Z               = 1;
+    cpu.N               = 1;
+
+    mem.data[0xFF00] = INS_ASL_ABS;
+    mem.data[0xFF01] = 0x00;
+    mem.data[0xFF02] = 0x80;
+    mem.data[0x8000] = 1;
+
+    const s32 EXPECTED_CYCLES = 6;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+
+    TEST_ASSERT_EQUAL(mem.data[0x8000], 2);
+
+    TEST_ASSERT_FALSE(cpu.C);
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+}
 int main(void)
 {
     UNITY_BEGIN();
@@ -177,6 +205,7 @@ int main(void)
     RUN_TEST(ASL_Can_Shift_The_Value_Of_One);
     RUN_TEST(ASL_Can_Shift_A_Negative_Value);
     RUN_TEST(ASL_ZP_Can_Shift_The_Value_Of_One);
+    RUN_TEST(ASL_ZP_Can_Shift_A_Negative_Value);
 
     return UNITY_END();
 }
