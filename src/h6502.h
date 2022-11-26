@@ -1653,6 +1653,22 @@ inline s32 Execute(s32 number_of_cycles)
             Write_Byte(&number_of_cycles, result, address);
             break;
         }
+        case INS_ASL_ABS:
+        {
+            const u16 address = Address_Absolute(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            const u8  result  = ASL(&number_of_cycles, operand);
+            Write_Byte(&number_of_cycles, result, address);
+            break;
+        }
+        case INS_ASL_ABS_X:
+        {
+            const u16 address = Address_Absolute_X_5_Cycle(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            const u8  result  = ASL(&number_of_cycles, operand);
+            Write_Byte(&number_of_cycles, result, address);
+            break;
+        }
         default:
         {
             print_db("Instruction not handled %x\n", instruction);
