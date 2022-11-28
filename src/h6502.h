@@ -25,12 +25,12 @@
 
 // TODO: Macros to access registers in cpu
 
-typedef uint8_t  u8;  // byte [0, 255]
-typedef uint16_t u16; // word [0, 65,535]
-typedef uint32_t u32; // [0, 4,294,967,295]
-typedef int8_t   s8;
-typedef int16_t  s16;
-typedef int32_t  s32;
+typedef uint_fast8_t  u8;  // byte [0, 255]
+typedef uint_fast16_t u16; // word [0, 65,535]
+typedef uint_fast32_t u32; // [0, 4,294,967,295]
+typedef int_fast8_t   s8;
+typedef int_fast16_t  s16;
+typedef int_fast32_t  s32;
 
 #define MAX_MEM 65536 // 1024 * 64 = 65536
 
