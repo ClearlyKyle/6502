@@ -273,12 +273,12 @@ typedef enum
     INS_CPY_ZP  = 0xC4,
     INS_CPY_ABS = 0xCC,
 
-    // Arithmetic shift left
+    // ASL (Arithmetic Shift Left)
     INS_ASL       = 0x0A,
     INS_ASL_ZP    = 0x06,
     INS_ASL_ZP_X  = 0x16,
     INS_ASL_ABS   = 0x0E,
-    INS_ASL_ABS_X = 0x1E
+    INS_ASL_ABS_X = 0x1E,
 
 } Opcode;
 
@@ -1667,6 +1667,12 @@ inline s32 Execute(s32 number_of_cycles)
             const u8  operand = Read_Byte(&number_of_cycles, address);
             const u8  result  = ASL(&number_of_cycles, operand);
             Write_Byte(&number_of_cycles, result, address);
+            break;
+        }
+            // LSR (Logical Shift Right)
+        case INS_LSR:
+        {
+            cpu.accumulator = LSR(&number_of_cycles, cpu.accumulator);
             break;
         }
         default:
