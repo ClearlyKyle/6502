@@ -280,6 +280,12 @@ typedef enum
     INS_ASL_ABS   = 0x0E,
     INS_ASL_ABS_X = 0x1E,
 
+    // LSR (Logical Shift Right)
+    INS_LSR       = 0x4A,
+    INS_LSR_ZP    = 0x46,
+    INS_LSR_ZP_X  = 0x56,
+    INS_LSR_ABS   = 0x4E,
+    INS_LSR_ABS_X = 0x5E,
 } Opcode;
 
 // ---------------------------------------------------------------------
@@ -1673,6 +1679,14 @@ inline s32 Execute(s32 number_of_cycles)
         case INS_LSR:
         {
             cpu.accumulator = LSR(&number_of_cycles, cpu.accumulator);
+            break;
+        }
+        case INS_LSR_ZP:
+        {
+            const u16 address = Address_Zero_Page(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            const u8  result  = LSR(&number_of_cycles, operand);
+            Write_Byte(&number_of_cycles, result, address);
             break;
         }
         default:
