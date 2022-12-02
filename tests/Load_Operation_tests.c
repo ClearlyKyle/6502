@@ -5,7 +5,7 @@
 
 void setUp(void) /* Is run before every test, put unit init calls here. */
 {
-    Reset_CPU(&cpu, &mem);
+    Reset_CPU();
 }
 void tearDown(void) {} /* Is run after every test, put unit clean-up calls here. */
 
@@ -31,19 +31,19 @@ void RunLittleProgram(void)
 
     const s32 NUM_CYCLES = 8;
 
-    s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    s32 cycles_used = Execute(NUM_CYCLES);
     TEST_ASSERT_EQUAL_INT32(NUM_CYCLES, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
     TEST_ASSERT_EQUAL(0x84, cpu.accumulator);
-    TEST_ASSERT_EQUAL_HEX8(0x84, cpu.accumulator);
+    TEST_ASSERT_EQUAL_UINT8(0x84, cpu.accumulator);
 }
 
 void CPU_Does_Nothing_When_Execute_Zero_Cycles(void)
 {
     const s32 NUM_CYCLES = 0;
 
-    s32 cycles_used = Execute(NUM_CYCLES, &mem);
+    s32 cycles_used = Execute(NUM_CYCLES);
 
     TEST_ASSERT_EQUAL_UINT32(0, cycles_used);
 }
@@ -53,7 +53,7 @@ void CPU_Can_Execute_More_Cycles_Than_Requested_If_The_Instruction_Requires(void
     mem.data[0xFFFC] = INS_LDA_IM;
     mem.data[0xFFFD] = 0x84;
 
-    s32 cycles_used = Execute(1, &mem);
+    s32 cycles_used = Execute(1);
     TEST_ASSERT_EQUAL_INT32(2, cycles_used);
 }
 
@@ -62,24 +62,24 @@ void Executing_A_Bad_Instruction_Does_Not_Start_Infinite_Loop(void)
     mem.data[0xFFFC] = 0x0; // invalud instruction
     mem.data[0xFFFD] = 0x0;
 
-    const s32 cycles_used = Execute(1, &mem);
-    TEST_ASSERT_EQUAL_INT32(0, cycles_used);
+    const s32 cycles_used = Execute(1);
+    TEST_ASSERT_EQUAL_INT32(1, cycles_used);
 }
 
 void LDA_Immediate_Can_Effect_The_Zero_Flag(void)
 {
-    cpu.Z = 0;
-    cpu.N = 1;
+    cpu.Z           = 0;
+    cpu.N           = 1;
     cpu.accumulator = 0x88; // junk value
 
     mem.data[0xFFFC] = INS_LDA_IM;
     mem.data[0xFFFD] = 0x0;
 
     // when:
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const s32 NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // then:
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -98,14 +98,14 @@ void Test_Loading_Register_Immediate(Opcode op, u8 *reg)
     mem.data[0xFFFC] = op;
     mem.data[0xFFFD] = 0x84;
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 2;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // TEST_ASSERT_EQUAL(expected, actual)
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
-    TEST_ASSERT_EQUAL_HEX8(0x84, *reg);
+    TEST_ASSERT_EQUAL_UINT8(0x84, *reg);
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_TRUE(cpu.N);
 
@@ -136,10 +136,10 @@ void Test_Loading_Register_Zero_Page(Opcode op, u8 *reg)
     mem.data[0xFFFD] = 0x42;
     mem.data[0x0042] = 0x37;
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 3;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
 
     // TEST_ASSERT_EQUAL(expected, actual)
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
@@ -177,18 +177,18 @@ void Test_Loading_Register_Zero_Page_X(Opcode op, u8 *reg)
 
         e.g. 0x80 + 0x0F => 0x8F
     */
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
     cpu.index_reg_X = 5;
 
     mem.data[0xFFFC] = op;
     mem.data[0xFFFD] = 0x42; // take this value "0x42" and add the "reg_X" value to it
     mem.data[0x0047] = 0x37; // read from the resulting memory address
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
@@ -200,18 +200,18 @@ void Test_Loading_Register_Zero_Page_X(Opcode op, u8 *reg)
 
 void Test_Loading_Register_Zero_Page_Y(Opcode op, u8 *reg)
 {
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
     cpu.index_reg_Y = 5;
 
     mem.data[0xFFFC] = op;
     mem.data[0xFFFD] = 0x42; // take this value "0x42" and add the "reg_X" value to it
     mem.data[0x0047] = 0x37; // read from the resulting memory address
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
@@ -244,10 +244,12 @@ void LDA_ZP_X_Can_Load_A_Value_Into_A_Register_When_It_wraps(void)
     mem.data[0xFFFD] = 0x80; // take this value "0x42" and add the "reg_X" value to it
     mem.data[0x007F] = 0x37; // read from the resulting memory address
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(4, &mem);
-    TEST_ASSERT_EQUAL_INT32(4, cycles_used);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
@@ -267,10 +269,11 @@ void Test_Loading_Register_Absolute(Opcode op, u8 *reg)
     mem.data[0xFFFE] = 0x44; // load from 0x4480
     mem.data[0x4480] = 0x37;
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     // TEST_ASSERT_EQUAL(expected, actual)
@@ -303,8 +306,8 @@ void Test_Loading_Register_Absolute_X(Opcode op, u8 *reg)
     // of the X Register(1) (0x80 + 0x44 -> 0x4480 + 1 -> 0x4481)
     // load the value(0x37) at this address to the A register
 
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
     cpu.index_reg_X = 1;
 
     mem.data[0xFFFC] = op;
@@ -312,10 +315,11 @@ void Test_Loading_Register_Absolute_X(Opcode op, u8 *reg)
     mem.data[0xFFFE] = 0x44; // load A from 0x4480
     mem.data[0x4481] = 0x37;
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
@@ -327,8 +331,8 @@ void Test_Loading_Register_Absolute_X(Opcode op, u8 *reg)
 
 void Test_Loading_Register_Absolute_Y(Opcode op, u8 *reg)
 {
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
     cpu.index_reg_Y = 1;
 
     mem.data[0xFFFC] = op;
@@ -336,10 +340,11 @@ void Test_Loading_Register_Absolute_Y(Opcode op, u8 *reg)
     mem.data[0xFFFE] = 0x44; // Go to 0x4480
     mem.data[0x4481] = 0x37; // LDA from : 0x4480 + Y_reg -> 0x4481
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 4;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
@@ -371,8 +376,8 @@ void LDA_ABS_Y_Can_Load_A_Value_Into_The_A_Register(void)
 
 void Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(Opcode op, u8 *reg)
 {
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
     cpu.index_reg_X = 0x1;
 
     mem.data[0xFFFC] = op;
@@ -380,10 +385,11 @@ void Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(Opcode op, u8 *reg)
     mem.data[0xFFFE] = 0x44; // load A from 0x4402 then add X Register
     mem.data[0x4500] = 0x37; // 0x4402 + X_reg(0xFF) -> 0x4501 corss page boundary!
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
@@ -395,8 +401,8 @@ void Test_Loading_Register_Absolute_X_Crossing_Page_Boundary(Opcode op, u8 *reg)
 
 void Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(Opcode op, u8 *reg)
 {
-    cpu.Z = 1;
-    cpu.N = 1;
+    cpu.Z           = 1;
+    cpu.N           = 1;
     cpu.index_reg_Y = 0x1;
 
     mem.data[0xFFFC] = op;
@@ -404,10 +410,11 @@ void Test_Loading_Register_Absolute_Y_Crossing_Page_Boundary(Opcode op, u8 *reg)
     mem.data[0xFFFE] = 0x44; // load from 0x4402
     mem.data[0x4500] = 0x37; // 0x4402 + 0xFF - cross page boundary
 
-    const CPU before = cpu;
+    const CPU before        = cpu;
     const int NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(NUM_OF_CYCLES, &mem);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
     TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, *reg);
@@ -448,11 +455,12 @@ void LDA_IND_X_Can_Load_A_Value_Into_The_A_Register(void)
     mem.data[0x0007] = 0x80; // 0x00 + 0x80 < go to this address
     mem.data[0x8000] = 0x37; // < set this value to the A register
 
-    const CPU before = cpu;
-    const int expected_cycles = 6;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(expected_cycles, &mem);
-    TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
     TEST_ASSERT_FALSE(cpu.Z);
@@ -480,11 +488,12 @@ void LDA_IND_Y_Can_Load_A_Value_Into_The_A_Register(void)
     mem.data[0x0003] = 0x80; //
     mem.data[0x8004] = 0x37; // 0x8000 + 0x4
 
-    const CPU before = cpu;
-    const int expected_cycles = 5;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 5;
 
-    const s32 cycles_used = Execute(expected_cycles, &mem);
-    TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
     TEST_ASSERT_FALSE(cpu.Z);
@@ -502,11 +511,12 @@ void LDA_IND_Y_Can_Load_A_Value_Into_The_A_Register_When_Cross_Page_Boundary(voi
     mem.data[0x0003] = 0x80; //
     mem.data[0x8101] = 0x37; // 0x8002 + 0xFF
 
-    const CPU before = cpu;
-    const int expected_cycles = 6;
+    const CPU before        = cpu;
+    const s32 NUM_OF_CYCLES = 6;
 
-    const s32 cycles_used = Execute(expected_cycles, &mem);
-    TEST_ASSERT_EQUAL_INT32(expected_cycles, cycles_used);
+    const s32 cycles_used = Execute(NUM_OF_CYCLES);
+
+    TEST_ASSERT_EQUAL_INT32(NUM_OF_CYCLES, cycles_used);
 
     TEST_ASSERT_EQUAL_HEX8(0x37, cpu.accumulator);
     TEST_ASSERT_FALSE(cpu.Z);
