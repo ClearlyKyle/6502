@@ -467,6 +467,34 @@ void LSR_ABS_Can_Shift_The_Value_Of_One(void)
     TEST_ASSERT_TRUE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 }
+
+void LSR_ABS_Can_Shift_A_Zero_Into_The_Carry_Flag(void)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = 1;
+    cpu.Z               = 1;
+    cpu.N               = 1;
+
+    mem.data[0xFF00] = INS_LSR_ABS;
+    mem.data[0xFF01] = 0x00;
+    mem.data[0xFF02] = 0x80;
+    mem.data[0x8000] = 8;
+
+    const s32 EXPECTED_CYCLES = 6;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    TEST_ASSERT_EQUAL(mem.data[0x8000], 4);
+
+    TEST_ASSERT_FALSE(cpu.C);
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -491,5 +519,6 @@ int main(void)
     RUN_TEST(LSR_ZP_X_Can_Shift_The_Value_Of_One);
     RUN_TEST(LSR_ZP_X_Can_Shift_A_Zero_Into_The_Carry_Flag);
     RUN_TEST(LSR_ABS_Can_Shift_The_Value_Of_One);
+    RUN_TEST(LSR_ABS_Can_Shift_A_Zero_Into_The_Carry_Flag);
     return UNITY_END();
 }
