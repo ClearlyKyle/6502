@@ -286,6 +286,13 @@ typedef enum
     INS_LSR_ZP_X  = 0x56,
     INS_LSR_ABS   = 0x4E,
     INS_LSR_ABS_X = 0x5E,
+
+    // ROL (ROtate Left)
+    INS_ROL       = 0x2A,
+    INS_ROL_ZP    = 0x26,
+    INS_ROL_ZP_X  = 0x36,
+    INS_ROL_ABS   = 0x2E,
+    INS_ROL_ABS_X = 0x3E,
 } Opcode;
 
 // ---------------------------------------------------------------------
