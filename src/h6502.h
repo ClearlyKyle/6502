@@ -1720,6 +1720,12 @@ inline s32 Execute(s32 number_of_cycles)
             Write_Byte(&number_of_cycles, result, address);
             break;
         }
+            // ROL (ROtate Left)
+        case INS_ROL:
+        {
+            cpu.accumulator = ROL(&number_of_cycles, cpu.accumulator);
+            break;
+        }
         default:
         {
             print_db("Instruction not handled %x\n", instruction);
