@@ -576,6 +576,31 @@ void ROL_Can_Shift_A_Bit_Out_Of_The_Carry_Flag(void)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_FALSE(cpu.N);
 }
+
+void ROL_Can_Shift_A_Bit_Into_The_Carry_Flag(void)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = 0;
+    cpu.Z               = 0;
+    cpu.N               = 1;
+    cpu.accumulator     = 0b10000000;
+
+    mem.data[0xFF00] = INS_ROL;
+
+    const s32 EXPECTED_CYCLES = 2;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    TEST_ASSERT_EQUAL(cpu.accumulator, 0);
+
+    TEST_ASSERT_TRUE(cpu.C);
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+}
 int main(void)
 {
     UNITY_BEGIN();
@@ -606,5 +631,6 @@ int main(void)
 
     // ROL (ROtate Left)
     RUN_TEST(ROL_Can_Shift_A_Bit_Out_Of_The_Carry_Flag);
+    RUN_TEST(ROL_Can_Shift_A_Bit_Into_The_Carry_Flag);
     return UNITY_END();
 }
