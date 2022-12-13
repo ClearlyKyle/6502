@@ -711,6 +711,17 @@ u8 ASL(s32 *cycles, u8 operand)
     (*cycles)--;
     return result;
 };
+/* Rotate left */
+static inline u8 ROL(s32 *cycles, u8 operand)
+{
+    const u8 new_bit_0 = cpu.C ? ZERO_BIT : 0;
+    cpu.C              = (operand & NEGATIVE_FLAG_BIT) > 0;
+    operand            = operand << 1;
+    operand |= new_bit_0;
+    Set_Zero_and_Negative_Flags(operand);
+    (*cycles)--;
+    return operand;
+};
 }
 // execute "number_of_cycles" the instruction in memory
 inline s32 Execute(s32 number_of_cycles)
