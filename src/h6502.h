@@ -711,6 +711,17 @@ u8 ASL(s32 *cycles, u8 operand)
     (*cycles)--;
     return result;
 };
+
+/* Logical shift right */
+static inline u8 LSR(s32 *cycles, u8 operand)
+{
+    cpu.C           = (operand & ZERO_BIT) > 0;
+    const u8 result = operand >> 1;
+    Set_Zero_and_Negative_Flags(result);
+    (*cycles)--;
+    return result;
+};
+
 /* Rotate left */
 static inline u8 ROL(s32 *cycles, u8 operand)
 {
