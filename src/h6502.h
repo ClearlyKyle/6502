@@ -1773,6 +1773,14 @@ inline s32 Execute(s32 number_of_cycles)
 
             break;
         }
+        case INS_ROL_ABS_X:
+        {
+            const u16 address = Address_Absolute_X_5_Cycle(&number_of_cycles);
+            const u8  operand = Read_Byte(&number_of_cycles, address);
+            const u8  result  = ROL(&number_of_cycles, operand);
+            Write_Byte(&number_of_cycles, result, address);
+            break;
+        }
         default:
         {
             print_db("Instruction not handled %x\n", instruction);
