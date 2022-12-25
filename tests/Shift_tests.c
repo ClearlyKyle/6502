@@ -859,6 +859,33 @@ void ROL_ZP_X_Can_Shift_A_Value_That_Result_In_A_Negative_Value(void)
     TEST_ASSERT_FALSE(cpu.Z);
     TEST_ASSERT_TRUE(cpu.N);
 }
+
+// ROR (ROtate Right)
+void ROR_Can_Shift_The_Carry_Flag_Into_The_Operand(void)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = 1;
+    cpu.Z               = 0;
+    cpu.N               = 0;
+    cpu.accumulator     = 0;
+
+    mem.data[0xFF00] = INS_ROR;
+
+    const s32 EXPECTED_CYCLES = 2;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    EXPECT_EQ(cpu.accumulator, 0b10000000);
+
+    TEST_ASSERT_FALSE(cpu.C);
+    TEST_ASSERT_FALSE(cpu.Z);
+    TEST_ASSERT_TRUE(cpu.N);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -900,5 +927,8 @@ int main(void)
     RUN_TEST(ROL_ZP_X_Can_Shift_A_Bit_Into_The_Carry_Flag);
     RUN_TEST(ROL_ZP_X_Can_Shift_Zero_With_No_Carry);
     RUN_TEST(ROL_ZP_X_Can_Shift_A_Value_That_Result_In_A_Negative_Value);
+
+    // ROR (ROtate Right)
+    RUN_TESTS(ROR_Can_Shift_The_Carry_Flag_Into_The_Operand);
     return UNITY_END();
 }
