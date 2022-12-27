@@ -886,6 +886,30 @@ void ROR_Can_Shift_The_Carry_Flag_Into_The_Operand(void)
     TEST_ASSERT_TRUE(cpu.N);
 }
 
+void ROR_Can_Shift_A_Value_Into_The_Carry_Flag(void)
+{
+    // given:
+    cpu.program_counter = 0xFF00;
+    cpu.C               = 0;
+    cpu.Z               = 0;
+    cpu.N               = 0;
+    cpu.accumulator     = 1;
+
+    mem.data[0xFF00] = INS_ROR;
+
+    const s32 EXPECTED_CYCLES = 2;
+
+    // when:
+    const s32 actual_cycles = Execute(EXPECTED_CYCLES);
+
+    // then:
+    TEST_ASSERT_EQUAL_INT32(EXPECTED_CYCLES, actual_cycles);
+    EXPECT_EQ(cpu.accumulator, 0);
+
+    TEST_ASSERT_TRUE(cpu.C);
+    TEST_ASSERT_TRUE(cpu.Z);
+    TEST_ASSERT_FALSE(cpu.N);
+}
 int main(void)
 {
     UNITY_BEGIN();
@@ -930,5 +954,6 @@ int main(void)
 
     // ROR (ROtate Right)
     RUN_TESTS(ROR_Can_Shift_The_Carry_Flag_Into_The_Operand);
+    RUN_TESTS(ROR_Can_Shift_A_Value_Into_The_Carry_Flag);
     return UNITY_END();
 }
