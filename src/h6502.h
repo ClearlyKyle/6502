@@ -741,7 +741,22 @@ static inline u8 ROL(s32 *cycles, u8 operand)
     (*cycles)--;
     return operand;
 };
+
+/* Rotate right */
+static inline u8 ROR(s32 *cycles, u8 operand)
+{
+    const bool OldBit0 = (operand & ZERO_BIT) > 0;
+    operand            = operand >> 1;
+    if (cpu.C)
+    {
+        operand |= NEGATIVE_FLAG_BIT;
 }
+    (*cycles)--;
+    cpu.C = OldBit0;
+    Set_Zero_and_Negative_Flags(operand);
+    return operand;
+};
+
 // execute "number_of_cycles" the instruction in memory
 inline s32 Execute(s32 number_of_cycles)
 {
