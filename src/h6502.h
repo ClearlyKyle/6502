@@ -309,12 +309,12 @@ static Memory mem = {0};
 static CPU    cpu = {0};
 // ---------------------------------------------------------------------
 
-void Initialise_Memory(void)
+static inline void Initialise_Memory(void)
 {
     memset(mem.data, 0, MAX_MEM);
 }
 
-void Reset_CPU(void)
+static inline void Reset_CPU(void)
 {
     cpu.program_counter = 0xFFFC; // The low and high 8-bit halves of the register are called PCL and PCH
     cpu.stack_pointer   = 0xFF;
@@ -337,7 +337,7 @@ void Reset_CPU(void)
     Initialise_Memory();
 }
 
-void Display_CPU_State(void)
+static inline void Display_CPU_State(void)
 {
     printf("A  : 0x%X \t(%d) \tSP: 0x%X \t(%d) \n", cpu.accumulator, cpu.accumulator, cpu.stack_pointer, cpu.stack_pointer);
     printf("X  : 0x%X \t(%d) \tPC: 0x%X \t(%d) \n", cpu.index_reg_X, cpu.index_reg_X, cpu.program_counter, cpu.program_counter);
@@ -360,7 +360,7 @@ void Display_CPU_State(void)
     printf("PS :  %s\t(0x%X)\n", PS_str, cpu.PS);
 }
 
-u16 Load_Program(const u8 *program, int number_of_bytes)
+static inline u16 Load_Program(const u8 *program, int number_of_bytes)
 {
     // if (!program)
     //{
@@ -387,13 +387,13 @@ u16 Load_Program(const u8 *program, int number_of_bytes)
     return load_address;
 }
 
-u16 SP_To_Address(void)
+static inline u16 SP_To_Address(void)
 {
     return 0x100 | cpu.stack_pointer;
 }
 
 // 1 Cycle (fetch oppcode)
-u8 Fetch_Byte(s32 *cycles)
+static inline u8 Fetch_Byte(s32 *cycles)
 {
     assert(cpu.program_counter < MAX_MEM);
 
@@ -404,13 +404,13 @@ u8 Fetch_Byte(s32 *cycles)
 }
 
 // 1 Cycle
-s8 Fetch_Signed_Byte(s32 *cycles)
+static inline s8 Fetch_Signed_Byte(s32 *cycles)
 {
     return (s8)Fetch_Byte(cycles);
 }
 
 // 2 Cycles
-u16 Fetch_Word(s32 *cycles)
+static inline u16 Fetch_Word(s32 *cycles)
 {
     assert(cpu.program_counter < MAX_MEM);
 
@@ -426,14 +426,14 @@ u16 Fetch_Word(s32 *cycles)
 }
 
 // 1 cycle
-void Write_Byte(s32 *cycles, u8 data, u16 address)
+static inline void Write_Byte(s32 *cycles, u8 data, u16 address)
 {
     mem.data[address] = data;
     (*cycles) -= 1;
 }
 
 // 1 Cycle
-u8 Read_Byte(s32 *cycles, u16 address)
+static inline u8 Read_Byte(s32 *cycles, u16 address)
 {
     const u8 data = mem.data[address];
     (*cycles) -= 1;
@@ -441,7 +441,7 @@ u8 Read_Byte(s32 *cycles, u16 address)
 }
 
 // 2 Cycles
-u16 Read_Word(s32 *cycles, u16 address)
+static inline u16 Read_Word(s32 *cycles, u16 address)
 {
     const u8 low_byte  = Read_Byte(cycles, address);
     const u8 high_byte = Read_Byte(cycles, address + 1);
@@ -460,7 +460,7 @@ void Write_Word(s32 *cycles, u16 data, u32 address)
 }
 
 /** Pop a 16-bit value from the stack */
-u16 Pop_Word_From_Stack(s32 *cycles)
+static inline u16 Pop_Word_From_Stack(s32 *cycles)
 {
     const u16 value_from_stack = Read_Word(cycles, SP_To_Address() + 1);
     cpu.stack_pointer += 2;
@@ -468,7 +468,7 @@ u16 Pop_Word_From_Stack(s32 *cycles)
     return value_from_stack;
 }
 
-void Push_Word_To_Stack(s32 *cycles, u16 value)
+static inline void Push_Word_To_Stack(s32 *cycles, u16 value)
 {
     // cycles , data, address
     Write_Byte(cycles, value >> 8, 0x100 | cpu.stack_pointer);
@@ -478,24 +478,24 @@ void Push_Word_To_Stack(s32 *cycles, u16 value)
 }
 
 /** Push the PC-1 onto the stack */
-void Push_PC_Minus_One_To_Stack(s32 *cycles)
+static inline void Push_PC_Minus_One_To_Stack(s32 *cycles)
 {
     Push_Word_To_Stack(cycles, cpu.program_counter - 1);
 }
 
 /** Push the PC+1 onto the stack */
-void Push_PC_Plus_One_To_Stack(s32 *cycles)
+static inline void Push_PC_Plus_One_To_Stack(s32 *cycles)
 {
     Push_Word_To_Stack(cycles, cpu.program_counter + 1);
 }
 
 /** Push the PC onto the stack */
-void Push_PC_To_Stack(s32 *cycles)
+static inline void Push_PC_To_Stack(s32 *cycles)
 {
     Push_Word_To_Stack(cycles, cpu.program_counter);
 }
 
-void Push_Byte_Onto_Stack(s32 *cycles, u8 value)
+static inline void Push_Byte_Onto_Stack(s32 *cycles, u8 value)
 {
     mem.data[SP_To_Address()] = value;
     cpu.stack_pointer--;
@@ -503,7 +503,7 @@ void Push_Byte_Onto_Stack(s32 *cycles, u8 value)
 }
 
 // 2 cycles
-u8 Pop_Byte_From_Stack(s32 *cycles)
+static inline u8 Pop_Byte_From_Stack(s32 *cycles)
 {
     cpu.stack_pointer++;
     (*cycles) -= 2;
@@ -511,20 +511,21 @@ u8 Pop_Byte_From_Stack(s32 *cycles)
 }
 
 // A, X or Y Register
-void Load_Register_Set_Status(u8 reg)
+static inline void Load_Register_Set_Status(u8 reg)
 {
     cpu.Z = (reg == 0);
     cpu.N = (reg & 0x80) > 0;
 }
 
 // Addressing mode - Zero Page (1 cycle)
-u8 Address_Zero_Page(s32 *cycles)
+//#define Address_Zero_Page(CYCLES) Fetch_Byte(CYCLES)
+static inline u8 Address_Zero_Page(s32 *cycles)
 {
     return Fetch_Byte(cycles); // zero_page_address
 }
 
 // Addressing mode - Zero Page (2 cycles)
-u16 Address_Zero_Page_X(s32 *cycles)
+static inline u16 Address_Zero_Page_X(s32 *cycles)
 {
     u8 zero_page_address = Fetch_Byte(cycles);
     zero_page_address += cpu.index_reg_X;
@@ -534,7 +535,7 @@ u16 Address_Zero_Page_X(s32 *cycles)
 }
 
 // Addressing mode - Zero Page (2 cycles)
-u16 Address_Zero_Page_Y(s32 *cycles)
+static inline u16 Address_Zero_Page_Y(s32 *cycles)
 {
     u8 zero_page_address = Fetch_Byte(cycles);
     zero_page_address += cpu.index_reg_Y;
@@ -544,14 +545,14 @@ u16 Address_Zero_Page_Y(s32 *cycles)
 }
 
 // Addressing mode - Absolute (2 cycles)
-u16 Address_Absolute(s32 *cycles)
+static inline u16 Address_Absolute(s32 *cycles)
 {
     const u16 absolute_address = Fetch_Word(cycles);
     return absolute_address;
 }
 
 // Addressing mode - Absolute X (2/3 cycles)
-u16 Address_Absolute_X(s32 *cycles)
+static inline u16 Address_Absolute_X(s32 *cycles)
 {
     const u16 absolute_address      = Fetch_Word(cycles);
     const u16 absolute_address_x    = absolute_address + cpu.index_reg_X;
@@ -562,7 +563,7 @@ u16 Address_Absolute_X(s32 *cycles)
     return absolute_address_x;
 }
 
-u16 Address_Absolute_X_5_Cycle(s32 *cycles) // Special Case
+static inline u16 Address_Absolute_X_5_Cycle(s32 *cycles) // Special Case
 {
     const u16 absolute_address   = Fetch_Word(cycles);
     const u16 absolute_address_x = absolute_address + cpu.index_reg_X;
@@ -572,7 +573,7 @@ u16 Address_Absolute_X_5_Cycle(s32 *cycles) // Special Case
 }
 
 // Addressing mode - Absolute Y (2/3 cycles)
-u16 Address_Absolute_Y(s32 *cycles)
+static inline u16 Address_Absolute_Y(s32 *cycles)
 {
     const u16 absolute_address      = Fetch_Word(cycles);
     const u16 absolute_address_y    = absolute_address + cpu.index_reg_Y;
@@ -582,7 +583,8 @@ u16 Address_Absolute_Y(s32 *cycles)
 
     return absolute_address_y;
 }
-u16 Address_Absolute_Y_5_Cycle(s32 *cycles) // Special case
+
+static inline u16 Address_Absolute_Y_5_Cycle(s32 *cycles) // Special case
 {
     const u16 absolute_address   = Fetch_Word(cycles);
     const u16 absolute_address_y = absolute_address + cpu.index_reg_Y;
@@ -590,8 +592,9 @@ u16 Address_Absolute_Y_5_Cycle(s32 *cycles) // Special case
 
     return absolute_address_y;
 }
+
 // Addressing mode - Indirect X (4 cycles)
-u16 Address_Indirect_X(s32 *cycles)
+static inline u16 Address_Indirect_X(s32 *cycles)
 {
     u8 zero_page_address = Fetch_Byte(cycles);
     zero_page_address += cpu.index_reg_X;
@@ -601,7 +604,7 @@ u16 Address_Indirect_X(s32 *cycles)
 }
 
 // Addressing mode - Indirect Y (3/4 cycles)
-u16 Address_Indirect_Y(s32 *cycles)
+static inline u16 Address_Indirect_Y(s32 *cycles)
 {
     const u8  zero_page_address   = Fetch_Byte(cycles);
     const u16 effective_address   = Read_Word(cycles, zero_page_address);
@@ -613,8 +616,9 @@ u16 Address_Indirect_Y(s32 *cycles)
 
     return effective_address_y;
 }
+
 // 4 Cycles
-u16 Address_Indirect_Y_6_Cycles(s32 *cycles) // Special Case
+static inline u16 Address_Indirect_Y_6_Cycles(s32 *cycles) // Special Case
 {
     const u8  zero_page_address   = Fetch_Byte(cycles);
     const u16 effective_address   = Read_Word(cycles, zero_page_address);
@@ -625,26 +629,28 @@ u16 Address_Indirect_Y_6_Cycles(s32 *cycles) // Special Case
 }
 
 // Load a value at an 'address' into a given 'register' (1 cycle)
-void Load_Register(s32 *cycles, u8 *reg, const u16 address)
+static inline void Load_Register(s32 *cycles, u8 *reg, const u16 address)
 {
     (*reg) = Read_Byte(cycles, address);
     Load_Register_Set_Status((*reg));
 }
 
 // AND the A register with the value from 'address'
-void AND_Register(s32 *cycles, const u16 address)
+static inline void AND_Register(s32 *cycles, const u16 address)
 {
     cpu.accumulator &= Read_Byte(cycles, address);
     Load_Register_Set_Status(cpu.accumulator);
 }
+
 // OR the A register with the value from 'address'
-void OR_Register(s32 *cycles, const u16 address)
+static inline void OR_Register(s32 *cycles, const u16 address)
 {
     cpu.accumulator |= Read_Byte(cycles, address);
     Load_Register_Set_Status(cpu.accumulator);
 }
+
 // EOR the A register with the value from 'address'
-void EOR_Register(s32 *cycles, const u16 address)
+static inline void EOR_Register(s32 *cycles, const u16 address)
 {
     cpu.accumulator ^= Read_Byte(cycles, address);
     Load_Register_Set_Status(cpu.accumulator);
@@ -653,7 +659,7 @@ void EOR_Register(s32 *cycles, const u16 address)
 // 1 Cycle - Fetch
 // 2 Cycles - flag is set then jump
 // 3 Cycles - Crossing page
-void Branch_If(s32 *cycles, u8 flag, u8 expected)
+static inline void Branch_If(s32 *cycles, u8 flag, u8 expected)
 {
     const s8 jump_offset = Fetch_Signed_Byte(cycles);
     if (flag == expected)
@@ -671,14 +677,14 @@ void Branch_If(s32 *cycles, u8 flag, u8 expected)
 }
 
 /*	reg (register) - The A,X or Y Register */
-void Set_Zero_and_Negative_Flags(u8 reg)
+static inline void Set_Zero_and_Negative_Flags(u8 reg)
 {
     cpu.Z = (reg == 0);
     cpu.N = (reg & NEGATIVE_FLAG_BIT) > 0;
 }
 
 /* Do add with carry given the the operand */
-void ADC(u8 operand)
+static inline void ADC(u8 operand)
 {
     assert(cpu.D == false && "haven't handled decimal mode!");
 
@@ -696,13 +702,14 @@ void ADC(u8 operand)
 };
 
 /* Do subtract with carry given the the operand */
+//#define SBC(OPERAND) ADC(~(OPERAND))
 void SBC(u8 operand)
 {
     ADC(~operand);
 };
 
 /* Sets the processor status for a CMP/CPX/CPY instruction */
-void Register_Compare(u8 operand, u8 register_value)
+static inline void Register_Compare(u8 operand, u8 register_value)
 {
     const u8 temp = register_value - operand;
     cpu.N         = ((temp & NEGATIVE_FLAG_BIT) > 0);
@@ -711,7 +718,7 @@ void Register_Compare(u8 operand, u8 register_value)
 }
 
 /* Arithmetic shift left */
-u8 ASL(s32 *cycles, u8 operand)
+static inline u8 ASL(s32 *cycles, u8 operand)
 {
     cpu.C           = (operand & NEGATIVE_FLAG_BIT) > 0;
     const u8 result = operand << 1;
@@ -750,7 +757,7 @@ static inline u8 ROR(s32 *cycles, u8 operand)
     if (cpu.C)
     {
         operand |= NEGATIVE_FLAG_BIT;
-}
+    }
     (*cycles)--;
     cpu.C = OldBit0;
     Set_Zero_and_Negative_Flags(operand);
